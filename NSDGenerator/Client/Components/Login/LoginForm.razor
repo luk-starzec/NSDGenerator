@@ -1,0 +1,81 @@
+﻿@inject HttpClient httpClient
+@inject TokenAuthenticationStateProvider tokenAuthStateProvider
+
+<div class="login-form__wrapper">
+
+    <button class="login-form__close-button" @onclick="CloseForm" title="cancel">
+        <SvgIcon SvgUrl="/assets/close-icon.svg"/>
+    </button>
+
+    <EditForm class="login-form__from" Model="model" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+
+        <label class="login-form__label" for="login-frm-email">Email:</label>
+        <InputText class="login-form__input" @bind-Value="model.Email" id="login-frm-email" />
+        <ValidationMessage For="() => model.Email" />
+
+        <label class="login-form__label" for="login-frm-pass">Password:</label>
+        <InputText class="login-form__input" type="password" @bind-Value="model.Password" id="login-frm-pass" />
+        <ValidationMessage For="()=>model.Password" />
+
+        @if (showError)
+        {
+            <p class="validation-message">@error</p>}
+
+        <button type="submit" class="login-form__button">
+            Log in
+        </button>
+
+    </EditForm>
+
+    <div class="login-form__signin-row">
+        <span>New user?</span>
+        <button>Sign in</button>
+    </div>
+     
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    LoginModel model = new();
+
+    string error = string.Empty;
+    bool showError => !string.IsNullOrEmpty(error);
+
+    protected override void OnInitialized()
+    {
+        model = new LoginModel
+        {
+            Email = "user@starzec.net",
+            Password = "user1",
+        };
+    }
+
+    private async Task CloseForm()
+    {
+        await OnClose.InvokeAsync();
+    }
+
+    private async Task HandleSubmit()
+    {
+        error = string.Empty;
+
+        var response = await httpClient.PostAsJsonAsync("/api/login", model);
+        var result = await response.Content.ReadFromJsonAsync<LoginResult>();
+
+        if (result.IsSuccessful)
+        {
+            await tokenAuthStateProvider.Login(result.Token);
+            await OnClose.InvokeAsync();
+        }
+        else
+            error = result.Error;
+    }
+
+    private void HandleSignin()
+    {
+        // redirect to signin page
+    }
+}

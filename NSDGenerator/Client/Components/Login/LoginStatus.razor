@@ -1,0 +1,49 @@
+﻿@inject TokenAuthenticationStateProvider tokenAuthStateProvider
+
+<div class="login-status__wrapper">
+    <AuthorizeView>
+
+        <NotAuthorized>
+
+            @if (frmVisible)
+            {
+                <LoginForm OnClose="() => frmVisible = false" />
+            }
+            else
+            {
+                <button class="login-status__login-button" @onclick="() => frmVisible = true">
+                    <SvgIcon SvgUrl="/assets/user-icon.svg" />
+                    Log in
+                </button>
+            }
+
+        </NotAuthorized>
+
+        <Authorized>
+
+            <div class="login-status__authorized-wrapper">
+
+                <SvgIcon SvgUrl="/assets/user-icon.svg" />
+
+                @context.User.Identity.Name
+
+                <button @onclick="LogoutUser" title="log out">
+                    <SvgIcon SvgUrl="/assets/logout-icon.svg" />
+                </button>
+
+            </div>
+
+        </Authorized>
+
+    </AuthorizeView>
+</div>
+
+@code {
+    bool frmVisible;
+
+    private async Task LogoutUser()
+    {
+        await tokenAuthStateProvider.Logout();
+    }
+
+}

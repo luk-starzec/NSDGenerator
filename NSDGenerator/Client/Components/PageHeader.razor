@@ -1,0 +1,21 @@
+﻿
+<header class="page-header__wrapper">
+
+    <div class="page-header__logo">
+        <SvgIcon SvgUrl="/assets/logo.svg" />
+    </div>
+
+    <div class="page-header__content">
+        @ChildContent
+    </div>
+     
+    <div class="page-header__login">
+        <LoginStatus />
+    </div>
+
+</header>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}
