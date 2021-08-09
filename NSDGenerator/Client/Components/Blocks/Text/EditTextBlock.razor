@@ -1,0 +1,62 @@
+﻿
+<div class="@CssClass edit-text-block__wrapper block__wrapper">
+
+    <div class="edit-text-block__text">
+        <input @bind="@Text" @bind:event="oninput" />
+    </div>
+
+    <button class="edit-text-block__button edit-text-block__button--delete" @onclick="DeleteBlockClick">
+        delete
+    </button>
+
+    <button class="edit-text-block__button edit-text-block__button--left" @onclick="AddTextBlockClick">
+        add text
+    </button>
+    <button class="edit-text-block__button edit-text-block__button--right" @onclick="AddBranchBlockClick">
+        add branch
+    </button>
+
+    <div class="@cssDeleteConfirm">
+
+        <div class="edit-text-block__delete-question">
+            Delete this block?
+        </div>
+
+        <button class="edit-text-block__question-button" @onclick="CancelDeleteClick">
+            Cancel
+        </button>
+
+        <button class="edit-text-block__question-button edit-text-block__question-button--confirm" @onclick="ConfirmDeleteClick">
+            Delete
+        </button>
+
+    </div>
+</div>
+
+@code {
+    [Parameter] public string CssClass { get; set; }
+
+    [Parameter] public Guid Id { get; set; }
+    [Parameter] public string Text { get; set; }
+    [Parameter] public EventCallback<string> TextChanged { get; set; }
+
+    [Parameter] public EventCallback<Guid> DeleteBlock { get; set; }
+    [Parameter] public EventCallback AddTextBlock { get; set; }
+    [Parameter] public EventCallback AddBranchBlock { get; set; }
+
+
+    bool deleteConfirmVisible;
+
+    string cssDeleteConfirm => $"edit-text-block__delete-confirm-wrapper {(deleteConfirmVisible ? "edit-text-block__delete-confirm-wrapper--visible" : "")}";
+
+    void DeleteBlockClick() => deleteConfirmVisible = true;
+
+    void CancelDeleteClick() => deleteConfirmVisible = false;
+
+    async Task ConfirmDeleteClick() => await DeleteBlock.InvokeAsync(Id);
+
+    async Task AddTextBlockClick() => await AddTextBlock.InvokeAsync();
+
+    async Task AddBranchBlockClick() => await AddBranchBlock.InvokeAsync();
+
+}

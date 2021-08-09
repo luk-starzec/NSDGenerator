@@ -1,0 +1,56 @@
+﻿$color-hue: 230;
+$color-30: hsl($color-hue, 40%, 35%);
+$color-50: hsl($color-hue, 40%, 50%);
+$color-70: hsl($color-hue, 40%, 70%);
+$color-80: hsl($color-hue, 40%, 80%);
+$color-90: hsl($color-hue, 40%, 90%);
+$color-95: hsl($color-hue, 40%, 95%);
+$color-98: hsl($color-hue, 40%, 98%);
+
+
+@mixin btn-base {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    border-radius: .5rem;
+    cursor: pointer;
+    transition: transform ease .1s, box-shadow ease .1s;
+    box-shadow: 4px 4px 4px 0 rgba(0, 0, 0, 0.15);
+
+    &:hover {
+        transform: scale(1.05);
+        box-shadow: 2px 4px 4px 0 rgba(0, 0, 0, 0.2);
+    }
+}
+
+@mixin btn-primary {
+    @include btn-base;
+    background-color: $color-30;
+    color: #ffffff;
+}
+
+@mixin btn-secondary {
+    @include btn-base;
+    background-color: $color-90;
+    color: $color-30;
+    box-shadow: 4px 4px 4px 0 rgba(0, 0, 0, 0.05);
+
+    &:hover {
+        background-color: $color-95;
+        box-shadow: 2px 4px 4px 0 rgba(0, 0, 0, 0.1);
+    }
+}
+
+@mixin btn-block {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: $color-70;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+    background-color: $color-50;
+    }
+}

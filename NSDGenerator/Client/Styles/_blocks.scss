@@ -1,0 +1,209 @@
+﻿@import 'shared';
+
+$border-color: $color-80;
+
+.branch-block__wrapper {
+    position: relative;
+    border: solid 1px $border-color;
+}
+
+.branch-block__title {
+    padding: .75em 1em;
+    text-align: center;
+    border-bottom: solid 1px $border-color;
+    color: $color-30;
+    background: #fff;
+}
+
+.branch-block__branch-wrapper {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    width: 100%;
+    background: linear-gradient(to top right, transparent 50%, $color-70 0) 0 0/50% 100% no-repeat, linear-gradient(to top left, transparent 50%, $color-70 0) 100% 0/50% 100% no-repeat;
+
+    &:before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: $color-95;
+        z-index: -1;
+    }
+}
+
+.branch-block__condition {
+    grid-column: 1/3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+}
+
+.branch-block__branch {
+    display: flex;
+    align-items: center;
+    color: $color-50;
+
+    &--left {
+        justify-content: flex-start
+    }
+
+    &--right {
+        justify-content: flex-end;
+    }
+}
+
+.branch-block__label {
+    margin: .5em 1em;
+}
+
+
+.branch-block__result-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: solid 1px $border-color;
+}
+
+.branch-block__result {
+    display: grid;
+    text-align: center;
+    height: 100%;
+
+    &--left {
+        border-right: solid 1px $border-color;
+    }
+
+    &--right {
+    }
+
+    .branch-block__branch-wrapper {
+        border: none;
+    }
+
+    .block__wrapper {
+        border: none;
+    }
+}
+
+
+.content-block__wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background: #fff;
+}
+
+.preview-text-block__wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: solid 1px $border-color;
+    background: #fff;
+
+    div {
+        padding: 0.5rem 1rem;
+        border-bottom: solid 1px $border-color;
+    }
+
+    &:last-child div {
+        border-bottom: none;
+    }
+}
+
+.block__child {
+    border-top: none;
+
+    div {
+        border-top: none;
+    }
+}
+
+.block__parent {
+    border-bottom: none;
+}
+
+.edit-text-block__wrapper {
+    position: relative;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    grid-template-columns: 1fr 1fr;
+}
+
+.edit-text-block__text {
+    grid-column: 1/3;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 4rem 0.5rem 0.5rem;
+    background-color: $color-98;
+
+    input {
+        width: 100%;
+        padding: 0.25rem;
+        border: none;
+        border-radius: 0.25rem;
+        text-align: center;
+    }
+}
+
+.edit-text-block__button {
+    @include btn-block;
+
+    &--delete {
+        position: absolute;
+        top: 0;
+        right: 0;
+        border-radius: 0 0 0 0.25rem;
+    }
+
+    &--left {
+        border-radius: 0.25rem 0 0 0.25rem
+    }
+
+    &--right {
+        margin-left: 1px;
+        border-radius: 0 0.25rem 0.25rem 0;
+    }
+}
+
+.edit-text-block__delete-confirm-wrapper {
+    position: absolute;
+    inset: 0;
+    background-color: hsla($color-hue, 40%, 30%, 0.85);
+    display: none;
+
+    &--visible {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}
+
+.edit-text-block__delete-question {
+    margin-inline: 1rem;
+    color: #fff;
+}
+
+.edit-text-block__question-button {
+    margin-inline: 0.5rem;
+    padding: 0.25rem;
+    background-color: #fff;
+    color: $color-30;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+
+    &:hover {
+        background-color: $color-95;
+    }
+
+    &--confirm {
+        background-color: $color-70;
+        color: #fff;
+
+        &:hover {
+            background-color: darkred;
+        }
+    }
+}

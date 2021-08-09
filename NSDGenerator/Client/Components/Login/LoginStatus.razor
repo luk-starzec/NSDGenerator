@@ -36,9 +36,22 @@
         </Authorized>
 
     </AuthorizeView>
+
+    @if (frmVisible)
+    {
+        <div class="login-status__mask">
+
+        </div>
+    }
 </div>
 
 @code {
+    public void ShowLoginForm()
+    {
+        frmVisible = true;
+        StateHasChanged();
+    }
+
     bool frmVisible;
 
     private async Task LogoutUser()

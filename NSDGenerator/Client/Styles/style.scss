@@ -3,9 +3,12 @@
 
 @import "Normalize/Normalize";
 
-* {
+*, button {
     font-family: 'Itim';
 }
 
-@import "_PageHeader.scss";
-@import "_IndexPage.scss";
+@import "pageHeader";
+@import "pageContent";
+@import "indexPage";
+@import "diagramPage";
+@import "blocks";

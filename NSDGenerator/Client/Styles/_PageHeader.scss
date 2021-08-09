@@ -1,11 +1,11 @@
-﻿@import "_Login.scss";
+﻿@import "login";
 
 .page-header__wrapper {
     height: 8rem;
     width: 100vw;
     display: flex;
     align-items: center;
-    background-color: #DBE2F0;
+    background-color: $color-95;
 }
 
 .page-header__logo {
@@ -13,6 +13,27 @@
 
     svg {
         box-shadow: 4px 4px 4px 0 rgba(0, 0, 0, 0.1);
+    }
+
+    .condition {
+        fill: $color-70;
+    }
+
+    .condition-left,
+    .condition-right {
+        fill: $color-90;
+    }
+
+    .result-left {
+        fill: $color-95;
+    }
+
+    .result-right {
+        fill: $color-98;
+    }
+
+    .box {
+        stroke: $color-90;
     }
 }
 

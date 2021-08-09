@@ -1,0 +1,11 @@
+﻿
+<div class="page-content__wrapper">
+    <main class="page-content__main">
+        @ChildContent
+    </main>
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

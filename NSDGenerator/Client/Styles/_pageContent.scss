@@ -1,0 +1,14 @@
+﻿@import "shared";
+
+.page-content__wrapper {
+    display: flex;
+    justify-content: center;
+    background: $color-98;
+    min-height: calc(100vh - 8rem);
+}
+
+.page-content__main {
+    width: 80vw;
+    background: #fff;
+    z-index: 0;
+}

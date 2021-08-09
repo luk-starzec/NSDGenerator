@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NSDGenerator.Client.Helpers;
+using NSDGenerator.Shared.Diagram;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -29,6 +30,8 @@ namespace NSDGenerator.Client
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddScoped<TokenAuthenticationStateProvider>();
             builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<TokenAuthenticationStateProvider>());
+
+            builder.Services.AddSingleton<AppState>();
 
             await builder.Build().RunAsync();
         }

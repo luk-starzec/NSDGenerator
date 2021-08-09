@@ -1,16 +1,16 @@
 ﻿
 <header class="page-header__wrapper">
 
-    <div class="page-header__logo">
+    <a class="page-header__logo" href="/" title="Home page">
         <SvgIcon SvgUrl="/assets/logo.svg" />
-    </div>
+    </a>
 
     <div class="page-header__content">
         @ChildContent
     </div>
      
     <div class="page-header__login">
-        <LoginStatus />
+        <LoginStatus @ref="loginStatus"/>
     </div>
 
 </header>
@@ -18,4 +18,8 @@
 @code {
     [Parameter]
     public RenderFragment ChildContent { get; set; }
+
+    public void ShowLoginForm() => loginStatus.ShowLoginForm();
+
+    private LoginStatus loginStatus;
 }

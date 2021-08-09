@@ -1,0 +1,39 @@
+﻿@page "/diagram"
+@inject AppState AppState
+@implements IDisposable
+
+<PageHeader>
+    <h1>
+        @model?.Name
+    </h1>
+</PageHeader>
+
+<PageContent>
+
+    <div class="diagram__wrapper">
+
+        <Block Model=@model.RootBlock />
+
+    </div>
+
+    <DiagramMenu />
+
+</PageContent>
+
+@code {
+    DiagramModel model;
+
+    protected override void OnInitialized()
+    {
+        if (AppState.CurrentDiagram is null)
+            AppState.SetCurrentDiagram(DiagramHelpers.GetNewDiagram());
+
+        model = AppState.CurrentDiagram;
+        AppState.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        AppState.OnChange -= StateHasChanged;
+    }
+}

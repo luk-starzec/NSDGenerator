@@ -1,0 +1,59 @@
+﻿
+<div class="@CssClass branch-block__wrapper block__wrapper">
+
+    @if (!string.IsNullOrEmpty(TitleText))
+    {
+        <div class="branch-block__title">
+            <div class="branch-block__label">
+                @TitleText
+            </div>
+        </div>
+
+    }
+
+    <div class="branch-block__branch-wrapper ">
+
+        <div class="branch-block__condition">
+            <div class="branch-block__label">
+                @ConditionText
+            </div>
+        </div>
+
+        <div class="branch-block__branch branch-block__branch--left">
+            <div class="branch-block__label">
+                @LeftBranchText
+            </div>
+        </div>
+
+        <div class="branch-block__branch branch-block__branch--right">
+            <div class="branch-block__label">
+                @RightBranchText
+            </div>
+        </div>
+    </div>
+
+    <div class="branch-block__result-wrapper">
+
+        <div class="branch-block__result branch-block__result--left">
+            @LeftResult
+        </div>
+
+        <div class="branch-block__result branch-block__result--right">
+            @RightResult
+        </div>
+
+    </div>
+
+</div>
+
+@code {
+    [Parameter] public string CssClass { get; set; }
+
+    [Parameter] public Guid Id { get; set; }
+    [Parameter] public string TitleText { get; set; }
+    [Parameter] public string ConditionText { get; set; }
+    [Parameter] public string LeftBranchText { get; set; } = "Yes";
+    [Parameter] public string RightBranchText { get; set; } = "No";
+    [Parameter] public RenderFragment LeftResult { get; set; }
+    [Parameter] public RenderFragment RightResult { get; set; }
+}

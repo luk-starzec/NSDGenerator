@@ -1,0 +1,47 @@
+﻿
+
+@if (textModel is not null)
+{
+    <TextBlock Text=@textModel.Text Id=@Model.Id CssClass=@cssTextBlock EditMode=true />
+
+    @if (@textModel.Child is not null)
+    {
+        <Block Model=@textModel.Child CssClass="block__child" />
+    }
+}
+
+@if (branchModel is not null)
+{
+    <BranchBlock Id=@Model.Id 
+                 TitleText=@branchModel.Title
+                 ConditionText=@branchModel.Condition
+                 LeftBranchText=@branchModel.LeftBranch
+                 RightBranchText=@branchModel.RightBranch
+                 CssClass=@CssClass>
+
+        <LeftResult>
+            <Block Model=@branchModel.LeftResult />
+        </LeftResult>
+
+        <RightResult>
+            <Block Model=@branchModel.RightResult />
+        </RightResult>
+
+    </BranchBlock>
+}
+
+
+@code {
+    [Parameter] public string CssClass { get; set; }
+
+    [Parameter] public IBlockModel Model { get; set; }
+
+    [Parameter] public bool EditMode { get; set; }
+
+
+    TextBlockModel textModel => Model as TextBlockModel;
+    BranchBlockModel branchModel => Model as BranchBlockModel;
+
+    string cssTextBlock => (textModel?.Child is not null) ? $"block__parent {CssClass}" : CssClass;
+
+}

@@ -1,5 +1,47 @@
-﻿h1 {
+﻿@import "shared";
+
+h1 {
     font-family: 'Comic Neue';
     font-size: 2em;
-    color: #4D6FB2;
+    color: $color-50;
+}
+
+.index__block-wrapper {
+    background: $color-95;
+    border-radius: 0.5rem;
+    padding: 3rem;
+    margin: 10vh 10vw;
+}
+
+.index__block {
+    font-size: 1.2em;
+
+    .branch-block__title {
+        font-size: 1.2em;
+    }
+
+    .branch-block__result {
+        min-height: 13rem;
+    }
+}
+
+.index__action-button {
+    @include btn-primary;
+    padding: 0.5em 1em;
+    margin: 1em;
+
+    &--big {
+        font-size: 1.2em;
+    }
+
+    &--login {
+        @include btn-secondary;
+        margin-bottom: 0.25em;
+    }
+}
+
+.index__login-block {
+    display: flex;
+    flex-direction: column;
+    color: $color-50;
 }

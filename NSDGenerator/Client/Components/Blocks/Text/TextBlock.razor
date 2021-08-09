@@ -1,0 +1,45 @@
+﻿@inject AppState AppState
+@implements IDisposable
+
+@if (EditMode && IsSelected)
+{
+    <EditTextBlock Text="@Text" Id="@Id" CssClass="@CssClass" />
+}
+else
+{
+    <PreviewTextBlock Text="@Text" Id="@Id" CssClass="@CssClass" OnBlockSelected=@OnBlockSelected />
+}
+
+@code {
+    [Parameter] public string CssClass { get; set; }
+
+    [Parameter] public Guid Id { get; set; }
+    [Parameter] public string Text { get; set; }
+
+    [Parameter] public bool EditMode { get; set; }
+
+    Guid selectedBlockId = Guid.Empty;
+    bool IsSelected => Id == selectedBlockId;
+
+    protected override void OnInitialized()
+    {
+        AppState.OnChange += AppStateChanged;
+    }
+
+    void OnBlockSelected(Guid id)
+    {
+        AppState.SetSelectedBlockId(id);
+    }
+
+    void AppStateChanged()
+    {
+        selectedBlockId = AppState.SelectedBlockId;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        AppState.OnChange -= StateHasChanged;
+    }
+
+}

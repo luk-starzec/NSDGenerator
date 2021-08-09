@@ -1,12 +1,67 @@
 ﻿@page "/"
+@inject NavigationManager navigationManager
+@inject AppState AppState
 
-<PageHeader>
+<PageHeader @ref="pageHeader">
     <h1>
         Nassi–Shneiderman diagram generator
     </h1>
 </PageHeader>
 
-<h1>Hello, world!</h1>
+<PageContent>
+    <section class="index__block-wrapper">
+
+        <BranchBlock TitleText="Start work" ConditionText="Open existing diagram?" CssClass="index__block">
+            <LeftResult>
+                <BranchBlock ConditionText="From file?">
+
+                    <LeftResult>
+                        <ContentBlock>
+                            <button class="index__action-button" @onclick="SelectFileClick">
+                                Select file
+                            </button>
+                        </ContentBlock>
+                    </LeftResult>
+
+                    <RightResult>
+                        <AuthorizeView>
+                            <Authorized>
+                                <ContentBlock>
+                                    <button class="index__action-button"
+                                            @onclick="ViewListClick">
+                                        View list
+                                    </button>
+                                </ContentBlock>
+                            </Authorized>
+                            <NotAuthorized>
+                                <ContentBlock CssClass="index__login-block">
+                                    <button class="index__action-button index__action-button--login"
+                                            @onclick="LoginClick">
+                                        Log in
+                                    </button>
+                                    <span>
+                                        to view your diagrams
+                                    </span>
+                                </ContentBlock>
+                            </NotAuthorized>
+                        </AuthorizeView>
+                    </RightResult>
+
+                </BranchBlock>
+            </LeftResult>
+
+            <RightResult>
+                <ContentBlock>
+                    <button class="index__action-button index__action-button--big"
+                            @onclick="NewDiagramClick">
+                        New diagram
+                    </button>
+                </ContentBlock>
+            </RightResult>
+        </BranchBlock>
+    </section>
+
+</PageContent>
 
 <AuthorizeView>
     This content is displayed only if the user is Authorized
@@ -16,3 +71,55 @@
     User is editor
 </AuthorizeView>
 
+@code{
+    private PageHeader pageHeader;
+
+    void LoginClick() => pageHeader.ShowLoginForm();
+
+    void ViewListClick() { }
+
+    void SelectFileClick() { }
+
+    void NewDiagramClick()
+    {
+        var test = new TextBlockModel
+        {
+            Id = Guid.NewGuid(),
+            Text = "Start block",
+            Child = new TextBlockModel
+            {
+                Id = Guid.NewGuid(),
+                Text = "Second block",
+                Child = new TextBlockModel("Third")
+            }
+        };
+        var diagram = new DiagramModel
+        {
+            Name = "New diagram",
+            RootBlock = test,
+        };
+
+        var fileBlock = new BranchBlockModel
+        {
+            Condition = "From file?",
+            LeftResult = new TextBlockModel("Select file"),
+            RightResult = new TextBlockModel("View list", test),
+        };
+        var openBlock = new BranchBlockModel
+        {
+            Title = "Start work",
+            Condition = "Open existing diagram?",
+            LeftResult = fileBlock,
+            RightResult = new TextBlockModel("New diagram"),
+        };
+        var home = new DiagramModel
+        {
+            Name = "Start page",
+            RootBlock = openBlock
+        };
+
+        AppState.SetCurrentDiagram(home);
+
+        navigationManager.NavigateTo("/diagram");
+    }
+}

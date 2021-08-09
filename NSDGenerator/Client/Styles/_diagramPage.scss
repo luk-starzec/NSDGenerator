@@ -1,0 +1,45 @@
+﻿@import 'shared';
+
+.diagram__wrapper {
+    margin: clamp(1rem, 5%, 5vh) clamp(1rem, 10%, 10vw);
+}
+
+
+.diagram-menu__wrapper {
+    position: fixed;
+    left: 2rem;
+    bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.diagram-menu__button {
+    @include btn-base;
+    justify-content: flex-start;
+    padding: 0;
+    color: #fff;
+    background-color: $color-70;
+
+    &:hover {
+        background-color: $color-30;
+
+        span{
+            display: block;
+        }
+    }
+
+    img {
+        width: 2rem;
+        height: 2rem;
+        margin: 0.5rem;
+    }
+
+    span {
+        flex-grow: 1;
+        text-align: center;
+        padding-inline: 1rem 1.5rem;
+        display: none;
+    }
+}
