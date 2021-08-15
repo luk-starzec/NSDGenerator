@@ -1,0 +1,13 @@
+﻿
+<button class="block-button__button block-button__button--delete" title="delete block"
+        @onclick="DeleteBlockClick" @onclick:stopPropagation="true">
+
+    <SvgIcon SvgUrl="/assets/del-block-icon.svg" />
+
+</button>
+
+@code {
+    [Parameter] public EventCallback OnDeleteBlock { get; set; }
+
+    async Task DeleteBlockClick() => await OnDeleteBlock.InvokeAsync();
+}

@@ -10,6 +10,7 @@ namespace NSDGenerator.Client.Helpers
     {
         public DiagramModel CurrentDiagram { get; private set; }
         public Guid SelectedBlockId { get; private set; }
+        public bool EditMode { get; private set; }
 
         public event Action OnChange;
 
@@ -22,6 +23,12 @@ namespace NSDGenerator.Client.Helpers
         public void SetSelectedBlockId(Guid id)
         {
             SelectedBlockId = id;
+            NotifyStateChanged();
+        }
+
+        public void SetEditMode(bool editMode)
+        {
+            EditMode = editMode;
             NotifyStateChanged();
         }
 

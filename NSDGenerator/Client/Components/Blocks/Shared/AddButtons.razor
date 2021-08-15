@@ -1,0 +1,23 @@
+﻿
+<button class="block-button__button block-button__button--add-left" title="add text block"
+        @onclick="AddTextBlockClick" @onclick:stopPropagation="true">
+
+    <SvgIcon SvgUrl="/assets/add-block-text-icon.svg" />
+
+</button>
+
+<button class="block-button__button block-button__button--add-right" title="add branch block"
+        @onclick="AddBranchBlockClick" @onclick:stopPropagation="true">
+
+    <SvgIcon SvgUrl="/assets/add-block-branch-icon.svg" />
+
+</button>
+
+@code {
+    [Parameter] public EventCallback OnAddTextBlock { get; set; }
+    [Parameter] public EventCallback OnAddBranchBlock { get; set; }
+
+    async Task AddTextBlockClick() => await OnAddTextBlock.InvokeAsync();
+    async Task AddBranchBlockClick() => await OnAddBranchBlock.InvokeAsync();
+
+}

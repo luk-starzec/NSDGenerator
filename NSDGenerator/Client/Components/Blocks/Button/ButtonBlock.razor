@@ -1,0 +1,19 @@
+﻿
+<div class="@CssClass button-block__wrapper">
+
+    <button class="button-block__button" @onclick="Model.OnClick">
+        @Model.ButtonText
+    </button>
+
+    <span class="button-block__after-text">
+        @Model.AfterText
+    </span>
+
+</div>
+
+@code {
+    [Parameter] public string CssClass { get; set; }
+
+    [Parameter] public ButtonBlockModel Model { get; set; }
+
+}

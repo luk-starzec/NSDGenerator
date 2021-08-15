@@ -2,61 +2,50 @@
 <div class="@CssClass edit-text-block__wrapper block__wrapper">
 
     <div class="edit-text-block__text">
-        <input @bind="@Text" @bind:event="oninput" />
+        <input @bind="@Model.Text" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="text" />
     </div>
 
-    <button class="edit-text-block__button edit-text-block__button--delete" @onclick="DeleteBlockClick">
-        delete
-    </button>
+    <DeleteButton OnDeleteBlock="@DeleteBlockClick" />
 
-    <button class="edit-text-block__button edit-text-block__button--left" @onclick="AddTextBlockClick">
-        add text
-    </button>
-    <button class="edit-text-block__button edit-text-block__button--right" @onclick="AddBranchBlockClick">
-        add branch
-    </button>
+    <AddButtons OnAddTextBlock="@HandleAddTextBlock" OnAddBranchBlock="@HandleAddBranchBlock" />
 
-    <div class="@cssDeleteConfirm">
+    <DeleteDialog @bind-IsVisible="@deleteDialogVisible" OnDeleteBlock="@HandleConfirmDelete" />
 
-        <div class="edit-text-block__delete-question">
-            Delete this block?
-        </div>
-
-        <button class="edit-text-block__question-button" @onclick="CancelDeleteClick">
-            Cancel
-        </button>
-
-        <button class="edit-text-block__question-button edit-text-block__question-button--confirm" @onclick="ConfirmDeleteClick">
-            Delete
-        </button>
-
-    </div>
 </div>
 
 @code {
     [Parameter] public string CssClass { get; set; }
 
-    [Parameter] public Guid Id { get; set; }
-    [Parameter] public string Text { get; set; }
-    [Parameter] public EventCallback<string> TextChanged { get; set; }
+    [Parameter] public TextBlockModel Model { get; set; }
 
-    [Parameter] public EventCallback<Guid> DeleteBlock { get; set; }
-    [Parameter] public EventCallback AddTextBlock { get; set; }
-    [Parameter] public EventCallback AddBranchBlock { get; set; }
+    [Parameter] public EventCallback OnChildAdded { get; set; }
 
+    [Parameter] public EventCallback OnBlockDeleted { get; set; }
 
-    bool deleteConfirmVisible;
+    bool deleteDialogVisible;
 
-    string cssDeleteConfirm => $"edit-text-block__delete-confirm-wrapper {(deleteConfirmVisible ? "edit-text-block__delete-confirm-wrapper--visible" : "")}";
+    void DeleteBlockClick() => deleteDialogVisible = true;
 
-    void DeleteBlockClick() => deleteConfirmVisible = true;
+    async Task HandleConfirmDelete() => await OnBlockDeleted.InvokeAsync();
 
-    void CancelDeleteClick() => deleteConfirmVisible = false;
+    async Task HandleAddTextBlock() => await AddBlock(true);
 
-    async Task ConfirmDeleteClick() => await DeleteBlock.InvokeAsync(Id);
+    async Task HandleAddBranchBlock() => await AddBlock(false);
 
-    async Task AddTextBlockClick() => await AddTextBlock.InvokeAsync();
+    async Task AddBlock(bool textBlock)
+    {
+        var currentChild = Model.Child;
 
-    async Task AddBranchBlockClick() => await AddBranchBlock.InvokeAsync();
+        IBlockModel block = textBlock
+            ? new TextBlockModel() { Child = currentChild }
+            : new BranchBlockModel() { LeftResult = currentChild };
+        block.Parent = Model;
+        Model.Child = block;
+
+        if (currentChild is not null)
+            currentChild.Parent = block;
+
+        await OnChildAdded.InvokeAsync();
+    }
 
 }

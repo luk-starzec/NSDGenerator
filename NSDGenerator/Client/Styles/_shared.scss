@@ -54,3 +54,25 @@ $color-98: hsl($color-hue, 40%, 98%);
     background-color: $color-50;
     }
 }
+
+@mixin input-base {
+    border: none;
+    border-radius: 0.25rem;
+    color: $color-50;
+
+    &::-webkit-input-placeholder {
+        color: $color-90;
+    }
+
+    &::-moz-placeholder {
+        color: $color-90;
+    }
+
+    &:-ms-input-placeholder {
+        color: $color-90;
+    }
+
+    &:-moz-placeholder {
+        color: $color-90;
+    }
+}

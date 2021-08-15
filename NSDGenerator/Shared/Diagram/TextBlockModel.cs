@@ -14,10 +14,12 @@ namespace NSDGenerator.Shared.Diagram
         public IBlockModel Child { get; set; }
 
         public TextBlockModel()
-        { }
+        {
+            Id = Guid.NewGuid();
+        }
 
-        public TextBlockModel(string text, IBlockModel child = null)
-            => (Text, Child, Id) = (text, child, Guid.NewGuid());
+        public TextBlockModel(string text, IBlockModel child = null) : this()
+            => (Text, Child) = (text, child);
 
     }
 }

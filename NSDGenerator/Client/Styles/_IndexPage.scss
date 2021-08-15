@@ -16,32 +16,46 @@ h1 {
 .index__block {
     font-size: 1.2em;
 
-    .branch-block__title {
-        font-size: 1.2em;
-    }
-
     .branch-block__result {
         min-height: 13rem;
     }
 }
 
-.index__action-button {
-    @include btn-primary;
-    padding: 0.5em 1em;
-    margin: 1em;
-
-    &--big {
-        font-size: 1.2em;
-    }
-
-    &--login {
-        @include btn-secondary;
-        margin-bottom: 0.25em;
+.index__title-block {
+    .preview-text-block__text {
+        padding: 1.25em 1em;
+        text-align: center;
+        font-size: 1.3em;
+        color: $color-50;
+        background: #fff;
     }
 }
 
-.index__login-block {
-    display: flex;
-    flex-direction: column;
-    color: $color-50;
+.index__action-block {
+    .button-block__button {
+        @include btn-primary;
+        padding: 0.5em 1em;
+        margin: 1em;
+
+        &--big {
+            font-size: 1.2em;
+        }
+
+        &--login {
+            @include btn-secondary;
+            margin-bottom: 0.25em;
+        }
+    }
+
+    &--login {
+        .button-block__button {
+            background-color: $color-90;
+            color: $color-50;
+            margin-bottom: 0.5rem;
+        }
+
+        .button-block__after-text {
+            margin-bottom: 0.5rem;
+        }
+    }
 }

@@ -1,40 +1,38 @@
 ﻿@inject AppState AppState
 @implements IDisposable
 
-@if (EditMode && IsSelected)
+@if (editMode && isSelected)
 {
-    <EditTextBlock Text="@Text" Id="@Id" CssClass="@CssClass" />
+    <EditTextBlock Model="@Model" CssClass="@CssClass" OnChildAdded="@HandleChildAdded" />
 }
 else
 {
-    <PreviewTextBlock Text="@Text" Id="@Id" CssClass="@CssClass" OnBlockSelected=@OnBlockSelected />
+    <PreviewTextBlock Model="@Model" CssClass="@CssClass" OnBlockSelected="@HandleBlockSelected" />
 }
+
+@if (@Model.Child is not null)
+{
+    <Block Model=@Model.Child CssClass="block__child" />
+}
+
 
 @code {
     [Parameter] public string CssClass { get; set; }
 
-    [Parameter] public Guid Id { get; set; }
-    [Parameter] public string Text { get; set; }
+    [Parameter] public TextBlockModel Model { get; set; }
 
-    [Parameter] public bool EditMode { get; set; }
+    [Parameter] public EventCallback<Guid> OnBlockChanged { get; set; }
+
+
+    bool editMode { get; set; }
 
     Guid selectedBlockId = Guid.Empty;
-    bool IsSelected => Id == selectedBlockId;
+
+    bool isSelected => Model.Id == selectedBlockId;
 
     protected override void OnInitialized()
     {
         AppState.OnChange += AppStateChanged;
-    }
-
-    void OnBlockSelected(Guid id)
-    {
-        AppState.SetSelectedBlockId(id);
-    }
-
-    void AppStateChanged()
-    {
-        selectedBlockId = AppState.SelectedBlockId;
-        StateHasChanged();
     }
 
     public void Dispose()
@@ -42,4 +40,17 @@ else
         AppState.OnChange -= StateHasChanged;
     }
 
+    void AppStateChanged()
+    {
+        selectedBlockId = AppState.SelectedBlockId;
+        editMode = AppState.EditMode;
+    }
+
+    void HandleBlockSelected(Guid id) => AppState.SetSelectedBlockId(id);
+
+    void HandleChildAdded()
+    {
+        AppState.SetSelectedBlockId(Model.Child.Id);
+        StateHasChanged();
+    }
 }

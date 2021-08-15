@@ -1,0 +1,90 @@
+﻿
+<div class="@CssClass edit-branch-block__wrapper block__wrapper">
+
+    <DeleteButton OnDeleteBlock="@DeleteBlockClick" />
+
+    <div class="edit-branch-block__branch-wrapper ">
+
+        <div class="edit-branch-block__condition">
+            <input class="edit-branch-block__input" @bind="@Model.Condition" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="condition" />
+        </div>
+
+        <div class="edit-branch-block__branch edit-branch-block__branch--left">
+            <input class="edit-branch-block__input" @bind="@Model.LeftBranch" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="yes" />
+        </div>
+
+        <div class="edit-branch-block__branch edit-branch-block__branch--right">
+            <input class="edit-branch-block__input" @bind="@Model.RightBranch" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="no" />
+        </div>
+
+    </div>
+
+    <div class="edit-branch-block__add-wrapper">
+
+        <AddButtons OnAddTextBlock="@HandleAddLeftTextBlock" OnAddBranchBlock="@HandleAddLeftBranchBlock" />
+
+        <AddButtons OnAddTextBlock="@HandleAddRightTextBlock" OnAddBranchBlock="@HandleAddRightBranchBlock" />
+
+    </div>
+
+    <div class="edit-branch-block__result-wrapper">
+
+        <div class="edit-branch-block__result edit-branch-block__result--left">
+            <Block Model="@Model.LeftResult" />
+        </div>
+
+        <div class="edit-branch-block__result edit-branch-block__result--right">
+            <Block Model="@Model.RightResult" />
+        </div>
+
+    </div>
+
+    <DeleteDialog @bind-IsVisible="@deleteDialogVisible" OnDeleteBlock="HandleConfirmDelete" />
+
+</div>
+
+@code {
+    [Parameter] public string CssClass { get; set; }
+
+    [Parameter] public BranchBlockModel Model { get; set; }
+
+    [Parameter] public EventCallback OnBlockDeleted { get; set; }
+    [Parameter] public EventCallback<bool> OnChildAdded { get; set; }
+
+    bool deleteDialogVisible;
+
+    void DeleteBlockClick() => deleteDialogVisible = true;
+
+    async Task HandleConfirmDelete() => await OnBlockDeleted.InvokeAsync();
+
+    async Task HandleAddLeftTextBlock() => await AddBlock(true, true);
+
+    async Task HandleAddLeftBranchBlock() => await AddBlock(true, false);
+
+    async Task HandleAddRightTextBlock() => await AddBlock(false, true);
+
+    async Task HandleAddRightBranchBlock() => await AddBlock(false, false);
+
+
+    async Task AddBlock(bool left, bool textBlock)
+    {
+        var currentChild = left ? Model.LeftResult : Model.RightResult;
+
+        IBlockModel block = textBlock
+            ? new TextBlockModel() { Child = currentChild }
+            : left ? new BranchBlockModel() { LeftResult = currentChild } : new BranchBlockModel() { RightResult = currentChild };
+        block.Parent = Model;
+
+        if (left)
+            Model.LeftResult = block;
+        else
+            Model.RightResult = block;
+
+        if (currentChild is not null)
+            currentChild.Parent = block;
+
+        await OnChildAdded.InvokeAsync(left);
+    }
+
+
+}

@@ -4,6 +4,14 @@
     margin: clamp(1rem, 5%, 5vh) clamp(1rem, 10%, 10vw);
 }
 
+.diagram__name-edit {
+    @include input-base;
+    font-size: 1.5em;
+    padding: 0.5rem;
+    color: $color-30;
+    text-align: center;
+    min-width: 50%;
+}
 
 .diagram-menu__wrapper {
     position: fixed;
@@ -25,7 +33,7 @@
     &:hover {
         background-color: $color-30;
 
-        span{
+        span {
             display: block;
         }
     }

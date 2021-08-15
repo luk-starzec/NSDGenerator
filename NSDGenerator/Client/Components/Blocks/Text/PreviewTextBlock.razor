@@ -1,17 +1,25 @@
 ﻿
 <div class="@CssClass preview-text-block__wrapper block__wrapper" @onclick="HandleBlockClick">
-    <div>
-        @Text
+
+    <div class="preview-text-block__text">
+        @Model.Text
     </div>
+
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
+
 </div>
 
 @code {
     [Parameter] public string CssClass { get; set; }
 
-    [Parameter] public Guid Id { get; set; }
-    [Parameter] public string Text { get; set; }
+    [Parameter] public TextBlockModel Model { get; set; }
+
+    [Parameter] public RenderFragment ChildContent { get; set; }
 
     [Parameter] public EventCallback<Guid> OnBlockSelected { get; set; }
 
-    async Task HandleBlockClick() => await OnBlockSelected.InvokeAsync(Id);
+    async Task HandleBlockClick() => await OnBlockSelected.InvokeAsync(Model.Id);
 }

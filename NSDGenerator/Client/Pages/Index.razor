@@ -11,54 +11,41 @@
 <PageContent>
     <section class="index__block-wrapper">
 
-        <BranchBlock TitleText="Start work" ConditionText="Open existing diagram?" CssClass="index__block">
-            <LeftResult>
-                <BranchBlock ConditionText="From file?">
+        <PreviewTextBlock Model="@(new TextBlockModel("Start work"))" CssClass="index__block index__title-block">
+            <ChildContent>
 
-                    <LeftResult>
-                        <ContentBlock>
-                            <button class="index__action-button" @onclick="SelectFileClick">
-                                Select file
-                            </button>
-                        </ContentBlock>
-                    </LeftResult>
+                <PreviewBranchBlock Model="@(new BranchBlockModel { Condition = "Open existing diagram?" })" CssClass="index__block">
+                    <LeftResultContent>
 
-                    <RightResult>
-                        <AuthorizeView>
-                            <Authorized>
-                                <ContentBlock>
-                                    <button class="index__action-button"
-                                            @onclick="ViewListClick">
-                                        View list
-                                    </button>
-                                </ContentBlock>
-                            </Authorized>
-                            <NotAuthorized>
-                                <ContentBlock CssClass="index__login-block">
-                                    <button class="index__action-button index__action-button--login"
-                                            @onclick="LoginClick">
-                                        Log in
-                                    </button>
-                                    <span>
-                                        to view your diagrams
-                                    </span>
-                                </ContentBlock>
-                            </NotAuthorized>
-                        </AuthorizeView>
-                    </RightResult>
+                        <PreviewBranchBlock Model="@(new BranchBlockModel { Condition = "From file?" })">
 
-                </BranchBlock>
-            </LeftResult>
+                            <LeftResultContent>
+                                <ButtonBlock Model="@(new ButtonBlockModel("Select file", SelectFileClick ))" CssClass="index__action-block" />
+                            </LeftResultContent>
 
-            <RightResult>
-                <ContentBlock>
-                    <button class="index__action-button index__action-button--big"
-                            @onclick="NewDiagramClick">
-                        New diagram
-                    </button>
-                </ContentBlock>
-            </RightResult>
-        </BranchBlock>
+                            <RightResultContent>
+                                <AuthorizeView>
+                                    <Authorized>
+                                        <ButtonBlock Model="@(new ButtonBlockModel("View list",  ViewListClick))" CssClass="index__action-block" />
+                                    </Authorized>
+                                    <NotAuthorized>
+                                        <ButtonBlock Model="@(new ButtonBlockModel("Log in", LoginClick,"to view your diagrams") )"
+                                                     CssClass=" index__action-block index__action-block--login" />
+                                    </NotAuthorized>
+                                </AuthorizeView>
+                            </RightResultContent>
+
+                        </PreviewBranchBlock>
+                    </LeftResultContent>
+
+                    <RightResultContent>
+                        <ButtonBlock Model="@(new ButtonBlockModel("New diagram", NewDiagramClick ))" CssClass="index__action-block index__action-block--big" />
+                    </RightResultContent>
+
+                </PreviewBranchBlock>
+
+            </ChildContent>
+        </PreviewTextBlock>
     </section>
 
 </PageContent>
@@ -107,7 +94,6 @@
         };
         var openBlock = new BranchBlockModel
         {
-            Title = "Start work",
             Condition = "Open existing diagram?",
             LeftResult = fileBlock,
             RightResult = new TextBlockModel("New diagram"),

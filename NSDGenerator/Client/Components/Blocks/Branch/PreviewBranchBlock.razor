@@ -1,0 +1,64 @@
+﻿
+<div class="@CssClass preview-branch-block__wrapper block__wrapper" @onclick="HandleBlockClick">
+
+    <div class="preview-branch-block__branch-wrapper ">
+
+        <div class="preview-branch-block__condition">
+            <div class="preview-branch-block__label">
+                @Model.Condition
+            </div>
+        </div>
+
+        <div class="preview-branch-block__branch preview-branch-block__branch--left">
+            <div class="preview-branch-block__label">
+                @Model.LeftBranch
+            </div>
+        </div>
+
+        <div class="preview-branch-block__branch preview-branch-block__branch--right">
+            <div class="preview-branch-block__label">
+                @Model.RightBranch
+            </div>
+        </div>
+    </div>
+
+    <div class="preview-branch-block__result-wrapper">
+
+        <div class="preview-branch-block__result preview-branch-block__result--left">
+            @if (LeftResultContent != null)
+            {
+                @LeftResultContent
+            }
+            else
+            {
+                <Block Model="@Model.LeftResult" />
+            }
+        </div>
+
+        <div class="preview-branch-block__result preview-branch-block__result--right">
+            @if (RightResultContent != null)
+            {
+                @RightResultContent
+            }
+            else
+            {
+                <Block Model="@Model.RightResult" />
+            }
+        </div>
+
+    </div>
+
+</div>
+
+@code {
+    [Parameter] public string CssClass { get; set; }
+
+    [Parameter] public BranchBlockModel Model { get; set; }
+    [Parameter] public RenderFragment LeftResultContent { get; set; }
+    [Parameter] public RenderFragment RightResultContent { get; set; }
+
+    [Parameter] public EventCallback<Guid> OnBlockSelected { get; set; }
+
+    async Task HandleBlockClick() => await OnBlockSelected.InvokeAsync(Model.Id);
+
+}

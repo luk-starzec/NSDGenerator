@@ -1,0 +1,33 @@
+﻿
+<div class="@cssDeleteConfirm">
+
+    <div class="delete-dialog__question">
+        Delete this block?
+    </div>
+
+    <button class="delete-dialog__button" @onclick="CancelDeleteClick" @onclick:stopPropagation="true">
+        Cancel
+    </button>
+
+    <button class="delete-dialog__button delete-dialog__button--confirm" @onclick="ConfirmDeleteClick" @onclick:stopPropagation="true">
+        Delete
+    </button>
+
+</div>
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
+
+    [Parameter] public EventCallback OnDeleteBlock { get; set; }
+
+    string cssDeleteConfirm => $"delete-dialog__wrapper {(IsVisible ? "delete-dialog__wrapper--visible" : "")}";
+
+    async Task ConfirmDeleteClick() => await OnDeleteBlock.InvokeAsync();
+
+    async Task CancelDeleteClick()
+    {
+        IsVisible = false;
+        await IsVisibleChanged.InvokeAsync(IsVisible);
+    }
+}
