@@ -1,7 +1,7 @@
 ﻿@inject AppState AppState
 @implements IDisposable
 
-@if (editMode && isSelected)
+@if (IsEditMode && isSelected)
 {
     <EditBranchBlock Model="@Model" CssClass="@CssClass" OnChildAdded="@HandleChildAdded" />
 }
@@ -16,11 +16,10 @@ else
 
     [Parameter] public BranchBlockModel Model { get; set; }
 
-    bool editMode { get; set; }
+    [CascadingParameter] bool IsEditMode { get; set; }
 
-    Guid selectedBlockId = Guid.Empty;
+    bool isSelected => Model.Id == AppState.SelectedBlockId;
 
-    bool isSelected => Model.Id == selectedBlockId;
 
     protected override void OnInitialized()
     {
@@ -29,14 +28,10 @@ else
 
     public void Dispose()
     {
-        AppState.OnChange -= StateHasChanged;
+        AppState.OnChange -= AppStateChanged;
     }
 
-    void AppStateChanged()
-    {
-        selectedBlockId = AppState.SelectedBlockId;
-        editMode = AppState.EditMode;
-    }
+    void AppStateChanged() => StateHasChanged();
 
     void HandleBlockSelected(Guid id) => AppState.SetSelectedBlockId(id);
 

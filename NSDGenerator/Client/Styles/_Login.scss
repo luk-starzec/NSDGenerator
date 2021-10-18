@@ -148,6 +148,6 @@
 .login-status__mask{
     position: absolute;
     inset: 0;
-    background: hsla($color-hue, 30%, 30%, 0.8);
+    background: var(--color-mask-85);
     z-index: 99;
 }

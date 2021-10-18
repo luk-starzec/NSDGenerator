@@ -1,7 +1,7 @@
 ﻿@import "shared";
 
 h1 {
-    font-family: 'Comic Neue';
+    font-family: 'Comfortaa';
     font-size: 2em;
     color: $color-50;
 }
@@ -34,11 +34,12 @@ h1 {
 .index__action-block {
     .button-block__button {
         @include btn-primary;
-        padding: 0.5em 1em;
+        padding: 0.65em 1em 0.5em;
         margin: 1em;
+        font-size: 0.9em;
 
         &--big {
-            font-size: 1.2em;
+            font-size: 1.1em;
         }
 
         &--login {

@@ -1,12 +1,35 @@
-﻿$color-hue: 230;
-$color-30: hsl($color-hue, 40%, 35%);
+﻿:root {
+    --color-30: hsl(0, 40%, 30%);
+    --color-50: hsl(0, 40%, 50%);
+    --color-70: hsl(0, 40%, 70%);
+    --color-80: hsl(0, 40%, 80%);
+    --color-90: hsl(0, 40%, 90%);
+    --color-95: hsl(0, 40%, 95%);
+    --color-98: hsl(0, 40%, 98%);
+    --color-mask-85: hsla(0, 40%, 15%, 0.85);
+}
+
+@function getColor($name) {
+    @return var(--color-#{$name});
+}
+
+$color-30: getColor(30);
+$color-50: getColor(50);
+$color-70: getColor(70);
+$color-80: getColor(80);
+$color-90: getColor(90);
+$color-95: getColor(95);
+$color-98: getColor(98);
+/*
+$color-hue: 230;
+$color-30: hsl($color-hue, 40%, 30%);
 $color-50: hsl($color-hue, 40%, 50%);
 $color-70: hsl($color-hue, 40%, 70%);
 $color-80: hsl($color-hue, 40%, 80%);
 $color-90: hsl($color-hue, 40%, 90%);
 $color-95: hsl($color-hue, 40%, 95%);
 $color-98: hsl($color-hue, 40%, 98%);
-
+*/
 
 @mixin btn-base {
     display: flex;
@@ -51,7 +74,7 @@ $color-98: hsl($color-hue, 40%, 98%);
     cursor: pointer;
 
     &:hover {
-    background-color: $color-50;
+        background-color: $color-50;
     }
 }
 

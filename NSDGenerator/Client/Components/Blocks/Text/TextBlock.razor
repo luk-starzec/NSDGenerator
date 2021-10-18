@@ -1,7 +1,7 @@
 ﻿@inject AppState AppState
 @implements IDisposable
 
-@if (editMode && isSelected)
+@if (IsEditMode && isSelected)
 {
     <EditTextBlock Model="@Model" CssClass="@CssClass" OnChildAdded="@HandleChildAdded" />
 }
@@ -23,12 +23,10 @@ else
 
     [Parameter] public EventCallback<Guid> OnBlockChanged { get; set; }
 
+    [CascadingParameter] bool IsEditMode { get; set; }
 
-    bool editMode { get; set; }
+    bool isSelected => Model.Id == AppState.SelectedBlockId;
 
-    Guid selectedBlockId = Guid.Empty;
-
-    bool isSelected => Model.Id == selectedBlockId;
 
     protected override void OnInitialized()
     {
@@ -37,14 +35,10 @@ else
 
     public void Dispose()
     {
-        AppState.OnChange -= StateHasChanged;
+        AppState.OnChange -= AppStateChanged;
     }
 
-    void AppStateChanged()
-    {
-        selectedBlockId = AppState.SelectedBlockId;
-        editMode = AppState.EditMode;
-    }
+    void AppStateChanged() => StateHasChanged(); 
 
     void HandleBlockSelected(Guid id) => AppState.SetSelectedBlockId(id);
 

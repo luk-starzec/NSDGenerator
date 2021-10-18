@@ -20,6 +20,27 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
+
+    <script>
+        function setThemeColor(hue) {
+            const element = document.getElementById('app');
+            element.style.setProperty('--color-30', getHsl(hue, 30));
+            element.style.setProperty('--color-50', getHsl(hue, 50));
+            element.style.setProperty('--color-70', getHsl(hue, 70));
+            element.style.setProperty('--color-80', getHsl(hue, 80));
+            element.style.setProperty('--color-90', getHsl(hue, 90));
+            element.style.setProperty('--color-95', getHsl(hue, 95));
+            element.style.setProperty('--color-98', getHsl(hue, 98));
+            element.style.setProperty('--color-mask-85', `hsla(${hue}, 40%, 15%, 0.85)`);
+        }
+        function setThemePreviewHue(hue) {
+            const element = document.getElementById('app');
+            element.style.setProperty('--theme-preview-hue', hue);
+        }
+        function getHsl(h, l) {
+            return `hsl(${h}, 40%, ${l}%)`;
+        }
+    </script>
 </body>
 
 </html>

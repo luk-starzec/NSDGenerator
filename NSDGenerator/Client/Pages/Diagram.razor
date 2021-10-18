@@ -3,7 +3,7 @@
 @implements IDisposable
 
 <PageHeader>
-    @if (editMode)
+    @if (isEditMode)
     {
         <input class="diagram__name-edit" @bind="@model.Name" @bind:event="oninput" placeholder="diagram name" />
     }
@@ -19,18 +19,22 @@
 
     <div class="diagram__wrapper">
 
-        <Block Model="@model.RootBlock" />
+        <CascadingValue Value="@isEditMode">
+
+            <Block Model="@model.RootBlock" />
+
+        </CascadingValue>
 
     </div>
 
-    <DiagramMenu EditMode="@editMode" OnEdit="@HandleEdit" OnPreview="@HandlePreview" />
+    <DiagramMenu EditMode="@isEditMode" OnEdit="@HandleEdit" OnPreview="@HandlePreview" />
 
 </PageContent>
 
 @code {
     DiagramModel model;
 
-    bool editMode;
+    bool isEditMode;
 
     protected override void OnInitialized()
     {
@@ -38,27 +42,26 @@
             AppState.SetCurrentDiagram(DiagramHelpers.GetNewDiagram());
 
         model = AppState.CurrentDiagram;
-        editMode = AppState.EditMode;
 
-        AppState.OnChange += StateHasChanged;
+        AppState.OnChange += AppStateChanged;
     }
 
     public void Dispose()
     {
-        AppState.OnChange -= StateHasChanged;
+        AppState.OnChange -= AppStateChanged;
     }
+
+    void AppStateChanged() => StateHasChanged();
 
     void HandleEdit()
     {
-        editMode = true;
-        AppState.SetEditMode(editMode);
-        AppState.SetSelectedBlockId(Guid.Empty);
+        isEditMode = true;
+        AppState.SetSelectedBlockId(null);
     }
 
     void HandlePreview()
     {
-        editMode = false;
-        AppState.SetEditMode(editMode);
+        isEditMode = false;
     }
 
 }

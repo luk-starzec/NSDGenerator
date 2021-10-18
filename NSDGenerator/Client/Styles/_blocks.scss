@@ -16,7 +16,7 @@ $border-color: $color-80;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
     width: 100%;
-    background: linear-gradient(to top right, transparent 50%, $color-70 0) 0 0/50% 100% no-repeat, linear-gradient(to top left, transparent 50%, $color-70 0) 100% 0/50% 100% no-repeat;
+    background: linear-gradient(to top right, transparent 50%, $color-70 0) 0 0/calc(50% + 1px) 100% no-repeat, linear-gradient(to top left, transparent 50%, $color-70 0) 100% 0/calc(50% + 1px) 100% no-repeat;
 
     &:before {
         content: "";
@@ -90,7 +90,7 @@ $border-color: $color-80;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
     width: 100%;
-    background: linear-gradient(to top right, transparent 50%, $color-90 0) 0 0/50% 100% no-repeat, linear-gradient(to top left, transparent 50%, $color-90 0) 100% 0/50% 100% no-repeat;
+    background: linear-gradient(to top right, transparent 50%, $color-90 0) 0 0/calc(50% + 1px) 100% no-repeat, linear-gradient(to top left, transparent 50%, $color-90 0) 100% 0/calc(50% + 1px) 100% no-repeat;
 
     &:before {
         content: "";
@@ -277,7 +277,7 @@ $border-color: $color-80;
 .delete-dialog__wrapper {
     position: absolute;
     inset: 0;
-    background-color: hsla($color-hue, 40%, 30%, 0.85);
+    background-color: var(--color-mask-85);
     display: none;
     z-index: 10;
 
