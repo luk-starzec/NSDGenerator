@@ -2,7 +2,7 @@
 <div class="@CssClass preview-text-block__wrapper block__wrapper" @onclick="HandleBlockClick">
 
     <div class="preview-text-block__text">
-        @Model.Text
+        @htmlText
     </div>
 
     @if (ChildContent != null)
@@ -20,6 +20,9 @@
     [Parameter] public RenderFragment ChildContent { get; set; }
 
     [Parameter] public EventCallback<Guid> OnBlockSelected { get; set; }
+
+
+    MarkupString htmlText => (MarkupString)Model.Text?.Replace("\n", "<br/>");
 
     async Task HandleBlockClick() => await OnBlockSelected.InvokeAsync(Model.Id);
 }

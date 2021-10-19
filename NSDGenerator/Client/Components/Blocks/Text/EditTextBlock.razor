@@ -1,11 +1,11 @@
 ﻿
 <div class="@CssClass edit-text-block__wrapper block__wrapper">
 
-    <div class="edit-text-block__text">
-        <input @bind="@Model.Text" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="text" />
-    </div>
-
     <DeleteButton OnDeleteBlock="@DeleteBlockClick" />
+
+    <div class="edit-text-block__text">
+        <textarea @bind="@Model.Text" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="text" />
+    </div>
 
     <AddButtons OnAddTextBlock="@HandleAddTextBlock" OnAddBranchBlock="@HandleAddBranchBlock" />
 
@@ -28,11 +28,11 @@
 
     async Task HandleConfirmDelete() => await OnBlockDeleted.InvokeAsync();
 
-    async Task HandleAddTextBlock() => await AddBlock(true);
+    async Task HandleAddTextBlock() => await AddChildBlock(true);
 
-    async Task HandleAddBranchBlock() => await AddBlock(false);
+    async Task HandleAddBranchBlock() => await AddChildBlock(false);
 
-    async Task AddBlock(bool textBlock)
+    async Task AddChildBlock(bool textBlock)
     {
         var currentChild = Model.Child;
 

@@ -59,6 +59,7 @@
 
     [Parameter] public EventCallback<Guid> OnBlockSelected { get; set; }
 
+
     async Task HandleBlockClick() => await OnBlockSelected.InvokeAsync(Model.Id);
 
 }

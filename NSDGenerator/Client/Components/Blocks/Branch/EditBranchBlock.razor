@@ -1,29 +1,33 @@
 ﻿
 <div class="@CssClass edit-branch-block__wrapper block__wrapper">
 
-    <DeleteButton OnDeleteBlock="@DeleteBlockClick" />
+    <div class="edit-branch-block__top-wrapper">
 
-    <div class="edit-branch-block__branch-wrapper ">
+        <div class="edit-branch-block__branch-wrapper ">
 
-        <div class="edit-branch-block__condition">
-            <input class="edit-branch-block__input" @bind="@Model.Condition" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="condition" />
+            <DeleteButton OnDeleteBlock="@DeleteBlockClick" />
+
+            <div class="edit-branch-block__condition">
+                <input class="edit-branch-block__input" @bind="@Model.Condition" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="condition" />
+            </div>
+
+            <div class="edit-branch-block__branch edit-branch-block__branch--left">
+                <input class="edit-branch-block__input edit-branch-block__input--short" @bind="@Model.LeftBranch" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="yes" />
+            </div>
+
+            <div class="edit-branch-block__branch edit-branch-block__branch--right">
+                <input class="edit-branch-block__input edit-branch-block__input--short" @bind="@Model.RightBranch" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="no" />
+            </div>
+
         </div>
 
-        <div class="edit-branch-block__branch edit-branch-block__branch--left">
-            <input class="edit-branch-block__input" @bind="@Model.LeftBranch" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="yes" />
+        <div class="edit-branch-block__add-wrapper">
+
+            <AddButtons OnAddTextBlock="@HandleAddLeftTextBlock" OnAddBranchBlock="@HandleAddLeftBranchBlock" />
+
+            <AddButtons OnAddTextBlock="@HandleAddRightTextBlock" OnAddBranchBlock="@HandleAddRightBranchBlock" />
+
         </div>
-
-        <div class="edit-branch-block__branch edit-branch-block__branch--right">
-            <input class="edit-branch-block__input" @bind="@Model.RightBranch" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="no" />
-        </div>
-
-    </div>
-
-    <div class="edit-branch-block__add-wrapper">
-
-        <AddButtons OnAddTextBlock="@HandleAddLeftTextBlock" OnAddBranchBlock="@HandleAddLeftBranchBlock" />
-
-        <AddButtons OnAddTextBlock="@HandleAddRightTextBlock" OnAddBranchBlock="@HandleAddRightBranchBlock" />
 
     </div>
 

@@ -5,13 +5,18 @@
         Delete this block?
     </div>
 
-    <button class="delete-dialog__button" @onclick="CancelDeleteClick" @onclick:stopPropagation="true">
-        Cancel
-    </button>
+    <div class="delete-dialog__answear">
 
-    <button class="delete-dialog__button delete-dialog__button--confirm" @onclick="ConfirmDeleteClick" @onclick:stopPropagation="true">
-        Delete
-    </button>
+        <button class="delete-dialog__button" @onclick="CancelDeleteClick" @onclick:stopPropagation="true">
+            Cancel
+        </button>
+
+        <button class="delete-dialog__button delete-dialog__button--confirm" @onclick="ConfirmDeleteClick" @onclick:stopPropagation="true">
+            Delete
+        </button>
+
+    </div>
+
 
 </div>
 

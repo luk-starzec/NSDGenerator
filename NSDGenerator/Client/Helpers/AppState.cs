@@ -11,6 +11,8 @@ namespace NSDGenerator.Client.Helpers
         public DiagramModel CurrentDiagram { get; private set; }
         public Guid? SelectedBlockId { get; private set; }
 
+        public event Action<Guid> OnBlockDeleted;
+
         public event Action OnChange;
 
         public void SetCurrentDiagram(DiagramModel diagram)
@@ -19,11 +21,14 @@ namespace NSDGenerator.Client.Helpers
             NotifyStateChanged();
         }
 
-        public void SetSelectedBlockId(Guid? id)
+        public void SelectBlock(Guid? id)
         {
             SelectedBlockId = id;
             NotifyStateChanged();
         }
+
+        public void DeleteBlock(Guid id) => OnBlockDeleted?.Invoke(id);
+
 
         private void NotifyStateChanged() => OnChange?.Invoke();
     }

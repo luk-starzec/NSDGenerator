@@ -3,11 +3,11 @@
 
 @if (IsEditMode && isSelected)
 {
-    <EditBranchBlock Model="@Model" CssClass="@CssClass" OnChildAdded="@HandleChildAdded" />
+    <EditBranchBlock Model="@Model" CssClass="@CssClass" OnChildAdded="@HandleChildAdded" OnBlockDeleted="HandleBlockDeleted" />
 }
 else
 {
-    <PreviewBranchBlock Model="@Model" CssClass="@CssClass" OnBlockSelected="@HandleBlockSelected" />
+    <PreviewBranchBlock Model="@Model" CssClass="@cssPreview" OnBlockSelected="@HandleBlockSelected" />
 }
 
 
@@ -18,26 +18,50 @@ else
 
     [CascadingParameter] bool IsEditMode { get; set; }
 
+
     bool isSelected => Model.Id == AppState.SelectedBlockId;
+
+    string cssMask => IsEditMode && AppState.SelectedBlockId is not null && !isSelected ? "block__masked" : "";
+
+    string cssPreview => $"{CssClass} {cssMask}";
 
 
     protected override void OnInitialized()
     {
         AppState.OnChange += AppStateChanged;
+        AppState.OnBlockDeleted += HandleChildDeleted;
     }
 
     public void Dispose()
     {
         AppState.OnChange -= AppStateChanged;
+        AppState.OnBlockDeleted -= HandleChildDeleted;
     }
 
     void AppStateChanged() => StateHasChanged();
 
-    void HandleBlockSelected(Guid id) => AppState.SetSelectedBlockId(id);
+    void HandleBlockSelected(Guid id) => AppState.SelectBlock(id);
+
+    void HandleBlockDeleted() => AppState.DeleteBlock(Model.Id);
 
     void HandleChildAdded(bool left)
     {
-        AppState.SetSelectedBlockId(left ? Model.LeftResult.Id : Model.RightResult.Id);
+        AppState.SelectBlock(left ? Model.LeftResult.Id : Model.RightResult.Id);
         StateHasChanged();
     }
+
+    void HandleChildDeleted(Guid id)
+    {
+        if (Model?.LeftResult?.Id == id)
+        {
+            Model.LeftResult = null;
+            AppState.SelectBlock(null);
+        }
+        if (Model?.RightResult?.Id == id)
+        {
+            Model.RightResult = null;
+            AppState.SelectBlock(null);
+        }
+    }
+
 }
