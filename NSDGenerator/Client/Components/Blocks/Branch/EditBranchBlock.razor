@@ -5,6 +5,8 @@
 
         <div class="edit-branch-block__branch-wrapper ">
 
+            <CloseButton OnClose="@HandleUnselected" />
+
             <DeleteButton OnDeleteBlock="@DeleteBlockClick" />
 
             <div class="edit-branch-block__condition">
@@ -52,14 +54,17 @@
 
     [Parameter] public BranchBlockModel Model { get; set; }
 
-    [Parameter] public EventCallback OnBlockDeleted { get; set; }
+    [Parameter] public EventCallback OnUnselected { get; set; }
+    [Parameter] public EventCallback OnDeleted { get; set; }
     [Parameter] public EventCallback<bool> OnChildAdded { get; set; }
 
     bool deleteDialogVisible;
 
     void DeleteBlockClick() => deleteDialogVisible = true;
 
-    async Task HandleConfirmDelete() => await OnBlockDeleted.InvokeAsync();
+    async Task HandleUnselected() => await OnUnselected.InvokeAsync();
+
+    async Task HandleConfirmDelete() => await OnDeleted.InvokeAsync();
 
     async Task HandleAddLeftTextBlock() => await AddBlock(true, true);
 

@@ -1084,6 +1084,15 @@ $color-98: hsl($color-hue, 40%, 98%);
     stroke: var(--color-95); }
   .block-button__button:hover svg .darkColor {
     fill: var(--color-70); }
+  .block-button__button--close {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 0 0 0.25rem 0; }
+    .block-button__button--close svg {
+      stroke: white;
+      height: 1em;
+      margin-block: .25rem; }
   .block-button__button--delete {
     grid-column: 1/3;
     justify-self: end;

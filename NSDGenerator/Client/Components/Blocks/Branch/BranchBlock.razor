@@ -3,7 +3,8 @@
 
 @if (IsEditMode && isSelected)
 {
-    <EditBranchBlock Model="@Model" CssClass="@CssClass" OnChildAdded="@HandleChildAdded" OnBlockDeleted="HandleBlockDeleted" />
+    <EditBranchBlock Model="@Model" CssClass="@CssClass" 
+                     OnChildAdded="@HandleChildAdded" OnDeleted="HandleBlockDeleted" OnUnselected="@HandleBlockUnselected" />
 }
 else
 {
@@ -41,6 +42,8 @@ else
     void AppStateChanged() => StateHasChanged();
 
     void HandleBlockSelected(Guid id) => AppState.SelectBlock(id);
+
+    void HandleBlockUnselected() => AppState.SelectBlock(null);
 
     void HandleBlockDeleted() => AppState.DeleteBlock(Model.Id);
 

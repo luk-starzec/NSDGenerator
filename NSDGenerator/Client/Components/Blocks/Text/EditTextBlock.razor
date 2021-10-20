@@ -1,6 +1,8 @@
 ﻿
 <div class="@CssClass edit-text-block__wrapper block__wrapper">
 
+    <CloseButton OnClose="@HandleUnselected" />
+
     <DeleteButton OnDeleteBlock="@DeleteBlockClick" />
 
     <div class="edit-text-block__text">
@@ -18,15 +20,17 @@
 
     [Parameter] public TextBlockModel Model { get; set; }
 
+    [Parameter] public EventCallback OnUnselected { get; set; }
     [Parameter] public EventCallback OnChildAdded { get; set; }
-
-    [Parameter] public EventCallback OnBlockDeleted { get; set; }
+    [Parameter] public EventCallback OnDeleted { get; set; }
 
     bool deleteDialogVisible;
 
     void DeleteBlockClick() => deleteDialogVisible = true;
 
-    async Task HandleConfirmDelete() => await OnBlockDeleted.InvokeAsync();
+    async Task HandleUnselected() => await OnUnselected.InvokeAsync();
+
+    async Task HandleConfirmDelete() => await OnDeleted.InvokeAsync();
 
     async Task HandleAddTextBlock() => await AddChildBlock(true);
 
