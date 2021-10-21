@@ -1,0 +1,79 @@
+﻿@inject IThemeService themeService;
+
+<div class="@cssWrapper">
+
+    @if (isOpen)
+    {
+
+        <div class="settings-menu__content">
+
+            <ThemeColor />
+
+            <button class="settings-menu__button" title="@titleDarkMode" @onclick="ChangeDarkMode">
+                <img src="@imgDarkMode" />
+            </button>
+
+            <button class="settings-menu__button" title="@titleGrayMode" @onclick="ChangeGrayMode">
+                <img src="/assets/bw-icon.svg" />
+            </button>
+
+            <button class="settings-menu__button" title="reset to default settings" @onclick="ResetSettings">
+                <img src="/assets/reset-icon.svg" />
+            </button>
+
+        </div>
+
+        <div class="settings-menu__title">
+
+            <span>Settings</span>
+
+            <button class="settings-menu__button settings-menu__button--small" title="close settings" @onclick="()=>isOpen=false">
+                <SvgIcon SvgUrl="/assets/close-icon.svg" />
+            </button>
+
+        </div>
+    }
+    else
+    {
+        <button class="settings-menu__button" title="open settings" @onclick="()=>isOpen=true">
+            <span>Settings</span>
+            <img src="/assets/settings-icon.svg" />
+        </button>
+    }
+
+</div>
+
+@code {
+
+    bool isOpen;
+    bool isDarkMode;
+    bool isGrayMode;
+
+    string cssWrapper => isOpen ? "settings-menu__wrapper settings-menu__wrapper--open" : "settings-menu__wrapper";
+
+    string titleDarkMode => isDarkMode ? "switch to light mode" : "switch to dark mode";
+    string imgDarkMode => isDarkMode ? "/assets/sun-icon.svg" : "/assets/moon-icon.svg";
+
+    string titleGrayMode => isGrayMode ? "switch to color mode" : "switch to gray scale mode";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await themeService.InitThemeAsync();
+    }
+
+    void ChangeDarkMode()
+    {
+        isDarkMode = !isDarkMode;
+    }
+
+    void ChangeGrayMode()
+    {
+        isGrayMode = !isGrayMode;
+    }
+
+    async Task ResetSettings()
+    {
+        await themeService.SetDefaultThemeAsync();
+        isOpen = false;
+    }
+}

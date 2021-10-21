@@ -1,0 +1,13 @@
+﻿
+<button class="block-button__button block-button__button--close" title="close edit"
+        @onclick="CloseClick" @onclick:stopPropagation="true">
+
+    <SvgIcon SvgUrl="/assets/close-icon.svg" />
+
+</button>
+
+@code {
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    async Task CloseClick() => await OnClose.InvokeAsync();
+}

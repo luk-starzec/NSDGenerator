@@ -1,0 +1,28 @@
+﻿@inject IThemeService themeService;
+
+<div class="theme-color__wrapper">
+
+    <input type="range" min="0" max="359" value="@hue" @oninput="OnInput" @onchange="OnChange" />
+
+</div>
+
+@code {
+    int hue = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hue = await themeService.GetCurrentThemeHueAsync();
+    }
+
+    async Task OnChange(ChangeEventArgs args)
+    {
+        hue = int.Parse(args.Value.ToString());
+        await themeService.SetThemeColorAsync(hue);
+    }
+
+    async Task OnInput(ChangeEventArgs args)
+    {
+        await themeService.SetPreviewColorAsync(int.Parse(args.Value.ToString()));
+    }
+
+}

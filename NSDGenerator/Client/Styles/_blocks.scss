@@ -236,6 +236,7 @@ $border-color: $color-80;
 .block__masked {
     background-color: $color-98;
     color: $color-70;
+    cursor: pointer;
 
     .preview-branch-block__condition {
         color: $color-95;
