@@ -1,12 +1,17 @@
 ﻿@inject IThemeService themeService;
 
-<div class="theme-color__wrapper">
+<div class="@cssWrapper">
 
-    <input type="range" min="0" max="359" value="@hue" @oninput="OnInput" @onchange="OnChange" />
+    <input type="range" min="0" max="359" value="@hue" disabled="@Disabled"
+           @oninput="OnInput" @onchange="OnChange" />
 
 </div>
 
 @code {
+    [Parameter] public bool Disabled { get; set; }
+
+    string cssWrapper => Disabled ? "theme-color__wrapper theme-color__wrapper--disabled" : "theme-color__wrapper";
+    
     int hue = 0;
 
     protected override async Task OnInitializedAsync()
@@ -17,7 +22,7 @@
     async Task OnChange(ChangeEventArgs args)
     {
         hue = int.Parse(args.Value.ToString());
-        await themeService.SetThemeColorAsync(hue);
+        await themeService.SetColorHueAsync(hue);
     }
 
     async Task OnInput(ChangeEventArgs args)

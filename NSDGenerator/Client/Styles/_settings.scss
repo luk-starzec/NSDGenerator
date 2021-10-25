@@ -93,11 +93,11 @@
     width: calc(50vh - 2rem);
     margin: 1rem;
     background: none;
-}
 
-:root {
-    --theme-hue: 0;
-    --theme-preview-hue: 0;
+    &--disabled {
+        opacity: .5;
+        filter: grayscale(.5);
+    }
 }
 
 $preview-bg: getPreviewColor();

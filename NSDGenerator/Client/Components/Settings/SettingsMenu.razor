@@ -7,7 +7,7 @@
 
         <div class="settings-menu__content">
 
-            <ThemeColor />
+            <ThemeColor Disabled="@isGrayMode" />
 
             <button class="settings-menu__button" title="@titleDarkMode" @onclick="ChangeDarkMode">
                 <img src="@imgDarkMode" />
@@ -59,6 +59,7 @@
     protected override async Task OnInitializedAsync()
     {
         await themeService.InitThemeAsync();
+        isGrayMode = await themeService.GetCurrentGrayScaleAsync();
     }
 
     void ChangeDarkMode()
@@ -66,9 +67,10 @@
         isDarkMode = !isDarkMode;
     }
 
-    void ChangeGrayMode()
+    async Task ChangeGrayMode()
     {
         isGrayMode = !isGrayMode;
+        await themeService.SetGrayScaleAsync(isGrayMode);
     }
 
     async Task ResetSettings()

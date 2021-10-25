@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>NSDGenerator</title>
+    <title>Nassi–Shneiderman Diagram Generator</title>
     <base href="/" />
     <!--<link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />-->
     <link href="css/app.css" rel="stylesheet" />
@@ -19,39 +19,10 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
+
     <script src="_framework/blazor.webassembly.js"></script>
 
-    <script>
-        function setThemeColor(hue) {
-            const element = document.getElementById('app');
-            element.style.setProperty('--theme-hue', hue);
-            element.style.setProperty('--color-30', getHsl(hue, 30));
-            element.style.setProperty('--color-50', getHsl(hue, 50));
-            element.style.setProperty('--color-70', getHsl(hue, 70));
-            element.style.setProperty('--color-80', getHsl(hue, 80));
-            element.style.setProperty('--color-90', getHsl(hue, 90));
-            element.style.setProperty('--color-95', getHsl(hue, 95));
-            element.style.setProperty('--color-98', getHsl(hue, 98));
-            element.style.setProperty('--color-mask-85', `hsla(${hue}, 40%, 15%, 0.85)`);
-        }
-
-        function getThemeHue() {
-            const element = document.getElementById('app');
-            const value = element.style.getPropertyValue('--theme-hue') ?? '';
-
-            const hue = value !== '' ? parseInt(value, 10) : 0;
-            return hue;
-        }
-
-        function setThemePreviewHue(hue) {
-            const element = document.getElementById('app');
-            element.style.setProperty('--theme-preview-hue', hue);
-        }
-
-        function getHsl(h, l) {
-            return `hsl(${h}, 40%, ${l}%)`;
-        }
-    </script>
+    <script src="scripts/settings.js"></script>
 </body>
 
 </html>

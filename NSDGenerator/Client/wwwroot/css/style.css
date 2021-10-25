@@ -1250,10 +1250,9 @@ $color-98: hsl($color-hue, 40%, 98%);
   width: calc(50vh - 2rem);
   margin: 1rem;
   background: none; }
-
-:root {
-  --theme-hue: 0;
-  --theme-preview-hue: 0; }
+  .theme-color__wrapper--disabled {
+    opacity: .5;
+    filter: grayscale(0.5); }
 
 input[type=range] {
   width: 100%;
