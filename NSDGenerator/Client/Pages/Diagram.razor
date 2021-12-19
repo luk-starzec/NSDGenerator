@@ -17,6 +17,14 @@
 
 <PageContent>
 
+    @if (isEditMode)
+    {
+        <div class="diagram__edit-info">
+            <SvgIcon SvgUrl="/assets/info-icon.svg" />
+            Click on item below to start editing
+        </div>
+    }
+
     <div class="diagram__wrapper">
 
         <CascadingValue Value="@isEditMode">
