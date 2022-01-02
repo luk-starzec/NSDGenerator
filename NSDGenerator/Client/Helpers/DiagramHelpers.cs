@@ -12,4 +12,11 @@ public static class DiagramHelpers
             Name = "New diagram",
             RootBlock = new TextBlockModel("Start step", new TextBlockModel("sdsdsd")),
         };
+
+    public static bool IsRootBlock(IBlockModel block)
+        => block?.Parent == null;
+
+    //public static bool IsRootBlock(DiagramModel diagram, Guid blockId)
+    //=> diagram?.RootBlock?.Id == blockId;
+
 }

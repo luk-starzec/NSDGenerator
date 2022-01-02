@@ -2,10 +2,22 @@
 
 public class TextBlockModel : IBlockModel
 {
+
     public IBlockModel Parent { get; set; }
     public Guid Id { get; set; }
     public string Text { get; set; }
-    public IBlockModel Child { get; set; }
+
+    private IBlockModel child;
+    public IBlockModel Child
+    {
+        get => child;
+        set
+        {
+            child = value;
+            if (child is not null)
+                child.Parent = this;
+        }
+    }
 
     public TextBlockModel()
     {

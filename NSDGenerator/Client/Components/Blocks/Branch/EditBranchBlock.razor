@@ -7,7 +7,10 @@
 
             <CloseButton OnClose="@HandleUnselected" />
 
-            <DeleteButton OnDeleteBlock="@DeleteBlockClick" />
+            @if (!DiagramHelpers.IsRootBlock(Model))
+            {
+                <DeleteButton OnDeleteBlock="@DeleteBlockClick" />
+            }
 
             <div class="edit-branch-block__condition">
                 <input class="edit-branch-block__input" @bind="@Model.Condition" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="condition" />

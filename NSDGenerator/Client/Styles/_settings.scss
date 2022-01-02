@@ -102,7 +102,7 @@
 
 $preview-bg: getPreviewColor();
 
-$range-track-bg: linear-gradient(90deg, hsl(0, 100%, 70%), hsl(120, 100%, 70%), hsl(200, 100%, 70%), hsl(240, 100%, 70%), hsl(360, 100%, 70%));
+$range-track-bg: linear-gradient(90deg, hsl(0, 100%, 75%), hsl(90, 100%, 75%), hsl(180, 100%, 75%),hsl(270, 100%, 75%), hsl(360, 100%, 75%));
 
 @mixin range-track {
     width: 100%;

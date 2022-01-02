@@ -2,13 +2,35 @@
 
 public class BranchBlockModel : IBlockModel
 {
+
     public Guid Id { get; set; }
     public IBlockModel Parent { get; set; }
     public string Condition { get; set; }
     public string LeftBranch { get; set; } = "Yes";
     public string RightBranch { get; set; } = "No";
-    public IBlockModel LeftResult { get; set; }
-    public IBlockModel RightResult { get; set; }
+
+    private IBlockModel leftResult;
+    public IBlockModel LeftResult
+    {
+        get => leftResult;
+        set
+        {
+            leftResult = value;
+            if (leftResult is not null)
+                leftResult.Parent = this;
+        }
+    }
+    private IBlockModel rightResult;
+    public IBlockModel RightResult
+    {
+        get => rightResult;
+        set
+        {
+            rightResult = value;
+            if (rightResult is not null)
+                rightResult.Parent = this;
+        }
+    }
 
     public BranchBlockModel()
     {
