@@ -33,6 +33,7 @@ public class Program
         builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<TokenAuthenticationStateProvider>());
 
         builder.Services.AddScoped<IThemeService, ThemeService>();
+        builder.Services.AddScoped<IPersistenceService, PersistenceService>();
         builder.Services.AddSingleton<AppState>();
 
         await builder.Build().RunAsync();

@@ -1,5 +1,6 @@
 ﻿@page "/diagram"
 @inject AppState AppState
+@inject IPersistenceService persistenceService;
 @implements IDisposable
 
 <PageHeader>
@@ -35,7 +36,7 @@
 
     </div>
 
-    <DiagramMenu EditMode="@isEditMode" OnEdit="@HandleEdit" OnPreview="@HandlePreview" OnDelete=@HandleDelete />
+    <DiagramMenu EditMode="@isEditMode" OnEdit="@HandleEdit" OnPreview="@HandlePreview" OnDelete=@HandleDelete OnDownload="@HandleDownload" />
 
 </PageContent>
 
@@ -94,8 +95,8 @@
         deleteDialogVisible = false;
     }
 
-    void HandleDownload()
+    async Task HandleDownload()
     {
-
+        await persistenceService.DownloadDiagram(model);
     }
 }
