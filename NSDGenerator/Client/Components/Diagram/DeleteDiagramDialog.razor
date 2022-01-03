@@ -1,0 +1,33 @@
+﻿
+<div class="delete-diagram-dialog__wrapper">
+
+    <div class="delete-diagram-dialog__question">
+        Are you sure you want to delete the diagram <b>@Name</b>?
+    </div>
+
+    <div class="delete-diagram-dialog__answear">
+
+        <button class="delete-diagram-dialog__button" @onclick="CancelClick">
+            Cancel
+        </button>
+
+        <button class="delete-diagram-dialog__button delete-diagram-dialog__button--confirm" @onclick="ConfirmClick">
+            Delete diagram
+        </button>
+
+    </div>
+
+</div>
+
+@code {
+    [Parameter] public string DiagramName { get; set; }
+    [Parameter] public EventCallback OnConfirm { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    string Name => string.IsNullOrWhiteSpace(DiagramName) ? "no name" : DiagramName;
+
+    async Task ConfirmClick() => await OnConfirm.InvokeAsync();
+
+    async Task CancelClick() => await OnCancel.InvokeAsync();
+
+}

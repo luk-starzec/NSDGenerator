@@ -35,14 +35,20 @@
 
     </div>
 
-    <DiagramMenu EditMode="@isEditMode" OnEdit="@HandleEdit" OnPreview="@HandlePreview" />
+    <DiagramMenu EditMode="@isEditMode" OnEdit="@HandleEdit" OnPreview="@HandlePreview" OnDelete=@HandleDelete />
 
 </PageContent>
+
+@if (deleteDialogVisible)
+{
+    <DeleteDiagramDialog DiagramName="@model.Name" OnCancel="@HandleDeleteCancel" OnConfirm="@HandleDeleteConfirm" />
+}
 
 @code {
     DiagramModel model;
 
     bool isEditMode;
+    bool deleteDialogVisible;
 
     protected override void OnInitialized()
     {
@@ -72,4 +78,24 @@
         isEditMode = false;
     }
 
+    void HandleDelete()
+    {
+        deleteDialogVisible = true;
+    }
+
+    void HandleDeleteCancel()
+    {
+        deleteDialogVisible = false;
+    }
+
+    void HandleDeleteConfirm()
+    {
+        // TODO
+        deleteDialogVisible = false;
+    }
+
+    void HandleDownload()
+    {
+
+    }
 }
