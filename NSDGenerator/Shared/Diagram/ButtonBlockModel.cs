@@ -16,7 +16,7 @@ public class ButtonBlockModel : IBlockModel
         set
         {
             child = value;
-            if (child is not null)
+            if (child is  null)
                 child.Parent = this;
         }
     }

@@ -1,6 +1,7 @@
 ﻿@page "/"
 @inject NavigationManager navigationManager
 @inject AppState AppState
+@inject ISerializeService serializeService;
 
 <PageHeader @ref="pageHeader">
     <h1>
@@ -48,6 +49,8 @@
         </PreviewTextBlock>
     </section>
 
+    <InputFile OnChange="LoadFromFile" accept="application/JSON" />
+
 </PageContent>
 
 <AuthorizeView>
@@ -58,7 +61,7 @@
     User is editor
 </AuthorizeView>
 
-@code{
+@code {
     private PageHeader pageHeader;
 
     void LoginClick() => pageHeader.ShowLoginForm();
@@ -67,42 +70,54 @@
 
     void SelectFileClick() { }
 
+    async Task LoadFromFile(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        var buffers = new byte[file.Size];
+        await file.OpenReadStream().ReadAsync(buffers);
+        var stringData = System.Text.Encoding.UTF8.GetString(buffers);
+        var diagram = serializeService.DeserializeDiagram(stringData);
+
+        AppState.SetCurrentDiagram(diagram);
+        navigationManager.NavigateTo("/diagram");
+    }
+
     void NewDiagramClick()
     {
         var test = new TextBlockModel
-        {
-            Id = Guid.NewGuid(),
-            Text = "Start block",
-            Child = new TextBlockModel
             {
                 Id = Guid.NewGuid(),
-                Text = "Second block",
-                Child = new TextBlockModel("Third")
-            }
-        };
+                Text = "Start block",
+                Child = new TextBlockModel
+                {
+                    Id = Guid.NewGuid(),
+                    Text = "Second block",
+                    Child = new TextBlockModel("Third")
+                }
+            };
         var diagram = new DiagramModel
-        {
-            Name = "New diagram",
-            RootBlock = test,
-        };
+            {
+                Name = "New diagram",
+                RootBlock = test,
+            };
 
         var fileBlock = new BranchBlockModel
-        {
-            Condition = "From file?",
-            LeftResult = new TextBlockModel("Select file"),
-            RightResult = new TextBlockModel("View list", test),
-        };
+            {
+                Condition = "From file?",
+                LeftResult = new TextBlockModel("Select file"),
+                RightResult = new TextBlockModel("View list", test),
+            };
         var openBlock = new BranchBlockModel
-        {
-            Condition = "Open existing diagram?",
-            LeftResult = fileBlock,
-            RightResult = new TextBlockModel("New diagram"),
-        };
+            {
+                Condition = "Open existing diagram?",
+                LeftResult = fileBlock,
+                RightResult = new TextBlockModel("New diagram"),
+            };
         var home = new DiagramModel
-        {
-            Name = "Start page",
-            RootBlock = openBlock
-        };
+            {
+                Name = "Start page",
+                RootBlock = openBlock
+            };
 
         AppState.SetCurrentDiagram(home);
 

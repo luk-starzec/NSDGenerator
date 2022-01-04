@@ -1,8 +1,6 @@
-﻿using System.Text.Json;
+﻿namespace NSDGenerator.Shared.Diagram;
 
-namespace NSDGenerator.Shared.Diagram;
-
-public class BranchBlockModel : IBlockModel
+public partial class BranchBlockModel : IBlockModel
 {
 
     public Guid Id { get; set; }
@@ -34,13 +32,8 @@ public class BranchBlockModel : IBlockModel
         }
     }
 
-    public string ToJson(JsonSerializerOptions options)
-        => JsonSerializer.Serialize(new JsonBranchBlockModel(Id, Parent?.Id, Condition, LeftBranch, RightBranch, LeftResult?.Id, RightResult?.Id), options);
-
     public BranchBlockModel()
     {
         Id = Guid.NewGuid();
     }
-
-    private record JsonBranchBlockModel(Guid Id, Guid? ParentId, string Condition, string LeftBranch, string RightBranch, Guid? LeftResult, Guid? RightResult, string BlockType = nameof(TextBlockModel));
 }

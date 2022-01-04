@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace NSDGenerator.Shared.Diagram;
+﻿namespace NSDGenerator.Shared.Diagram;
 
 public interface IBlockModel
 {
