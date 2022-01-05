@@ -32,7 +32,7 @@ h1 {
 }
 
 .index__action-block {
-    .button-block__button {
+    .button-block__button, .file-button-block__button {
         @include btn-primary;
         padding: 0.65em 1em 0.5em;
         margin: 1em;

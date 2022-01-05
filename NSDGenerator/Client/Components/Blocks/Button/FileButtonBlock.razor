@@ -1,0 +1,26 @@
+﻿
+
+<div class="@CssClass file-button-block__wrapper">
+
+    <label class="file-button-block__button">
+        @Model.ButtonText
+        <InputFile class="file-button-block__input" OnChange="OpenFile" accept="application/JSON" />
+    </label>
+
+</div>
+
+@code {
+    [Parameter] public string CssClass { get; set; }
+
+    [Parameter] public FileButtonBlockModel Model { get; set; }
+
+    async Task OpenFile(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        var buffers = new byte[file.Size];
+        await file.OpenReadStream().ReadAsync(buffers);
+        var stringData = System.Text.Encoding.UTF8.GetString(buffers);
+
+        Model.OnFileSelected(stringData);
+    }
+}

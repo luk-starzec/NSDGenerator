@@ -21,7 +21,7 @@
                         <PreviewBranchBlock Model="@(new BranchBlockModel { Condition = "From file?" })">
 
                             <LeftResultContent>
-                                <ButtonBlock Model="@(new ButtonBlockModel("Select file", SelectFileClick ))" CssClass="index__action-block" />
+                                <FileButtonBlock Model="@(new FileButtonBlockModel("Select file", SelectFileClick ))" CssClass="index__action-block" />
                             </LeftResultContent>
 
                             <RightResultContent>
@@ -49,8 +49,6 @@
         </PreviewTextBlock>
     </section>
 
-    <InputFile OnChange="LoadFromFile" accept="application/JSON" />
-
     <button @onclick="TestDiagramClick">Test diagram</button>
 
 </PageContent>
@@ -70,15 +68,9 @@
 
     void ViewListClick() { }
 
-    void SelectFileClick() { }
-
-    async Task LoadFromFile(InputFileChangeEventArgs e)
+    void SelectFileClick(string fileContent)
     {
-        var file = e.File;
-        var buffers = new byte[file.Size];
-        await file.OpenReadStream().ReadAsync(buffers);
-        var stringData = System.Text.Encoding.UTF8.GetString(buffers);
-        var diagram = serializeService.DeserializeDiagram(stringData);
+        var diagram = serializeService.DeserializeDiagram(fileContent);
 
         AppState.SetCurrentDiagram(diagram);
         navigationManager.NavigateTo("/diagram");

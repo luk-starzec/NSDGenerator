@@ -401,3 +401,18 @@ $border-color: $color-80;
     align-items: center;
     color: $color-50;
 }
+
+.file-button-block__wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: $color-50;
+}
+
+.file-button-block__input {
+    opacity: 0;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+}
