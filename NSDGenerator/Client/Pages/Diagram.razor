@@ -6,35 +6,52 @@
 <PageHeader>
     @if (isEditMode)
     {
-        <input class="diagram__name-edit" @bind="@model.Name" @bind:event="oninput" placeholder="diagram name" />
+        <input class="diagram__name--edit" @bind="@model.Name" @bind:event="oninput" placeholder="diagram name" />
     }
     else
     {
-        <h1>
-            @model?.Name
-        </h1>
+        <AuthorizeView>
+            <NotAuthorized>
+                <h1 class="diagram__name">
+                    @model?.Name
+                </h1>
+            </NotAuthorized>
+            <Authorized>
+                <h1 class="diagram__name--short">
+                    @model?.Name
+                </h1>
+            </Authorized>
+        </AuthorizeView>
     }
 </PageHeader>
 
 <PageContent>
 
-    @if (isEditMode)
+    @if (firstBlockSelectorVisible)
     {
-        <div class="diagram__edit-info">
-            <SvgIcon SvgUrl="/assets/info-icon.svg" />
-            Click on item below to start editing
-        </div>
+        <FirstBlockSelector OnTextBlockSelected="@HandleFirstBlockText" OnBranchBlockSelected="@HandleFirstBlockBranch" />
     }
+    else
+    {
+        @if (isEditMode)
+        {
+            <div class="diagram__edit-info">
+                <SvgIcon SvgUrl="/assets/info-icon.svg" />
+                Click on item below to start editing
+            </div>
+        }
 
-    <div class="diagram__wrapper">
+        <div class="diagram__wrapper">
 
-        <CascadingValue Value="@isEditMode">
+            <CascadingValue Value="@isEditMode">
 
-            <Block Model="@model.RootBlock" />
+                <Block Model="@model.RootBlock" />
 
-        </CascadingValue>
+            </CascadingValue>
 
-    </div>
+        </div>
+
+    }
 
     <DiagramMenu EditMode="@isEditMode" OnEdit="@HandleEdit" OnPreview="@HandlePreview" OnDelete=@HandleDelete OnDownload="@HandleDownload" />
 
@@ -50,6 +67,7 @@
 
     bool isEditMode;
     bool deleteDialogVisible;
+    bool firstBlockSelectorVisible => model?.RootBlock is null;
 
     protected override void OnInitialized()
     {
@@ -59,6 +77,9 @@
         model = AppState.CurrentDiagram;
 
         AppState.OnChange += AppStateChanged;
+
+        if (firstBlockSelectorVisible)
+            isEditMode = true;
     }
 
     public void Dispose()
@@ -67,6 +88,18 @@
     }
 
     void AppStateChanged() => StateHasChanged();
+
+    void HandleFirstBlockText()
+    {
+        model.RootBlock = new TextBlockModel();
+        AppState.SelectBlock(model.RootBlock.Id);
+    }
+
+    void HandleFirstBlockBranch()
+    {
+        model.RootBlock = new BranchBlockModel();
+        AppState.SelectBlock(model.RootBlock.Id);
+    }
 
     void HandleEdit()
     {

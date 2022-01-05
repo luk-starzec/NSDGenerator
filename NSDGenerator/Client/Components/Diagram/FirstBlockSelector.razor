@@ -1,0 +1,42 @@
+﻿
+<div class="first-block-selector__wrapper">
+
+    <p>Select diagram's first block type:</p>
+
+    <ul class="first-block-selector__list">
+
+        <li class="first-block-selector__list-item">
+
+            <button class="first-block-selector__button" @onclick="TextBlockClick">
+
+                <SvgIcon SvgUrl="/assets/text-block-icon.svg" />
+
+                <span>Text</span>
+
+            </button>
+
+        </li>
+
+        <li class="first-block-selector__list-item">
+
+            <button class="first-block-selector__button" @onclick="BranchBlockClick">
+
+                <SvgIcon SvgUrl="/assets/branch-block-icon.svg" />
+
+                <span>Branch</span>
+
+            </button>
+
+        </li>
+
+    </ul>
+</div>
+
+@code {
+    [Parameter] public EventCallback OnTextBlockSelected { get; set; }
+    [Parameter] public EventCallback OnBranchBlockSelected { get; set; }
+
+    async Task TextBlockClick() => await OnTextBlockSelected.InvokeAsync();
+    async Task BranchBlockClick() => await OnBranchBlockSelected.InvokeAsync();
+
+}

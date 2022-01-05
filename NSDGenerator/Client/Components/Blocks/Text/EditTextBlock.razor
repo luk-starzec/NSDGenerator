@@ -3,10 +3,7 @@
 
     <CloseButton OnClose="@HandleUnselected" />
 
-    @if (!DiagramHelpers.IsRootBlock(Model))
-    {
-        <DeleteButton OnDeleteBlock="@DeleteBlockClick" />
-    }
+    <DeleteButton OnDeleteBlock="@DeleteBlockClick" />
 
     <div class="edit-text-block__text">
         <textarea @bind="@Model.Text" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="text" />

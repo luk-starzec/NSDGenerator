@@ -51,6 +51,8 @@
 
     <InputFile OnChange="LoadFromFile" accept="application/JSON" />
 
+    <button @onclick="TestDiagramClick">Test diagram</button>
+
 </PageContent>
 
 <AuthorizeView>
@@ -83,6 +85,14 @@
     }
 
     void NewDiagramClick()
+    {
+        var diagram = DiagramHelpers.GetNewDiagram();
+        AppState.SetCurrentDiagram(diagram);
+
+        navigationManager.NavigateTo("/diagram");
+    }
+
+    void TestDiagramClick()
     {
         var test = new TextBlockModel
             {

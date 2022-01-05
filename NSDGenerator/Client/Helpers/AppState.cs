@@ -24,8 +24,16 @@ public class AppState
         NotifyStateChanged();
     }
 
-    public void DeleteBlock(Guid id) => OnBlockDeleted?.Invoke(id);
+    public void DeleteBlock(Guid id)
+    {
+        OnBlockDeleted?.Invoke(id);
 
+        if (CurrentDiagram.RootBlock.Id == id)
+        {
+            CurrentDiagram.RootBlock = null;
+            NotifyStateChanged();
+        }
+    }
 
     private void NotifyStateChanged() => OnChange?.Invoke();
 }

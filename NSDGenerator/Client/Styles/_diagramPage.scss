@@ -40,15 +40,24 @@
     }
 }
 
-.diagram__name-edit {
-    @include input-base;
-    font-size: 1.5em;
-    padding: 0.5rem;
-    color: $color-30;
-    text-align: center;
-    min-width: 50%;
-    animation: name-edit .2s;
+.diagram__name {
+    margin-left: 3rem;
+
+    &--short {
+        margin-left: 8rem;
+    }
+
+    &--edit {
+        @include input-base;
+        font-size: 1.5em;
+        padding: 0.5rem;
+        color: $color-30;
+        text-align: center;
+        min-width: 50%;
+        animation: name-edit .2s;
+    }
 }
+
 
 @keyframes name-edit {
     0% {
@@ -143,6 +152,56 @@
 
         &:hover {
             background-color: darkred;
+        }
+    }
+}
+
+
+.first-block-selector__wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 30rem;
+    margin: 2rem auto;
+    border: 1px solid $color-90;
+    padding-block: 1rem;
+
+    p {
+        font-size: 1.3em;
+    }
+}
+
+.first-block-selector__list {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: .5rem;
+}
+
+.first-block-selector__button {
+    @include btn-primary;
+    background-color: $color-70;
+    padding: .75em 1.5em;
+    margin: 1em;
+    gap: 1rem;
+
+    svg {
+        .darkColor {
+            fill: $color-80;
+        }
+
+        .lightColor {
+            fill: $color-95;
+            stroke: $color-95;
+        }
+    }
+
+    &:hover {
+        background-color: $color-30;
+
+        svg .darkColor {
+            fill: $color-70;
         }
     }
 }
