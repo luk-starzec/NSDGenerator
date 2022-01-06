@@ -1,4 +1,6 @@
 ﻿@page "/diagram"
+@page "/diagram/{id:guid}"
+
 @inject AppState AppState
 @inject IPersistenceService persistenceService;
 @implements IDisposable
@@ -10,47 +12,44 @@
     }
     else
     {
-        <AuthorizeView>
-            <NotAuthorized>
-                <h1 class="diagram__name">
-                    @model?.Name
-                </h1>
-            </NotAuthorized>
-            <Authorized>
-                <h1 class="diagram__name--short">
-                    @model?.Name
-                </h1>
-            </Authorized>
-        </AuthorizeView>
+        <h1 class="diagram__name">
+            @model?.Name
+        </h1>
     }
 </PageHeader>
 
 <PageContent>
 
-    @if (firstBlockSelectorVisible)
+    @if (model is null)
     {
-        <FirstBlockSelector OnTextBlockSelected="@HandleFirstBlockText" OnBranchBlockSelected="@HandleFirstBlockBranch" />
+        <p>Loading diagram...</p>
     }
     else
     {
-        @if (isEditMode)
+        @if (firstBlockSelectorVisible)
         {
-            <div class="diagram__edit-info">
-                <SvgIcon SvgUrl="/assets/info-icon.svg" />
-                Click on item below to start editing
+            <FirstBlockSelector OnTextBlockSelected="@HandleFirstBlockText" OnBranchBlockSelected="@HandleFirstBlockBranch" />
+        }
+        else
+        {
+            @if (isEditMode)
+            {
+                <div class="diagram__edit-info">
+                    <SvgIcon SvgUrl="/assets/info-icon.svg" />
+                    Click on item below to start editing
+                </div>
+            }
+
+            <div class="diagram__wrapper">
+
+                <CascadingValue Value="@isEditMode">
+
+                    <Block Model="@model.RootBlock" />
+
+                </CascadingValue>
+
             </div>
         }
-
-        <div class="diagram__wrapper">
-
-            <CascadingValue Value="@isEditMode">
-
-                <Block Model="@model.RootBlock" />
-
-            </CascadingValue>
-
-        </div>
-
     }
 
     <DiagramMenu EditMode="@isEditMode" OnEdit="@HandleEdit" OnPreview="@HandlePreview" OnDelete=@HandleDelete OnDownload="@HandleDownload" />
@@ -63,28 +62,49 @@
 }
 
 @code {
+    [Parameter] public Guid? Id { get; set; }
+
     DiagramModel model;
 
     bool isEditMode;
     bool deleteDialogVisible;
     bool firstBlockSelectorVisible => model?.RootBlock is null;
 
-    protected override void OnInitialized()
+    protected override async Task OnParametersSetAsync()
     {
+        if (Id is not null)
+        {
+            var diagram = await persistenceService.GetDiagramAsync(Id.Value);
+
+            if (diagram is null)
+            {
+                // show error message
+
+                return;
+            }
+
+            AppState.SetCurrentDiagram(diagram);
+        }
+
         if (AppState.CurrentDiagram is null)
             AppState.SetCurrentDiagram(DiagramHelpers.GetNewDiagram());
 
         model = AppState.CurrentDiagram;
 
-        AppState.OnChange += AppStateChanged;
-
         if (firstBlockSelectorVisible)
             isEditMode = true;
+    }
+
+
+    protected override void OnInitialized()
+    {
+        AppState.OnChange += AppStateChanged;
     }
 
     public void Dispose()
     {
         AppState.OnChange -= AppStateChanged;
+        AppState.SetCurrentDiagram(null);
     }
 
     void AppStateChanged() => StateHasChanged();
@@ -130,6 +150,6 @@
 
     async Task HandleDownload()
     {
-        await persistenceService.DownloadDiagram(model);
+        await persistenceService.DownloadDiagramAsync(model);
     }
 }

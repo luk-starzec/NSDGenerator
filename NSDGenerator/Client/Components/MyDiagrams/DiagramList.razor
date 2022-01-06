@@ -1,0 +1,62 @@
+﻿
+<table class="diagram-list__table">
+
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                Created
+            </th>
+            <th>
+                Modified
+            </th>
+            <th>
+
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var diagram in Diagrams)
+        {
+            <tr>
+
+                <td>
+                    @diagram.Name
+                </td>
+
+                <td>
+                    @diagram.Created
+                </td>
+
+                <td>
+                    @diagram.Modified
+                </td>
+
+                <td class="diagram-list__cell--buttons">
+
+                    <button @onclick="(async()=>await ViewClick(diagram.Id))">view</button>
+
+                    <button @onclick="(async()=>await DownloadClick(diagram.Id))">download</button>
+
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>
+
+@code {
+    [Parameter] public IEnumerable<DiagramInfoModel> Diagrams { get; set; }
+
+    [Parameter] public EventCallback<Guid> OnViewDiagram { get; set; }
+    [Parameter] public EventCallback<Guid> OnDownloadDiagram { get; set; }
+
+    async Task ViewClick(Guid id) => await OnViewDiagram.InvokeAsync(id);
+    async Task DownloadClick(Guid id) => await OnDownloadDiagram.InvokeAsync(id);
+}

@@ -31,9 +31,5 @@
 .page-header__content {
     flex-grow: 1;
     text-align: center;
-}
-
-.page-header__login {
-    margin: 0 2rem;
-    min-width: 7rem;
+    margin-right: calc(2rem + 70px + 2rem);
 }

@@ -41,11 +41,6 @@
 }
 
 .diagram__name {
-    margin-left: 3rem;
-
-    &--short {
-        margin-left: 8rem;
-    }
 
     &--edit {
         @include input-base;

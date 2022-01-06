@@ -36,14 +36,13 @@
         </Authorized>
 
     </AuthorizeView>
-
-    @if (frmVisible)
-    {
-        <div class="login-status__mask">
-
-        </div>
-    }
 </div>
+
+@if (frmVisible)
+{
+    <div class="login-status__mask">
+    </div>
+}
 
 @code {
     public void ShowLoginForm()

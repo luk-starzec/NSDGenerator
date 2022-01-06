@@ -1,0 +1,16 @@
+﻿
+<div class="unauthorized-dialog__wrapper">
+
+    <p class="unauthorized-dialog__message">
+        Only logged in users can view this page
+    </p>
+
+    <button class="unauthorized-dialog__login-button" @onclick="OnLoginClick">
+        Log in
+    </button>
+
+</div>
+
+@code {
+    [Parameter] public EventCallback OnLoginClick { get; set; }
+}

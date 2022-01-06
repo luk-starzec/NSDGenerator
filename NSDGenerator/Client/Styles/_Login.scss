@@ -1,5 +1,12 @@
 ﻿@import "shared";
 
+.login-status__wrapper {
+    position: absolute;
+    top: 2.5rem;
+    right: 2rem;
+    min-width: 7rem;
+}
+
 @mixin input-base {
     border: 1px solid $color-95;
     border-radius: .25rem;
@@ -145,7 +152,7 @@
     }
 }
 
-.login-status__mask{
+.login-status__mask {
     position: absolute;
     inset: 0;
     background: var(--color-mask-85);

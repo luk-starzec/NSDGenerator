@@ -66,7 +66,7 @@
 
     void LoginClick() => pageHeader.ShowLoginForm();
 
-    void ViewListClick() { }
+    void ViewListClick() => navigationManager.NavigateTo("/my-diagrams");
 
     void SelectFileClick(string fileContent)
     {
@@ -76,13 +76,7 @@
         navigationManager.NavigateTo("/diagram");
     }
 
-    void NewDiagramClick()
-    {
-        var diagram = DiagramHelpers.GetNewDiagram();
-        AppState.SetCurrentDiagram(diagram);
-
-        navigationManager.NavigateTo("/diagram");
-    }
+    void NewDiagramClick() => navigationManager.NavigateTo("/diagram");
 
     void TestDiagramClick()
     {

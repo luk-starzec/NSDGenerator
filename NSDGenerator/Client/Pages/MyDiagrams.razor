@@ -1,0 +1,60 @@
+﻿@page "/my-diagrams"
+@inject NavigationManager navigationManager
+@inject IPersistenceService persistenceService
+
+<PageHeader @ref="pageHeader">
+    <h1>
+        My diagrams
+    </h1>
+</PageHeader>
+
+<PageContent>
+
+    <div class="my-diagrams__wrapper">
+
+        <AuthorizeView>
+
+            <NotAuthorized>
+
+                <UnauthorizedDialog OnLoginClick="@HandleLogin" />
+
+            </NotAuthorized>
+
+            <Authorized>
+
+                @if (diagrams is null)
+                {
+                    <p class="my-diagrams__loading-message">Loading...</p>
+                }
+                else
+                {
+                    <DiagramList Diagrams="@diagrams" OnViewDiagram="@HandleViewDiagram" OnDownloadDiagram="@HandleDownloadDiagram" />
+                }
+
+            </Authorized>
+
+        </AuthorizeView>
+
+    </div>
+</PageContent>
+
+@code {
+    private PageHeader pageHeader;
+
+    private IEnumerable<DiagramInfoModel> diagrams;
+
+    void HandleLogin() => pageHeader.ShowLoginForm();
+
+    async Task HandleViewDiagram(Guid id) => navigationManager.NavigateTo($"/diagram/{id}");
+
+    async Task HandleDownloadDiagram(Guid id)
+    {
+        var diagram = await persistenceService.GetDiagramAsync(id);
+        await persistenceService.DownloadDiagramAsync(diagram);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        diagrams = await persistenceService.GetDiagramsAsync();
+    }
+}

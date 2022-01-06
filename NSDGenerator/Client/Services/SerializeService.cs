@@ -33,13 +33,17 @@ namespace NSDGenerator.Client.Services
         public DiagramModel DeserializeDiagram(string json)
         {
             var jd = JsonSerializer.Deserialize<JsonDiagram>(json, jsonOptions);
+            return DeserializeDiagram(jd);
+        }
 
-            var rootBlock = DeserializeBlocks(jd.BlockCollection, jd.BlockCollection.RootId);
+        public DiagramModel DeserializeDiagram(JsonDiagram jsonDiagram)
+        {
+            var rootBlock = DeserializeBlocks(jsonDiagram.BlockCollection, jsonDiagram.BlockCollection.RootId);
 
             var diagram = new DiagramModel
             {
-                Id = jd.Id,
-                Name = jd.Name,
+                Id = jsonDiagram.Id,
+                Name = jsonDiagram.Name,
                 RootBlock = rootBlock,
             };
 
@@ -95,7 +99,7 @@ namespace NSDGenerator.Client.Services
                 return tb;
 
             var bb = TryDeserializeBranchBlock(current, blockCollection);
-            if(bb is not null)
+            if (bb is not null)
                 return bb;
 
             return null;
