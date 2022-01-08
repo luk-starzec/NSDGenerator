@@ -1,4 +1,4 @@
-﻿namespace NSDGenerator.Shared.Diagram;
+﻿namespace NSDGenerator.Shared.Diagram.Models;
 
 public class ButtonBlockModel : IBlockModel
 {
@@ -16,7 +16,7 @@ public class ButtonBlockModel : IBlockModel
         set
         {
             child = value;
-            if (child is  null)
+            if (child is null)
                 child.Parent = this;
         }
     }

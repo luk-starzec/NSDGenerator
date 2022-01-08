@@ -34,7 +34,7 @@ namespace NSDGenerator.Server.Controllers
 
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, login.Email)
+                new Claim(ClaimTypes.Name, login.Email),
             };
 
             if (login.Email.StartsWith("guest"))

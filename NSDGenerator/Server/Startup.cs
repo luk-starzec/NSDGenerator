@@ -1,10 +1,14 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using NSDGenerator.Server.Data;
+using NSDGenerator.Server.Repo;
+using NSDGenerator.Shared.Diagram.Helpers;
 
 namespace NSDGenerator.Server;
 
@@ -19,6 +23,12 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<ISerializationHelper, SerializationHelper>();
+        services.AddScoped<IDbRepo, DbRepo>();
+
+        services.AddDbContext<NsdContext>(options =>
+            options.UseSqlServer(Configuration.GetConnectionString("NsdDatabase")));
+
         services.Configure<JwtSettings>(Configuration.GetSection(JwtSettings.JwtSettingsKey));
         var jwtSettings = Configuration.GetSection(JwtSettings.JwtSettingsKey).Get<JwtSettings>();
 

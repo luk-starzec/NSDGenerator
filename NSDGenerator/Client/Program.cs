@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using NSDGenerator.Client.Helpers;
 using NSDGenerator.Client.Services;
 using NSDGenerator.Shared.Diagram;
+using NSDGenerator.Shared.Diagram.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -33,8 +34,8 @@ public class Program
         builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<TokenAuthenticationStateProvider>());
 
         builder.Services.AddScoped<IThemeService, ThemeService>();
-        builder.Services.AddScoped<ISerializeService, SerializeService>();
-        builder.Services.AddScoped<IPersistenceService, PersistenceService>();
+        builder.Services.AddScoped<ISerializationHelper, SerializationHelper>();
+        builder.Services.AddScoped<IDiagramService, DiagramService>();
         builder.Services.AddSingleton<AppState>();
 
         await builder.Build().RunAsync();

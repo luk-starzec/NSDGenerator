@@ -1,45 +1,43 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
+using NSDGenerator.Server.Repo;
+using NSDGenerator.Shared.Diagram.JsonModels;
+using NSDGenerator.Shared.Diagram.Models;
 using System;
-using NSDGenerator.Shared.Diagram;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace NSDGenerator.Server.Controllers
+namespace NSDGenerator.Server.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class DiagramController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class DiagramController : ControllerBase
-    {
-        [HttpGet]
-        public IEnumerable<DiagramInfoModel> GetDiagrams()
-        {
-            var diagrams = new List<DiagramInfoModel>
-            {
-                new DiagramInfoModel(Guid.NewGuid(),"First", new DateTime(2021,1,1,12,0, 0),new DateTime(2021,1,3,12,0, 0)),
-                new DiagramInfoModel(Guid.NewGuid(),"Second",new DateTime(2022,1,1,12,0, 0),new DateTime(2022,1,3,12,0, 0)),
-            };
-            return diagrams;
-        }
+    private readonly IDbRepo repo;
 
-        [HttpGet("{id}")]
-        public JsonDiagram GetDiagram(Guid id)
-        {
-            var rootId = Guid.NewGuid();
-            var diagram = new JsonDiagram
-            {
-                Id = id,
-                Name = $"Test id: {id}",
-                BlockCollection = new JsonBlockCollection
-                {
-                    RootId = rootId,
-                    TextBlocks = new List<JsonTextBlockModel>
-                    {
-                        new JsonTextBlockModel(rootId, "This is text", null),
-                    },
-                }
-            };
-            return diagram;
-        }
+    public DiagramController(IDbRepo repo)
+    {
+        this.repo = repo;
+    }
+
+    [HttpGet, Authorize]
+    public async Task<IEnumerable<DiagramInfoModel>> GetDiagrams()
+    {
+        var userName = User.Identity.Name;
+        return await repo.GetDiagramInfosAsync(userName);
+    }
+
+    [HttpPost, Authorize]
+    public async Task SaveDiagram([FromBody] DiagramJsonModel diagram)
+    {
+        var userName = User.Identity.Name;
+        await repo.SaveDiagramAsync(diagram, userName);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<DiagramJsonModel> GetDiagram(Guid id)
+    {
+        var userName = User.Identity.IsAuthenticated ? User.Identity.Name : null;
+        return await repo.GetDiagramAsync(id, userName);
     }
 }

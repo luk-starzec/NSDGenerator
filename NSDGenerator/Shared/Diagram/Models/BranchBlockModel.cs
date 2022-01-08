@@ -1,4 +1,4 @@
-﻿namespace NSDGenerator.Shared.Diagram;
+﻿namespace NSDGenerator.Shared.Diagram.Models;
 
 public partial class BranchBlockModel : IBlockModel
 {

@@ -1,7 +1,7 @@
 ﻿@page "/"
 @inject NavigationManager navigationManager
 @inject AppState AppState
-@inject ISerializeService serializeService;
+@inject IDiagramService  diagramService;
 
 <PageHeader @ref="pageHeader">
     <h1>
@@ -70,7 +70,7 @@
 
     void SelectFileClick(string fileContent)
     {
-        var diagram = serializeService.DeserializeDiagram(fileContent);
+        var diagram = diagramService.GetDiagram(fileContent);
 
         AppState.SetCurrentDiagram(diagram);
         navigationManager.NavigateTo("/diagram");

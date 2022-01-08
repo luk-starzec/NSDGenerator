@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace NSDGenerator.Shared.Diagram;
+﻿namespace NSDGenerator.Shared.Diagram.Models;
 
 public class FileButtonBlockModel : IBlockModel
 {

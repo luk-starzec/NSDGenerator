@@ -7,6 +7,7 @@
     --color-95: hsl(0, 40%, 95%);
     --color-98: hsl(0, 40%, 98%);
     --color-mask-85: hsla(0, 40%, 15%, 0.85);
+    --color-dark-text: hsl(0, 0%, 10%);
 }
 
 @function getColor($name) {
@@ -20,6 +21,8 @@ $color-80: getColor(80);
 $color-90: getColor(90);
 $color-95: getColor(95);
 $color-98: getColor(98);
+$color-dark-text: getColor(dark-text);
+
 /*
 $color-hue: 230;
 $color-30: hsl($color-hue, 40%, 30%);
