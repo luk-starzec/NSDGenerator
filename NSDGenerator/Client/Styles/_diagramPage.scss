@@ -40,25 +40,47 @@
     }
 }
 
-.diagram__name--edit {
-    position: relative;
 
-    input {
-        @include input-base;
-        font-size: 1.8em;
-        padding: 0.5rem;
-        color: $color-30;
-        text-align: center;
-        min-width: 50%;
-        animation: name-edit .2s;
-        background: white url(../assets/pen-icon.svg) no-repeat 98% center;
-        background-size: 1em;
+.diagram-edit-header__wrapper {
+    display: flex;
+}
+
+.diagram-edit-header__name-input {
+    @include input-base;
+    font-size: 1.8em;
+    padding: 0.5rem;
+    color: $color-30;
+    text-align: center;
+    min-width: 50%;
+    animation: name-edit .2s;
+    background: white url(../assets/pen-icon.svg) no-repeat 98% center;
+    background-size: 1em;
+    border-radius: 0 .5rem .5rem 0;
+}
+
+.diagram-edit-header__private-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    border-radius: .5rem 0 0 .5rem;
+    cursor: pointer;
+    background-color: $color-80;
+    padding-inline: .75rem;
+    transform-origin: right;
+    animation: name-edit .4s;
+
+    &:hover {
+        background-color: $color-50;
     }
 }
 
-
 @keyframes name-edit {
     0% {
+        transform: scaleX(0)
+    }
+
+    50% {
         transform: scaleX(0)
     }
 
@@ -206,7 +228,7 @@
 }
 
 
-.diagram__info-dialog {
+.info-dialog__wrapper {
     position: absolute;
     top: 0;
     left: 50%;
@@ -220,7 +242,7 @@
     box-shadow: 4px 4px 4px 0 rgba(0, 0, 0, 0.1);
 
 
-    .diagram__info-dialog-icon {
+    .info-dialog__icon {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -241,7 +263,7 @@
         }
     }
 
-    .diagram__info-dialog-message {
+    .info-dialog__message {
         margin-inline: 1.5rem 2rem;
         color: $color-30;
 
@@ -250,7 +272,7 @@
         }
     }
 
-    .diagram__info-dialog-close {
+    .info-dialog__close-button {
         @include btn-base;
         position: absolute;
         top: .5rem;

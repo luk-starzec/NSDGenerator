@@ -1,0 +1,96 @@
+﻿@using System.Timers;
+@implements IDisposable
+
+@if (IsVisible)
+{
+    <div class="info-dialog__wrapper">
+
+        <span class="info-dialog__icon @cssIcon">
+            <SvgIcon SvgUrl="@IconUrl" />
+        </span>
+
+        <p class="info-dialog__message @cssMessage">
+            @Message
+        </p>
+
+        <button class="info-dialog__close-button" title="close" @onclick="CloseDialog">
+            <SvgIcon SvgUrl="/assets/close-icon.svg" />
+        </button>
+
+    </div>
+
+}
+
+@code {
+    [Parameter] public string Message { get; set; }
+
+    [Parameter]
+    public bool IsVisible
+    {
+        get => isVisible;
+        set => SetIsVisible(value);
+    }
+    [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
+
+    [Parameter] public string CssSufix { get; set; }
+    [Parameter] public string IconUrl { get; set; }
+
+    [Parameter]
+    public int CloseAfter
+    {
+        get => closeAfter;
+        set => SetCloseAfter(value);
+    }
+
+    bool isVisible;
+    int closeAfter;
+
+    string cssIcon => !string.IsNullOrEmpty(CssSufix) ? $"info-dialog__icon--{CssSufix}" : "";
+    string cssMessage => !string.IsNullOrEmpty(CssSufix) ? $"info-dialog__message--{CssSufix}" : "";
+
+    bool timerEnabled => closeAfter > 0;
+
+    Timer timer = new Timer();
+
+    protected override void OnInitialized()
+    {
+        timer.Elapsed += OnTimerTick;
+        CloseAfter = 3;
+    }
+
+    public void Dispose()
+    {
+        timer.Elapsed -= OnTimerTick;
+    }
+
+    private void OnTimerTick(object sender, ElapsedEventArgs e)
+    {
+        InvokeAsync(() => CloseDialog());
+        StateHasChanged();
+    }
+
+    private void SetIsVisible(bool value)
+    {
+        isVisible = value;
+
+        if (!isVisible)
+            timer.Stop();
+        else if (timerEnabled)
+            timer.Start();
+    }
+
+    private void SetCloseAfter(int value)
+    {
+        closeAfter = value;
+        timer.Interval = closeAfter * 1000;
+
+        if (!timerEnabled)
+            timer.Stop();
+    }
+
+    private async Task CloseDialog()
+    {
+        IsVisible = false;
+        await IsVisibleChanged.InvokeAsync(IsVisible);
+    }
+}

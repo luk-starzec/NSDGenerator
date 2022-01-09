@@ -1,0 +1,20 @@
+﻿@inject NavigationManager navigationManager
+
+<div class="diagram-edit-header__wrapper">
+
+    <button class="diagram-edit-header__private-button" title="@buttonTitle" @onclick="ChangeIsPrivate">
+        <img src="@buttonIcon" />
+    </button>
+
+    <input class="diagram-edit-header__name-input" @bind="@Model.Name" @bind:event="oninput" placeholder="diagram name" />
+
+</div>
+
+@code {
+    [Parameter] public DiagramModel Model { get; set; }
+
+    string buttonTitle => Model.IsPrivate ? "Diagram visible to me only. Click to make public." : "Diagram visible to everyone. Click to make private.";
+    string buttonIcon => Model.IsPrivate ? "/assets/locked-icon.svg" : "/assets/unlocked-icon.svg";
+
+    void ChangeIsPrivate() => Model.IsPrivate = !Model.IsPrivate;
+}

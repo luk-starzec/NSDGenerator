@@ -43,6 +43,7 @@ public class DbRepo : IDbRepo
             Id = row.Id,
             Name = row.Name,
             IsPrivate = row.IsPrivate,
+            Owner = row.UserName,
             BlockCollection = blocks,
         };
     }

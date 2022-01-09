@@ -8,9 +8,7 @@
 <PageHeader>
     @if (isEditMode)
     {
-        <span class="diagram__name--edit">
-            <input @bind="@model.Name" @bind:event="oninput" placeholder="diagram name" />
-        </span>
+        <DiagramEditHeader Model="@model" />
     }
     else
     {
@@ -54,7 +52,8 @@
         }
     }
 
-    <DiagramMenu EditMode="@isEditMode" OnEdit="@HandleEdit" OnPreview="@HandlePreview" OnDelete=@HandleDelete OnDownload="@HandleDownload" OnSave="@HandleSave" />
+    <DiagramMenu EditMode="@isEditMode" DiagramOwner="@model?.Owner"
+                 OnEdit="@HandleEdit" OnPreview="@HandlePreview" OnDelete=@HandleDelete OnDownload="@HandleDownload" OnSave="@HandleSave" />
 
 </PageContent>
 
@@ -70,44 +69,10 @@
     </div>
 }
 
-@if (errorDialogVisible)
-{
-    <div class="diagram__info-dialog">
+<InfoDialog IsVisible="@errorDialogVisible" Message="an error occurred while saving diagram" CssSufix="error" IconUrl="/assets/error-icon.svg" />
 
-        <span class="diagram__info-dialog-icon diagram__info-dialog-icon--error">
-            <SvgIcon SvgUrl="/assets/error-icon.svg" />
-        </span>
+<InfoDialog IsVisible="@savedDialogVisible" Message="diagram has been saved" IconUrl="/assets/check-icon.svg" />
 
-        <p class="diagram__info-dialog-message diagram__info-dialog-message--error">
-            @errorMessage
-        </p>
-
-        <button class="diagram__info-dialog-close" title="close" @onclick="() => errorMessage=string.Empty">
-            <SvgIcon SvgUrl="/assets/close-icon.svg" />
-        </button>
-
-    </div>
-}
-
-@if (successDialogVisible)
-{
-    <div class="diagram__info-dialog">
-
-        <span class="diagram__info-dialog-icon">
-            <SvgIcon SvgUrl="/assets/info-icon.svg" />
-        </span>
-
-        <p class="diagram__info-dialog-message">
-            @successMessage
-        </p>
-
-        <button class="diagram__info-dialog-close" title="close" @onclick="() => successMessage=string.Empty">
-            <SvgIcon SvgUrl="/assets/close-icon.svg" />
-        </button>
-
-    </div>
-
-}
 
 @code {
     [Parameter] public Guid? Id { get; set; }
@@ -118,11 +83,8 @@
     bool deleteDialogVisible;
     bool savingDialogVisible;
 
-    string successMessage;
-    bool successDialogVisible => !string.IsNullOrEmpty(successMessage);
-
-    string errorMessage;
-    bool errorDialogVisible => !string.IsNullOrEmpty(errorMessage);
+    bool savedDialogVisible;
+    bool errorDialogVisible;
 
     bool firstBlockSelectorVisible => model?.RootBlock is null;
 
@@ -156,6 +118,7 @@
     {
         AppState.OnChange += AppStateChanged;
     }
+
 
     public void Dispose()
     {
@@ -212,8 +175,8 @@
     async Task HandleSave()
     {
         isEditMode = false;
-        errorMessage = string.Empty;
-        successMessage = string.Empty;
+        errorDialogVisible = false;
+        savedDialogVisible = false;
 
         savingDialogVisible = true;
 
@@ -222,8 +185,8 @@
         savingDialogVisible = false;
 
         if (result)
-            successMessage = "diagram has been saved ";
+            savedDialogVisible = true;
         else
-            errorMessage = "an error occurred while saving diagram";
+            errorDialogVisible = true;
     }
 }

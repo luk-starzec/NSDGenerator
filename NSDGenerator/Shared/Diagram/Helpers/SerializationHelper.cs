@@ -45,6 +45,7 @@ public class SerializationHelper : ISerializationHelper
             Id = jsonDiagram.Id,
             Name = jsonDiagram.Name,
             IsPrivate = jsonDiagram.IsPrivate,
+            Owner = jsonDiagram.Owner,
             RootBlock = rootBlock,
         };
 

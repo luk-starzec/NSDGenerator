@@ -13,6 +13,9 @@
                 Modified
             </th>
             <th>
+                Visibility
+            </th>
+            <th>
 
             </th>
         </tr>
@@ -34,6 +37,10 @@
 
                 <td>
                     @diagram.Modified
+                </td>
+
+                <td class="diagram-list__cell--visibility" title="@GetvisibilityInfo(diagram.IsPrivate)">
+                    <SvgIcon SvgUrl="@GetvisibilityIcon(diagram.IsPrivate)" />
                 </td>
 
                 <td class="diagram-list__cell--buttons">
@@ -59,4 +66,7 @@
 
     async Task ViewClick(Guid id) => await OnViewDiagram.InvokeAsync(id);
     async Task DownloadClick(Guid id) => await OnDownloadDiagram.InvokeAsync(id);
+
+    string GetvisibilityIcon(bool isPrivate) => isPrivate ? "/assets/locked-icon.svg" : "/assets/unlocked-icon.svg";
+    string GetvisibilityInfo(bool isPrivate) => isPrivate ? "private" : "public";
 }

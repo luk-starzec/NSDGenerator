@@ -1,36 +1,41 @@
 ﻿
 <div class="diagram-menu__wrapper">
 
-    @if (EditMode)
+    @if (showEditOptions)
     {
-        <button class="diagram-menu__button" title="Switch to preview mode" @onclick="PreviewClick">
-            <img src="/assets/preview-icon.svg" />
-            <span>Preview</span>
-        </button>
+        @if (EditMode)
+        {
+            <button class="diagram-menu__button" title="Switch to preview mode" @onclick="PreviewClick">
+                <img src="/assets/preview-icon.svg" />
+                <span>Preview</span>
+            </button>
+        }
+        else
+        {
+            <button class="diagram-menu__button" title="Switch to edit mode" @onclick="EditClick">
+                <img src="/assets/edit-icon.svg" />
+                <span>Edit</span>
+            </button>
+        }
     }
-    else
-    {
-        <button class="diagram-menu__button" title="Switch to edit mode" @onclick="EditClick">
-            <img src="/assets/edit-icon.svg" />
-            <span>Edit</span>
-        </button>
-    }
-
 
     <button class="diagram-menu__button" title="Download diagram" @onclick="DownloadClick">
         <img src="/assets/download-icon.svg" />
         <span>Download</span>
     </button>
 
-    <button class="diagram-menu__button" title="Save in cloud" @onclick="OnSave">
-        <img src="/assets/cloud-icon.svg" />
-        <span>Save</span>
-    </button>
+    @if (showEditOptions)
+    {
+        <button class="diagram-menu__button" title="Save in cloud" @onclick="OnSave">
+            <img src="/assets/cloud-icon.svg" />
+            <span>Save</span>
+        </button>
 
-    <button class="diagram-menu__button" title="Delete diagram" @onclick="OnDelete">
-        <img src="/assets/delete-icon.svg" />
-        <span>Delete</span>
-    </button>
+        <button class="diagram-menu__button" title="Delete diagram" @onclick="OnDelete">
+            <img src="/assets/delete-icon.svg" />
+            <span>Delete</span>
+        </button>
+    }
 
     <button class="diagram-menu__button" title="Print diagram" @onclick="OnPrint">
         <img src="/assets/print-icon.svg" />
@@ -42,6 +47,8 @@
 @code {
     [Parameter] public bool EditMode { get; set; }
 
+    [Parameter] public string DiagramOwner { get; set; }
+
     [Parameter] public EventCallback OnPreview { get; set; }
     [Parameter] public EventCallback OnEdit { get; set; }
     [Parameter] public EventCallback OnDownload { get; set; }
@@ -49,6 +56,14 @@
     [Parameter] public EventCallback OnDelete { get; set; }
     [Parameter] public EventCallback OnPrint { get; set; }
 
+    [CascadingParameter] Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    bool showEditOptions;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        showEditOptions = await IsCurrentUserDiagramOwner();
+    }
 
     async Task PreviewClick() => await OnPreview.InvokeAsync();
     async Task EditClick() => await OnEdit.InvokeAsync();
@@ -56,5 +71,14 @@
     async Task SaveClick() => await OnSave.InvokeAsync();
     async Task DeleteClick() => await OnDelete.InvokeAsync();
     async Task PrintClick() => await OnPrint.InvokeAsync();
+
+    async Task<bool> IsCurrentUserDiagramOwner()
+    {
+        var authState = await authenticationStateTask;
+        var user = authState.User;
+
+        return user.Identity.IsAuthenticated
+            && user.Identity.Name == DiagramOwner;
+    }
 
 }
