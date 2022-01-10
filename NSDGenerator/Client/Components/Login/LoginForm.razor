@@ -1,5 +1,6 @@
 ﻿@inject HttpClient httpClient
 @inject TokenAuthenticationStateProvider tokenAuthStateProvider
+@inject NavigationManager navigationManager
 
 <div class="login-form__wrapper">
 
@@ -30,7 +31,7 @@
 
     <div class="login-form__signin-row">
         <span>New user?</span>
-        <button>Sign in</button>
+        <button @onclick="HandleSignin">Sign in</button>
     </div>
      
 </div>
@@ -76,6 +77,6 @@
 
     private void HandleSignin()
     {
-        // redirect to signin page
+        navigationManager.NavigateTo("/register-user");
     }
 }

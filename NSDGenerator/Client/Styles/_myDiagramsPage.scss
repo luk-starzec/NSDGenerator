@@ -39,14 +39,20 @@
     border-collapse: collapse;
 
     th {
-        background-color: $color-90;
         padding: .5rem 1rem;
+        background-color: $color-90;
+        color: $color-30;
     }
 
     td {
         padding: .5rem 1rem;
         border-bottom: 1px solid $color-95;
     }
+}
+
+.diagram-list__cell--created,
+.diagram-list__cell--modified {
+    text-align: center;
 }
 
 .diagram-list__cell--visibility {

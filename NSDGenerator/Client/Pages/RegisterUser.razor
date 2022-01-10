@@ -1,0 +1,62 @@
+﻿@page "/register-user"
+
+
+<PageHeader>
+    <h1>
+        User registration
+    </h1>
+</PageHeader>
+
+<PageContent>
+
+    <div class="register-user__wrapper">
+
+        <EditForm Model="@user" OnValidSubmit="@HandleValidSubmit">
+            <DataAnnotationsValidator />
+
+            <label class="register-user__form-label register-user__form-label--email" for="email">
+                Email:
+            </label>
+            <InputText class="register-user__form-input register-user__form-input--email" id="email" @bind-Value="user.Email" />
+
+            <label class="register-user__form-label register-user__form-label--password" for="password">
+                Password:
+            </label>
+            <InputText class="register-user__form-input register-user__form-input--password" id="password" @bind-Value="user.Password" />
+            <div class="register-user__form-info register-user__form-info--password" title="password should contain at least 8 characters">
+                <SvgIcon SvgUrl="/assets/info-icon.svg" />
+            </div>
+
+            <label class="register-user__form-label register-user__form-label--confirm" for="confirm">
+                Confirm:
+            </label>
+            <InputText class="register-user__form-input register-user__form-input--confirm" id="confirm" @bind-Value="user.PasswordConfirmation" />
+
+            <label class="register-user__form-label register-user__form-label--code" for="code">
+                Registration code:
+            </label>
+            <InputText class="register-user__form-input register-user__form-input--code" id="code" @bind-Value="user.RegistrationCode" />
+            <div class="register-user__form-info register-user__form-info--code" title="temporarily, creating new accounts is only available to users with a referral code">
+                <SvgIcon SvgUrl="/assets/info-icon.svg" />
+            </div>
+
+            <ValidationSummary />
+
+            <button type="submit" class="register-user__submit-button">Submit</button>
+
+        </EditForm>
+
+    </div>
+
+</PageContent>
+
+
+@code {
+    private UserModel user = new();
+
+
+    private void HandleValidSubmit()
+    {
+        // Process the valid form
+    }
+}
