@@ -2,7 +2,7 @@
 
 namespace NSDGenerator.Shared.Login;
 
-public class LoginModel
+public class LoginDto
 {
     [Required]
     public string Email { get; set; }

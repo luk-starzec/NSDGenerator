@@ -13,7 +13,7 @@
         align-items: center;
         grid-template-columns: 1fr 1fr 1fr;
         background-color: $color-98;
-        padding: 5rem;
+        padding: 4rem 5rem;
 
         .validation-errors {
             grid-column: 1/4;

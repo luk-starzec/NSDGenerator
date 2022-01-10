@@ -24,7 +24,7 @@ namespace NSDGenerator.Server.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginModel login)
+        public IActionResult Login([FromBody] LoginDto login)
         {
             var result = login.Email == "user@starzec.net" && login.Password == "user1"
                 || login.Email == "guest@starzec.net" && login.Password == "guest";
@@ -58,5 +58,15 @@ namespace NSDGenerator.Server.Controllers
             return Ok(new LoginResult(true, Token: stringToken));
         }
 
+        [HttpPost("register")]
+        public IActionResult Register([FromBody] RegisterDto register)
+        {
+            if (register.RegistrationCode != "123")
+                return BadRequest(new RegisterResult(false, "Invalid registration code"));
+
+            System.Threading.Thread.Sleep(3000);
+
+            return Ok(new RegisterResult(true));
+        }
     }
 }

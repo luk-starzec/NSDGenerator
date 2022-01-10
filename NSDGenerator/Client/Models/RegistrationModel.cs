@@ -2,7 +2,7 @@
 
 namespace NSDGenerator.Client.Models;
 
-public class UserModel
+public class RegistrationModel
 {
     [Required]
     public string Email { get; set; }

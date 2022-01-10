@@ -44,9 +44,14 @@ $color-98: hsl($color-hue, 40%, 98%);
     transition: transform ease .1s, box-shadow ease .1s;
     box-shadow: 4px 4px 4px 0 rgba(0, 0, 0, 0.15);
 
-    &:hover {
+    &:hover:enabled {
         transform: scale(1.05);
         box-shadow: 2px 4px 4px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    &:disabled {
+        opacity: .5;
+        cursor: not-allowed;
     }
 }
 
