@@ -1,22 +1,19 @@
 ﻿
 <div class="diagram-menu__wrapper">
 
-    @if (showEditOptions)
+    @if (EditMode)
     {
-        @if (EditMode)
-        {
-            <button class="diagram-menu__button" title="Switch to preview mode" @onclick="PreviewClick">
-                <img src="/assets/preview-icon.svg" />
-                <span>Preview</span>
-            </button>
-        }
-        else
-        {
-            <button class="diagram-menu__button" title="Switch to edit mode" @onclick="EditClick">
-                <img src="/assets/edit-icon.svg" />
-                <span>Edit</span>
-            </button>
-        }
+        <button class="diagram-menu__button" title="Switch to preview mode" @onclick="PreviewClick">
+            <img src="/assets/preview-icon.svg" />
+            <span>Preview</span>
+        </button>
+    }
+    else
+    {
+        <button class="diagram-menu__button" title="Switch to edit mode" @onclick="EditClick">
+            <img src="/assets/edit-icon.svg" />
+            <span>Edit</span>
+        </button>
     }
 
     <button class="diagram-menu__button" title="Download diagram" @onclick="DownloadClick">
@@ -78,7 +75,7 @@
         var user = authState.User;
 
         return user.Identity.IsAuthenticated
-            && user.Identity.Name == DiagramOwner;
+            && (user.Identity.Name == DiagramOwner || DiagramOwner is null);
     }
 
 }
