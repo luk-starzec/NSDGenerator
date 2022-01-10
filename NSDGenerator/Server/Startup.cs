@@ -8,7 +8,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using NSDGenerator.Server.Data;
 using NSDGenerator.Server.Repo;
-using NSDGenerator.Shared.Diagram.Helpers;
 
 namespace NSDGenerator.Server;
 
@@ -23,7 +22,6 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<ISerializationHelper, SerializationHelper>();
         services.AddScoped<IDbRepo, DbRepo>();
 
         services.AddDbContext<NsdContext>(options =>

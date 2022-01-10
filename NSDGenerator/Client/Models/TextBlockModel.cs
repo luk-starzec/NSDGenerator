@@ -1,4 +1,4 @@
-﻿namespace NSDGenerator.Shared.Diagram.Models;
+﻿namespace NSDGenerator.Client.Models;
 
 public partial class TextBlockModel : IBlockModel
 {

@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
-using NSDGenerator.Shared.Diagram.Helpers;
-using NSDGenerator.Shared.Diagram.JsonModels;
-using NSDGenerator.Shared.Diagram.Models;
-using System;
+using NSDGenerator.Client.Helpers;
+using NSDGenerator.Client.Models;
+using NSDGenerator.Shared.Diagram;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -35,11 +34,11 @@ public class DiagramService : IDiagramService
         await js.InvokeVoidAsync("DownloadFile", $"{name}.json", "application/json;charset=utf-8", content);
     }
 
-    public async Task<IEnumerable<DiagramInfoModel>> GetMyDiagramsAsync()
+    public async Task<IEnumerable<DiagramDto>> GetMyDiagramsAsync()
     {
         try
         {
-            var diagrams = await httpClient.GetFromJsonAsync<IEnumerable<DiagramInfoModel>>("api/diagram");
+            var diagrams = await httpClient.GetFromJsonAsync<IEnumerable<DiagramDto>>("api/diagram");
             return diagrams;
         }
         catch (Exception ex)
@@ -53,8 +52,8 @@ public class DiagramService : IDiagramService
     {
         try
         {
-            var json = await httpClient.GetFromJsonAsync<DiagramJsonModel>($"api/diagram/{id}");
-            var diagram = serializationHelper.DeserializeDiagram(json);
+            var dto = await httpClient.GetFromJsonAsync<DiagramFullDto>($"api/diagram/{id}");
+            var diagram = serializationHelper.DeserializeDiagram(dto);
             return diagram;
         }
         catch (Exception ex)

@@ -1,12 +1,13 @@
-﻿namespace NSDGenerator.Shared.Diagram.Models;
+﻿namespace NSDGenerator.Client.Models;
 
-public class FileButtonBlockModel : IBlockModel
+public class ButtonBlockModel : IBlockModel
 {
 
     public IBlockModel Parent { get; set; }
     public Guid Id { get; set; }
     public string ButtonText { get; set; }
-    public Action<string> OnFileSelected { get; set; }
+    public string AfterText { get; set; }
+    public Action OnClick { get; set; }
 
     private IBlockModel child;
     public IBlockModel Child
@@ -20,12 +21,12 @@ public class FileButtonBlockModel : IBlockModel
         }
     }
 
-    public FileButtonBlockModel()
+    public ButtonBlockModel()
     {
         Id = Guid.NewGuid();
     }
 
-    public FileButtonBlockModel(string buttonText, Action<string> onFileSelected) : this()
-        => (ButtonText, OnFileSelected) = (buttonText, onFileSelected);
+    public ButtonBlockModel(string buttonText, Action onClick, string afterText = null) : this()
+        => (ButtonText, OnClick, AfterText) = (buttonText, onClick, afterText);
 
 }

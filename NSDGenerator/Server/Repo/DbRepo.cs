@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NSDGenerator.Server.Data;
-using NSDGenerator.Shared.Diagram.Helpers;
-using NSDGenerator.Shared.Diagram.JsonModels;
-using NSDGenerator.Shared.Diagram.Models;
+using NSDGenerator.Shared.Diagram;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +23,7 @@ public class DbRepo : IDbRepo
         this.context = context;
     }
 
-    public async Task<DiagramJsonModel> GetDiagramAsync(Guid id, string userName)
+    public async Task<DiagramFullDto> GetDiagramAsync(Guid id, string userName)
     {
         var row = await context.Diagrams
             .Where(r => r.Id == id)
@@ -38,7 +36,7 @@ public class DbRepo : IDbRepo
 
         var blocks = await GetBlockCollectionAsync(id, row.RootBlockId);
 
-        return new DiagramJsonModel
+        return new DiagramFullDto
         {
             Id = row.Id,
             Name = row.Name,
@@ -48,16 +46,16 @@ public class DbRepo : IDbRepo
         };
     }
 
-    public async Task<IEnumerable<DiagramInfoModel>> GetDiagramInfosAsync(string userName)
+    public async Task<IEnumerable<DiagramDto>> GetDiagramInfosAsync(string userName)
     {
         return await context.Diagrams
             .Where(r => r.UserName == userName)
-            .Select(r => new DiagramInfoModel(r.Id, r.Name, r.IsPrivate, r.Created, r.Modified))
+            .Select(r => new DiagramDto(r.Id, r.Name, r.IsPrivate, r.Created, r.Modified))
             .ToListAsync();
     }
 
 
-    public async Task SaveDiagramAsync(DiagramJsonModel diagram, string userName)
+    public async Task SaveDiagramAsync(DiagramFullDto diagram, string userName)
     {
         var diagramRow = await context.Diagrams.SingleOrDefaultAsync(r => r.Id == diagram.Id);
 
@@ -105,7 +103,7 @@ public class DbRepo : IDbRepo
 
     #region Converters
 
-    private async Task<BlockCollectionJsonModel> GetBlockCollectionAsync(Guid diagramId, Guid? rootId)
+    private async Task<BlockCollectionDto> GetBlockCollectionAsync(Guid diagramId, Guid? rootId)
     {
         if (rootId is null)
             return null;
@@ -117,7 +115,7 @@ public class DbRepo : IDbRepo
         return BlocksToBlockCollectionJsonModel(blocks, rootId.Value);
     }
 
-    private BlockCollectionJsonModel BlocksToBlockCollectionJsonModel(Block[] blocks, Guid rootId)
+    private BlockCollectionDto BlocksToBlockCollectionJsonModel(Block[] blocks, Guid rootId)
     {
         var text = blocks
             .Where(r => r.BlockType == EnumBlockType.Text)
@@ -128,7 +126,7 @@ public class DbRepo : IDbRepo
             .Select(r => BlockToBranchBlockJsonModel(r))
             .ToList();
 
-        return new BlockCollectionJsonModel
+        return new BlockCollectionDto
         {
             RootId = rootId,
             TextBlocks = text,
@@ -136,22 +134,22 @@ public class DbRepo : IDbRepo
         };
     }
 
-    private TextBlockJsonModel BlockToTextBlockJsonModel(Block block)
+    private TextBlockDlo BlockToTextBlockJsonModel(Block block)
     {
         var content = JsonSerializer.Deserialize<TextBlockJsonData>(block.JsonData, jsonOptions);
-        return new TextBlockJsonModel(block.Id, content.Text, content.ChildId);
+        return new TextBlockDlo(block.Id, content.Text, content.ChildId);
     }
 
-    private BranchBlockJsonModel BlockToBranchBlockJsonModel(Block block)
+    private BranchBlockDto BlockToBranchBlockJsonModel(Block block)
     {
         var content = JsonSerializer.Deserialize<BranchBlockJsonData>(block.JsonData, jsonOptions);
-        return new BranchBlockJsonModel(block.Id, content.Condition, content.LeftBranch, content.RightBranch, content.LeftResult, content.RightResult);
+        return new BranchBlockDto(block.Id, content.Condition, content.LeftBranch, content.RightBranch, content.LeftResult, content.RightResult);
     }
 
-    private void UpdateBlock(Block block, IBlockJsonModel model)
+    private void UpdateBlock(Block block, IBlockDto model)
     {
         string jsonData = null;
-        if (model is TextBlockJsonModel tb)
+        if (model is TextBlockDlo tb)
         {
             block.BlockType = EnumBlockType.Text;
 
@@ -159,7 +157,7 @@ public class DbRepo : IDbRepo
             jsonData = JsonSerializer.Serialize(content, jsonOptions);
         }
 
-        if (model is BranchBlockJsonModel bb)
+        if (model is BranchBlockDto bb)
         {
             block.BlockType = EnumBlockType.Branch;
 

@@ -31,11 +31,11 @@
                     @diagram.Name
                 </td>
 
-                <td>
+                <td class="diagram-list__cell--created">
                     @diagram.Created
                 </td>
 
-                <td>
+                <td class="diagram-list__cell--modified">
                     @diagram.Modified
                 </td>
 
@@ -59,7 +59,7 @@
 </table>
 
 @code {
-    [Parameter] public IEnumerable<DiagramInfoModel> Diagrams { get; set; }
+    [Parameter] public IEnumerable<DiagramDto> Diagrams { get; set; }
 
     [Parameter] public EventCallback<Guid> OnViewDiagram { get; set; }
     [Parameter] public EventCallback<Guid> OnDownloadDiagram { get; set; }

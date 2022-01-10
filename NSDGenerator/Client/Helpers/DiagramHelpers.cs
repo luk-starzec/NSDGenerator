@@ -1,5 +1,4 @@
-﻿using NSDGenerator.Shared.Diagram.Models;
-using System;
+﻿using NSDGenerator.Client.Models;
 
 namespace NSDGenerator.Client.Helpers;
 
