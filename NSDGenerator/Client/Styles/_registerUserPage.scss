@@ -1,83 +1,31 @@
-﻿@import "shared";
+﻿@import 'register';
+@import "shared";
 
 .register-user__wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
-
-    form {
-        margin: 5rem 2rem;
-        max-width: 35rem;
-        display: grid;
-        justify-content: center;
-        align-items: center;
-        grid-template-columns: 1fr 1fr 1fr;
-        background-color: $color-98;
-        padding: 4rem 5rem;
-
-        .validation-errors {
-            grid-column: 1/4;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            list-style: none;
-        }
-
-        .validation-message {
-            color: crimson;
-        }
-
-        .invalid {
-            outline: 1px solid crimson;
-        }
-    }
 }
 
-.register-user__form-label {
-    grid-column: 1/2;
-    text-align: right;
-    margin-right: 1rem;
+.register-user__success-dialog {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem;
+    margin: 3rem 1rem;
+    border: 1px solid $color-90;
+    box-shadow: 4px 4px 4px 0 rgb(0 0 0 / 5%);
+}
+
+.register-user__success-message {
+    font-size: 1.5em;
+    text-align: center;
+    margin-bottom: 3rem;
     color: $color-30;
-
-    &--password {
-        margin-top: .75rem;
-    }
 }
 
-.register-user__form-input {
-    grid-column: 2/3;
-    @include input-base;
-    padding: .5rem;
-
-
-    &--password {
-        margin-block: 1.5rem 1rem;
-    }
-
-    &--code {
-        margin-block: 2rem;
-    }
-}
-
-.register-user__form-info {
-    grid-column: 3/4;
-    height: 1.5rem;
-    width: 1.5rem;
-    margin-left: .5rem;
-    cursor: help;
-
-    path {
-        fill: $color-70;
-    }
-
-    &--password {
-        margin-top: .5rem;
-    }
-}
-
-.register-user__submit-button {
-    grid-column: 1/4;
+.register-user__success-button {
     @include btn-primary;
-    margin-top: 2rem;
-    padding: .5rem 1rem;
+    padding: .75rem 2rem;
 }

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using NSDGenerator.Server.Data;
 using NSDGenerator.Shared.Diagram;
+using NSDGenerator.Shared.Login;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +17,13 @@ public class DbRepo : IDbRepo
 
     private readonly ILogger<DbRepo> logger;
     private readonly NsdContext context;
+    private readonly DiagramConverters diagramConverters;
 
     public DbRepo(ILogger<DbRepo> logger, NsdContext context)
     {
         this.logger = logger;
         this.context = context;
+        diagramConverters = new DiagramConverters(jsonOptions);
     }
 
     public async Task<DiagramFullDto> GetDiagramAsync(Guid id, string userName)
@@ -101,7 +104,38 @@ public class DbRepo : IDbRepo
         var result = await context.SaveChangesAsync();
     }
 
-    #region Converters
+
+    public async Task<string> RegisterUserAsync(RegisterDto register)
+    {
+        var code = await context.RegistrationCodes
+            .Where(r => r.Code == register.RegistrationCode)
+            .Where(r => r.IsActive)
+            .Where(r => !r.ValidTo.HasValue || r.ValidTo >= DateTime.Now)
+            .SingleOrDefaultAsync();
+
+        if (code is null)
+            return "Invalid registration code";
+
+        var existingUser = await context.Users.AnyAsync(r => r.Name == register.Email);
+
+        if (existingUser)
+            return $"User {register.Email} already exists";
+
+        var user = new User
+        {
+            Name = register.Email,
+            Password = GeneratePasswordHash(register.Password),
+            IsEnabled = true,
+            Created = DateTime.Now,
+        };
+        context.Users.Add(user);
+
+        code.IsActive = false;
+
+        await context.SaveChangesAsync();
+
+        return null;
+    }
 
     private async Task<BlockCollectionDto> GetBlockCollectionAsync(Guid diagramId, Guid? rootId)
     {
@@ -112,44 +146,14 @@ public class DbRepo : IDbRepo
             .Where(r => r.DiagramId == diagramId)
             .ToArrayAsync();
 
-        return BlocksToBlockCollectionJsonModel(blocks, rootId.Value);
+        return diagramConverters.BlocksToBlockCollectionDto(blocks, rootId.Value);
     }
 
-    private BlockCollectionDto BlocksToBlockCollectionJsonModel(Block[] blocks, Guid rootId)
-    {
-        var text = blocks
-            .Where(r => r.BlockType == EnumBlockType.Text)
-            .Select(r => BlockToTextBlockJsonModel(r))
-            .ToList();
-        var branch = blocks
-            .Where(r => r.BlockType == EnumBlockType.Branch)
-            .Select(r => BlockToBranchBlockJsonModel(r))
-            .ToList();
 
-        return new BlockCollectionDto
-        {
-            RootId = rootId,
-            TextBlocks = text,
-            BranchBlocks = branch,
-        };
-    }
-
-    private TextBlockDlo BlockToTextBlockJsonModel(Block block)
-    {
-        var content = JsonSerializer.Deserialize<TextBlockJsonData>(block.JsonData, jsonOptions);
-        return new TextBlockDlo(block.Id, content.Text, content.ChildId);
-    }
-
-    private BranchBlockDto BlockToBranchBlockJsonModel(Block block)
-    {
-        var content = JsonSerializer.Deserialize<BranchBlockJsonData>(block.JsonData, jsonOptions);
-        return new BranchBlockDto(block.Id, content.Condition, content.LeftBranch, content.RightBranch, content.LeftResult, content.RightResult);
-    }
-
-    private void UpdateBlock(Block block, IBlockDto model)
+    private void UpdateBlock(Block block, IBlockDto dto)
     {
         string jsonData = null;
-        if (model is TextBlockDlo tb)
+        if (dto is TextBlockDto tb)
         {
             block.BlockType = EnumBlockType.Text;
 
@@ -157,7 +161,7 @@ public class DbRepo : IDbRepo
             jsonData = JsonSerializer.Serialize(content, jsonOptions);
         }
 
-        if (model is BranchBlockDto bb)
+        if (dto is BranchBlockDto bb)
         {
             block.BlockType = EnumBlockType.Branch;
 
@@ -168,5 +172,9 @@ public class DbRepo : IDbRepo
         block.JsonData = jsonData;
     }
 
-    #endregion
+    private string GeneratePasswordHash(string password)
+    {
+        // TODO
+        return password;
+    }
 }

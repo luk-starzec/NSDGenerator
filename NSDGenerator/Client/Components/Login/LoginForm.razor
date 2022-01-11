@@ -64,7 +64,7 @@
     {
         error = string.Empty;
 
-        var response = await httpClient.PostAsJsonAsync("/api/login", model);
+        var response = await httpClient.PostAsJsonAsync("/api/user/login", model);
         var result = await response.Content.ReadFromJsonAsync<LoginResult>();
 
         if (result.IsSuccessful)

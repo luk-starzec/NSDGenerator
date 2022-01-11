@@ -1,0 +1,87 @@
+﻿@inject HttpClient httpClient
+@inject TokenAuthenticationStateProvider tokenAuthStateProvider
+
+<EditForm Model="@model" OnValidSubmit="@HandleValidSubmit" class="register-form__form">
+    <DataAnnotationsValidator />
+
+    <label class="register-form__label register-form__label--email" for="register-email">
+        Email:
+    </label>
+    <InputText class="register-form__input register-form__input--email" id="register-email" @bind-Value="model.Email" />
+
+    <label class="register-form__label register-form__label--password" for="register-password">
+        Password:
+    </label>
+    <InputText type="password" class="register-form__input register-form__input--password" id="register-password"
+               @bind-Value="model.Password" />
+    <div class="register-form__info register-form__info--password" title="password should contain at least 8 characters">
+        <SvgIcon SvgUrl="/assets/info-icon.svg" />
+    </div>
+
+    <label class="register-form__label register-form__label--confirm" for="register-confirm">
+        Confirm:
+    </label>
+    <InputText type="password" class="register-form__input register-form__input--confirm" id="register-confirm"
+               @bind-Value="model.PasswordConfirmation" />
+
+    <label class="register-form__label register-form__label--code" for="register-code">
+        Registration code:
+    </label>
+    <InputText class="register-form__input register-form__input--code" id="register-code"
+               @bind-Value="model.RegistrationCode" />
+    <div class="register-form__info register-form__info--code" title="temporarily, creating new accounts is only available to users with a referral code">
+        <SvgIcon SvgUrl="/assets/info-icon.svg" />
+    </div>
+
+    <button type="submit" class="register-form__submit-button" disabled=@buttonDisabled>
+        @buttonText
+    </button>
+
+    <ValidationSummary />
+
+    @if (showResultError)
+    {
+        <div class="validation-errors">
+            <p class="validation-message">@resultError</p>
+        </div>
+    }
+
+</EditForm>
+
+@code {
+    [Parameter] public EventCallback OnSuccess { get; set; }
+
+    private RegistrationModel model = new();
+
+    string resultError = string.Empty;
+    bool showResultError => !string.IsNullOrEmpty(resultError);
+
+    bool buttonDisabled => buttonText == processingText;
+
+    const string submitText = "Submit";
+    const string processingText = "processing...";
+
+    string buttonText = submitText;
+
+    async Task HandleValidSubmit()
+    {
+        buttonText = processingText;
+
+        resultError = string.Empty;
+
+        var response = await httpClient.PostAsJsonAsync("/api/user/register", model);
+        var result = await response.Content.ReadFromJsonAsync<RegisterResult>();
+
+        if (result.IsSuccessful)
+        {
+            await tokenAuthStateProvider.Login(result.Token);
+            await OnSuccess.InvokeAsync();
+            return;
+        }
+
+        resultError = result.Error;
+
+        buttonText = submitText;
+    }
+
+}

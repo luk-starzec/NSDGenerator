@@ -1,0 +1,77 @@
+﻿@import "shared";
+
+.register-form__form {
+    margin: 5rem 2rem;
+    max-width: 35rem;
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    grid-template-columns: 1fr 1fr 1fr;
+    background-color: $color-98;
+    padding: 4rem 5rem 1rem 5rem;
+
+    .validation-errors {
+        grid-column: 1/4;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        list-style: none;
+    }
+
+    .validation-message {
+        color: crimson;
+    }
+
+    .invalid {
+        outline: 1px solid crimson;
+    }
+}
+
+.register-form__label {
+    grid-column: 1/2;
+    text-align: right;
+    margin-right: 1rem;
+    color: $color-30;
+
+    &--password {
+        margin-top: .75rem;
+    }
+}
+
+.register-form__input {
+    grid-column: 2/3;
+    @include input-base;
+    padding: .5rem;
+
+
+    &--password {
+        margin-block: 1.5rem 1rem;
+    }
+
+    &--code {
+        margin-block: 2rem;
+    }
+}
+
+.register-form__info {
+    grid-column: 3/4;
+    height: 1.5rem;
+    width: 1.5rem;
+    margin-left: .5rem;
+    cursor: help;
+
+    path {
+        fill: $color-70;
+    }
+
+    &--password {
+        margin-top: .5rem;
+    }
+}
+
+.register-form__submit-button {
+    grid-column: 1/4;
+    @include btn-primary;
+    margin-block: 1.5rem;
+    padding: .5rem 1rem;
+}

@@ -71,7 +71,7 @@ public class SerializationHelper : ISerializationHelper
             return false;
 
         var tb = block as TextBlockModel;
-        var jtb = new TextBlockDlo(tb.Id, tb.Text, tb.Child?.Id);
+        var jtb = new TextBlockDto(tb.Id, tb.Text, tb.Child?.Id);
         blockCollectionDto.TextBlocks.Add(jtb);
 
         SerializeBlocks(tb.Child, blockCollectionDto);
@@ -109,10 +109,10 @@ public class SerializationHelper : ISerializationHelper
 
     private TextBlockModel TryDeserializeTextBlock(IBlockDto blockDto, BlockCollectionDto blockCollectionDto)
     {
-        if (blockDto is not TextBlockDlo)
+        if (blockDto is not TextBlockDto)
             return null;
 
-        var tbd = blockDto as TextBlockDlo;
+        var tbd = blockDto as TextBlockDto;
         var tb = new TextBlockModel
         {
             Id = tbd.Id,

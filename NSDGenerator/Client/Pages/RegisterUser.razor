@@ -1,6 +1,6 @@
 ﻿@page "/register-user"
 
-@inject HttpClient httpClient
+@inject NavigationManager navigationManager
 
 <PageHeader>
     <h1>
@@ -12,49 +12,24 @@
 
     <div class="register-user__wrapper">
 
-        <EditForm Model="@model" OnValidSubmit="@HandleValidSubmit">
-            <DataAnnotationsValidator />
+        @if (showSuccess)
+        {
+            <div class="register-user__success-dialog">
 
-            <label class="register-user__form-label register-user__form-label--email" for="email">
-                Email:
-            </label>
-            <InputText class="register-user__form-input register-user__form-input--email" id="email" @bind-Value="model.Email" />
+                <p class="register-user__success-message">
+                    User account has been created.
+                </p>
 
-            <label class="register-user__form-label register-user__form-label--password" for="password">
-                Password:
-            </label>
-            <InputText class="register-user__form-input register-user__form-input--password" id="password" @bind-Value="model.Password" />
-            <div class="register-user__form-info register-user__form-info--password" title="password should contain at least 8 characters">
-                <SvgIcon SvgUrl="/assets/info-icon.svg" />
+                <button class="register-user__success-button" @onclick="HandleClick">
+                    Create your first diagram
+                </button>
+
             </div>
-
-            <label class="register-user__form-label register-user__form-label--confirm" for="confirm">
-                Confirm:
-            </label>
-            <InputText class="register-user__form-input register-user__form-input--confirm" id="confirm" @bind-Value="model.PasswordConfirmation" />
-
-            <label class="register-user__form-label register-user__form-label--code" for="code">
-                Registration code:
-            </label>
-            <InputText class="register-user__form-input register-user__form-input--code" id="code" @bind-Value="model.RegistrationCode" />
-            <div class="register-user__form-info register-user__form-info--code" title="temporarily, creating new accounts is only available to users with a referral code">
-                <SvgIcon SvgUrl="/assets/info-icon.svg" />
-            </div>
-
-            <ValidationSummary />
-
-            @if (showResultError)
-            {
-                <div class="validation-errors">
-                    <p class="validation-message">@resultError</p>
-                </div>
-            }
-
-            <button type="submit" class="register-user__submit-button" disabled=@buttonDisabled>
-                @buttonText
-            </button>
-
-        </EditForm>
+        }
+        else
+        {
+            <RegisterForm OnSuccess="@HandleSuccess" />
+        }
 
     </div>
 
@@ -62,30 +37,10 @@
 
 
 @code {
-    private RegistrationModel model = new();
+    bool showSuccess;
 
-    string resultError = string.Empty;
-    bool showResultError => !string.IsNullOrEmpty(resultError);
+    private void HandleSuccess() => showSuccess = true;
 
-    bool buttonDisabled => buttonText == processingText;
+    private void HandleClick() => navigationManager.NavigateTo("/diagram");
 
-    const string submitText = "Submit";
-    const string processingText = "processing...";
-
-    string buttonText = submitText;
-
-    async Task HandleValidSubmit()
-    {
-        buttonText = processingText;
-
-        resultError = string.Empty;
-
-        var response = await httpClient.PostAsJsonAsync("/api/register", model);
-        var result = await response.Content.ReadFromJsonAsync<RegisterResult>();
-
-        if (!result.IsSuccessful)
-            resultError = result.Error;
-
-        buttonText = submitText;
-    }
 }
