@@ -9,4 +9,9 @@ public interface ISerializationHelper
     DiagramModel DeserializeDiagram(DiagramFullDto diagramFullDto);
 
     string SerializeDiagram(DiagramModel diagram);
+
+    public BlockCollectionDto RootBlockToBlockCollectionDto(IBlockModel rootBlock);
+    public IBlockModel BlockCollectionDtoToRootBlock(BlockCollectionDto blockCollectionDto);
+
+
 }

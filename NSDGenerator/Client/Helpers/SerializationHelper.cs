@@ -1,4 +1,5 @@
 ﻿using NSDGenerator.Client.Models;
+using NSDGenerator.Client.Pages;
 using NSDGenerator.Shared.Diagram;
 using System.Linq;
 using System.Text.Json;
@@ -50,6 +51,22 @@ public class SerializationHelper : ISerializationHelper
         };
 
         return diagram;
+    }
+
+    public BlockCollectionDto RootBlockToBlockCollectionDto(IBlockModel rootBlock)
+    {
+        if(rootBlock is null)
+            return null;
+
+        var blocks = new BlockCollectionDto { RootId = rootBlock.Id, };
+        SerializeBlocks(rootBlock, blocks);
+
+        return blocks;
+    }
+
+    public IBlockModel BlockCollectionDtoToRootBlock(BlockCollectionDto blockCollectionDto)
+    {
+        return DeserializeBlocks(blockCollectionDto, blockCollectionDto.RootId);
     }
 
 

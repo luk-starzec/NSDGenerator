@@ -2,7 +2,8 @@
 @page "/diagram/{id:guid}"
 
 @inject AppState AppState
-@inject IDiagramService persistenceService;
+@inject IDiagramService diagramService;
+
 @implements IDisposable
 
 <PageHeader>
@@ -53,7 +54,8 @@
     }
 
     <DiagramMenu EditMode="@isEditMode" DiagramOwner="@model?.Owner"
-                 OnEdit="@HandleEdit" OnPreview="@HandlePreview" OnDelete=@HandleDelete OnDownload="@HandleDownload" OnSave="@HandleSave" />
+                 OnEdit="@HandleEdit" OnPreview="@HandlePreview" OnDelete=@HandleDelete OnDownload="@HandleDownload"
+                 OnDuplicate="@HandleDuplicate" OnSave="@HandleSave" />
 
 </PageContent>
 
@@ -73,6 +75,8 @@
 
 <InfoDialog IsVisible="@savedDialogVisible" Message="diagram has been saved" IconUrl="/assets/check-icon.svg" />
 
+<InfoDialog IsVisible="@copiedDialogVisible" Message="new diagram has been created" IconUrl="/assets/check-icon.svg" />
+
 
 @code {
     [Parameter] public Guid? Id { get; set; }
@@ -85,6 +89,7 @@
 
     bool savedDialogVisible;
     bool errorDialogVisible;
+    bool copiedDialogVisible;
 
     bool firstBlockSelectorVisible => model?.RootBlock is null;
 
@@ -92,7 +97,7 @@
     {
         if (Id is not null)
         {
-            var diagram = await persistenceService.GetDiagramAsync(Id.Value);
+            var diagram = await diagramService.GetDiagramAsync(Id.Value);
 
             if (diagram is null)
             {
@@ -167,9 +172,19 @@
         deleteDialogVisible = false;
     }
 
+    void HandleDuplicate()
+    {
+        var copy = diagramService.CreateDiagramCopy(model);
+        
+        AppState.SetCurrentDiagram(copy);
+        model = copy;
+
+        copiedDialogVisible = true;
+    }
+
     async Task HandleDownload()
     {
-        await persistenceService.DownloadDiagramAsync(model);
+        await diagramService.DownloadDiagramAsync(model);
     }
 
     async Task HandleSave()
@@ -180,7 +195,7 @@
 
         savingDialogVisible = true;
 
-        var result = await persistenceService.SaveDiagramAsync(model);
+        var result = await diagramService.SaveDiagramAsync(model);
 
         savingDialogVisible = false;
 

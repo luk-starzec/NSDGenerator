@@ -4,6 +4,7 @@ using NSDGenerator.Client.Helpers;
 using NSDGenerator.Client.Models;
 using NSDGenerator.Shared.Diagram;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
@@ -84,6 +85,51 @@ public class DiagramService : IDiagramService
         return serializationHelper.DeserializeDiagram(fileContent);
     }
 
+    public DiagramModel CreateDiagramCopy(DiagramModel diagram)
+    {
+        var rootBlockCopy = diagram.RootBlock is not null ? CopyBlockTree(diagram.RootBlock) : null;
+
+        var copy = new DiagramModel
+        {
+            Name = $"Copy {diagram.Name}",
+            RootBlock = rootBlockCopy,
+        };
+        return copy;
+    }
+
+    private IBlockModel CopyBlockTree(IBlockModel rootBlock)
+    {
+        var blockCollection = serializationHelper.RootBlockToBlockCollectionDto(rootBlock);
+
+        var map = blockCollection.Blocks.ToDictionary(k => k.Id, v => Guid.NewGuid());
+
+        var textBlocks = blockCollection.TextBlocks
+            .Select(r => r with
+            {
+                Id = map[r.Id],
+                ChildId = r.ChildId.HasValue ? map[r.ChildId.Value] : null
+            })
+            .ToList();
+        var branchBlocks = blockCollection.BranchBlocks
+            .Select(r => r with
+            {
+                Id = map[r.Id],
+                LeftResult = r.LeftResult.HasValue ? map[r.LeftResult.Value] : null,
+                RightResult = r.RightResult.HasValue ? map[r.RightResult.Value] : null
+            })
+            .ToList();
+
+        var newBlockCollection = new BlockCollectionDto
+        {
+            RootId = map[rootBlock.Id],
+            TextBlocks = textBlocks,
+            BranchBlocks = branchBlocks,
+        };
+
+        var copy = serializationHelper.BlockCollectionDtoToRootBlock(newBlockCollection);
+
+        return copy;
+    }
 
     private string GetFileName(string diagramName)
     {

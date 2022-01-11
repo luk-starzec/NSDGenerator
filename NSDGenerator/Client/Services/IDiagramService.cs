@@ -12,5 +12,8 @@ namespace NSDGenerator.Client.Services
         DiagramModel GetDiagram(string fileContent);
         Task<bool> SaveDiagramAsync(DiagramModel diagram);
         Task DownloadDiagramAsync(DiagramModel diagram);
+
+        DiagramModel CreateDiagramCopy(DiagramModel diagram);
+
     }
 }

@@ -34,6 +34,11 @@
         </button>
     }
 
+    <button class="diagram-menu__button" title="Copy as new diagram" @onclick="OnDuplicate">
+        <img src="/assets/duplicate-icon.svg" />
+        <span>Duplicate</span>
+    </button>
+
     <button class="diagram-menu__button" title="Print diagram" @onclick="OnPrint">
         <img src="/assets/print-icon.svg" />
         <span>Print</span>
@@ -51,6 +56,7 @@
     [Parameter] public EventCallback OnDownload { get; set; }
     [Parameter] public EventCallback OnSave { get; set; }
     [Parameter] public EventCallback OnDelete { get; set; }
+    [Parameter] public EventCallback OnDuplicate { get; set; }
     [Parameter] public EventCallback OnPrint { get; set; }
 
     [CascadingParameter] Task<AuthenticationState> authenticationStateTask { get; set; }
@@ -67,6 +73,7 @@
     async Task DownloadClick() => await OnDownload.InvokeAsync();
     async Task SaveClick() => await OnSave.InvokeAsync();
     async Task DeleteClick() => await OnDelete.InvokeAsync();
+    async Task DuplicateClick() => await OnDuplicate.InvokeAsync();
     async Task PrintClick() => await OnPrint.InvokeAsync();
 
     async Task<bool> IsCurrentUserDiagramOwner()
