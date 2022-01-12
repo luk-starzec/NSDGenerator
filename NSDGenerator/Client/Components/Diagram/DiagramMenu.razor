@@ -50,6 +50,7 @@
     [Parameter] public bool EditMode { get; set; }
 
     [Parameter] public string DiagramOwner { get; set; }
+    [Parameter] public string CurrentUser { get; set; }
 
     [Parameter] public EventCallback OnPreview { get; set; }
     [Parameter] public EventCallback OnEdit { get; set; }
@@ -61,12 +62,8 @@
 
     [CascadingParameter] Task<AuthenticationState> authenticationStateTask { get; set; }
 
-    bool showEditOptions;
-
-    protected override async Task OnParametersSetAsync()
-    {
-        showEditOptions = await IsCurrentUserDiagramOwner();
-    }
+    bool showEditOptions => CurrentUser is not null
+                            && (CurrentUser == DiagramOwner || DiagramOwner is null);
 
     async Task PreviewClick() => await OnPreview.InvokeAsync();
     async Task EditClick() => await OnEdit.InvokeAsync();
@@ -75,14 +72,5 @@
     async Task DeleteClick() => await OnDelete.InvokeAsync();
     async Task DuplicateClick() => await OnDuplicate.InvokeAsync();
     async Task PrintClick() => await OnPrint.InvokeAsync();
-
-    async Task<bool> IsCurrentUserDiagramOwner()
-    {
-        var authState = await authenticationStateTask;
-        var user = authState.User;
-
-        return user.Identity.IsAuthenticated
-            && (user.Identity.Name == DiagramOwner || DiagramOwner is null);
-    }
 
 }

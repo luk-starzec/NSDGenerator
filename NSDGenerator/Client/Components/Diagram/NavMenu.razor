@@ -1,0 +1,60 @@
+﻿@inject NavigationManager navigationManager
+
+<div class="nav-menu__wrapper">
+
+    <button class="@cssHeader" title="@titleHeader" @onclick="HandleHeaderClick">
+        <span>Menu</span>
+        <SvgIcon SvgUrl="@imgHeader" />
+    </button>
+
+    @if (isOpen)
+    {
+        <ul class="nav-menu__list">
+
+            <li class="nav-menu__list-item" title="Home page">
+                <NavLink class="nav-menu__nav-link" href="">
+                    <span>Home</span>
+                    <SvgIcon SvgUrl="/assets/home-icon.svg" />
+                </NavLink>
+            </li>
+
+            <li class="nav-menu__list-item" title="Open empty diagram" @onclick="HandleNewDiagramClick">
+                <NavLink class="nav-menu__nav-link" href="/diagram">
+                    <span>New diagram</span>
+                    <SvgIcon SvgUrl="/assets/empty-icon.svg" />
+                </NavLink>
+            </li>
+
+            @if (UserAuthenticated)
+            {
+                <li class="nav-menu__list-item" title="List of saved diagrams">
+                    <NavLink class="nav-menu__nav-link" href="my-diagrams">
+                        <span>My diagrams</span>
+                        <SvgIcon SvgUrl="/assets/list-icon.svg" />
+                    </NavLink>
+                </li>
+            }
+
+        </ul>
+    }
+
+</div>
+
+@code {
+    [Parameter] public bool UserAuthenticated { get; set; }
+    [Parameter] public EventCallback OnNewDiagram { get; set; }
+
+    bool isOpen;
+
+    string cssHeader => isOpen ? "nav-menu__header nav-menu__header--open" : "nav-menu__header";
+    string titleHeader => isOpen ? "Close menu" : "Menu";
+    string imgHeader => isOpen ? "/assets/close-icon.svg" : "/assets/menu-icon.svg";
+
+    void HandleHeaderClick() => isOpen = !isOpen;
+
+    async Task HandleNewDiagramClick()
+    {
+        await OnNewDiagram.InvokeAsync();
+        isOpen = false;
+    }
+}

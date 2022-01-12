@@ -2,7 +2,7 @@
 @page "/diagram/{id:guid}"
 
 @inject AppState AppState
-@inject IDiagramService diagramService;
+@inject IDiagramService diagramService
 
 @implements IDisposable
 
@@ -53,9 +53,11 @@
         }
     }
 
-    <DiagramMenu EditMode="@isEditMode" DiagramOwner="@model?.Owner"
+    <DiagramMenu EditMode="@isEditMode" DiagramOwner="@model?.Owner" CurrentUser="@currentUser"
                  OnEdit="@HandleEdit" OnPreview="@HandlePreview" OnDelete=@HandleDelete OnDownload="@HandleDownload"
                  OnDuplicate="@HandleDuplicate" OnSave="@HandleSave" />
+
+    <NavMenu UserAuthenticated="@isAuthenticated" OnNewDiagram="@HandleNewDiagram" />
 
 </PageContent>
 
@@ -81,7 +83,12 @@
 @code {
     [Parameter] public Guid? Id { get; set; }
 
+    [CascadingParameter] Task<AuthenticationState> authenticationStateTask { get; set; }
+
     DiagramModel model;
+
+    string currentUser = null;
+    bool isAuthenticated => currentUser is not null;
 
     bool isEditMode;
     bool deleteDialogVisible;
@@ -92,6 +99,7 @@
     bool copiedDialogVisible;
 
     bool firstBlockSelectorVisible => model?.RootBlock is null;
+
 
     protected override async Task OnParametersSetAsync()
     {
@@ -116,6 +124,10 @@
 
         if (firstBlockSelectorVisible)
             isEditMode = true;
+
+        var authState = await authenticationStateTask;
+        var user = authState.User;
+        currentUser = user.Identity.IsAuthenticated ? user.Identity.Name : null;
     }
 
 
@@ -175,11 +187,19 @@
     void HandleDuplicate()
     {
         var copy = diagramService.CreateDiagramCopy(model);
-        
+
         AppState.SetCurrentDiagram(copy);
         model = copy;
 
         copiedDialogVisible = true;
+    }
+
+    void HandleNewDiagram()
+    {
+        var diagram = DiagramHelpers.GetNewDiagram();
+        AppState.SetCurrentDiagram(diagram);
+        model = diagram;
+        isEditMode = true;
     }
 
     async Task HandleDownload()
