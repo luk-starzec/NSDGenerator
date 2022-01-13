@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace NSDGenerator.Client.Services
 {
-    public interface IDiagramService
+    internal interface IDiagramService
     {
         Task<IEnumerable<DiagramDto>> GetMyDiagramsAsync();
         Task<DiagramModel> GetDiagramAsync(Guid id);

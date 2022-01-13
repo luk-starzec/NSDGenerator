@@ -3,43 +3,43 @@
 
     @if (EditMode)
     {
-        <button class="diagram-menu__button" title="Switch to preview mode" @onclick="PreviewClick">
+        <button class="diagram-menu__button" title="Switch to preview mode" disabled="@Disabled" @onclick="PreviewClick">
             <img src="/assets/preview-icon.svg" />
             <span>Preview</span>
         </button>
     }
     else
     {
-        <button class="diagram-menu__button" title="Switch to edit mode" @onclick="EditClick">
+        <button class="diagram-menu__button" title="Switch to edit mode" disabled="@Disabled" @onclick="EditClick">
             <img src="/assets/edit-icon.svg" />
             <span>Edit</span>
         </button>
     }
 
-    <button class="diagram-menu__button" title="Download diagram" @onclick="DownloadClick">
+    <button class="diagram-menu__button" title="Download diagram" disabled="@Disabled" @onclick="DownloadClick">
         <img src="/assets/download-icon.svg" />
         <span>Download</span>
     </button>
 
     @if (showEditOptions)
     {
-        <button class="diagram-menu__button" title="Save in cloud" @onclick="OnSave">
+        <button class="diagram-menu__button" title="Save in cloud" disabled="@Disabled" @onclick="OnSave">
             <img src="/assets/cloud-icon.svg" />
             <span>Save</span>
         </button>
 
-        <button class="diagram-menu__button" title="Delete diagram" @onclick="OnDelete">
+        <button class="diagram-menu__button" title="Delete diagram" disabled="@Disabled" @onclick="OnDelete">
             <img src="/assets/delete-icon.svg" />
             <span>Delete</span>
         </button>
     }
 
-    <button class="diagram-menu__button" title="Copy as new diagram" @onclick="OnDuplicate">
+    <button class="diagram-menu__button" title="Copy as new diagram" disabled="@Disabled" @onclick="OnDuplicate">
         <img src="/assets/duplicate-icon.svg" />
         <span>Duplicate</span>
     </button>
 
-    <button class="diagram-menu__button" title="Print diagram" @onclick="OnPrint">
+    <button class="diagram-menu__button" title="Print diagram" disabled="@Disabled" @onclick="OnPrint">
         <img src="/assets/print-icon.svg" />
         <span>Print</span>
     </button>
@@ -51,6 +51,8 @@
 
     [Parameter] public string DiagramOwner { get; set; }
     [Parameter] public string CurrentUser { get; set; }
+
+    [Parameter] public bool Disabled { get; set; }
 
     [Parameter] public EventCallback OnPreview { get; set; }
     [Parameter] public EventCallback OnEdit { get; set; }

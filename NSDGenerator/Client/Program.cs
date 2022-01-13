@@ -33,7 +33,7 @@ public class Program
         builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<TokenAuthenticationStateProvider>());
 
         builder.Services.AddScoped<IThemeService, ThemeService>();
-        builder.Services.AddScoped<ISerializationHelper, SerializationHelper>();
+        builder.Services.AddScoped<IModelConverterService, ModelConverterService>();
         builder.Services.AddScoped<IDiagramService, DiagramService>();
         builder.Services.AddSingleton<AppState>();
 

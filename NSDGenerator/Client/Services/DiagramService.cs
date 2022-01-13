@@ -12,14 +12,14 @@ using System.Threading.Tasks;
 
 namespace NSDGenerator.Client.Services;
 
-public class DiagramService : IDiagramService
+internal class DiagramService : IDiagramService
 {
     private readonly ILogger<DiagramService> logger;
     private readonly HttpClient httpClient;
     private readonly IJSRuntime js;
-    private readonly ISerializationHelper serializationHelper;
+    private readonly IModelConverterService serializationHelper;
 
-    public DiagramService(ILogger<DiagramService> logger, HttpClient httpClient, IJSRuntime js, ISerializationHelper serializationHelper)
+    public DiagramService(ILogger<DiagramService> logger, HttpClient httpClient, IJSRuntime js, IModelConverterService serializationHelper)
     {
         this.logger = logger;
         this.httpClient = httpClient;
@@ -30,7 +30,7 @@ public class DiagramService : IDiagramService
     public async Task DownloadDiagramAsync(DiagramModel diagram)
     {
         var name = GetFileName(diagram.Name);
-        string content = serializationHelper.SerializeDiagram(diagram);
+        string content = serializationHelper.DiagramModelToJson(diagram);
 
         await js.InvokeVoidAsync("DownloadFile", $"{name}.json", "application/json;charset=utf-8", content);
     }
@@ -54,7 +54,7 @@ public class DiagramService : IDiagramService
         try
         {
             var dto = await httpClient.GetFromJsonAsync<DiagramFullDto>($"api/diagram/{id}");
-            var diagram = serializationHelper.DeserializeDiagram(dto);
+            var diagram = serializationHelper.DiagramFullDtoToDiagramModel(dto);
             return diagram;
         }
         catch (Exception ex)
@@ -68,7 +68,7 @@ public class DiagramService : IDiagramService
     {
         try
         {
-            var json = serializationHelper.SerializeDiagram(diagram);
+            var json = serializationHelper.DiagramModelToJson(diagram);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await httpClient.PostAsync($"api/diagram", content);
             return response.IsSuccessStatusCode;
@@ -82,7 +82,7 @@ public class DiagramService : IDiagramService
 
     public DiagramModel GetDiagram(string fileContent)
     {
-        return serializationHelper.DeserializeDiagram(fileContent);
+        return serializationHelper.JsonToDiagramModel(fileContent);
     }
 
     public DiagramModel CreateDiagramCopy(DiagramModel diagram)

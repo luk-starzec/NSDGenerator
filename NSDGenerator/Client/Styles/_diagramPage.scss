@@ -40,6 +40,23 @@
     }
 }
 
+.message-panel__wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 30rem;
+    margin: 3rem auto;
+    color: $color-30;
+
+    &--empty {
+        color: $color-80;
+    }
+
+    p {
+        font-size: 1.3em;
+    }
+}
 
 .diagram-edit-header__wrapper {
     display: flex;
@@ -110,12 +127,16 @@
     color: #fff;
     background-color: $color-70;
 
-    &:hover {
+    &:hover:enabled {
         background-color: $color-30;
 
         span {
             display: block;
         }
+    }
+
+    &:disabled {
+        opacity: .5;
     }
 
     img {

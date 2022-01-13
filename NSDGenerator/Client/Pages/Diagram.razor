@@ -21,9 +21,13 @@
 
 <PageContent>
 
-    @if (model is null)
+    @if (errorMessageVisible)
     {
-        <p>Loading diagram...</p>
+        <MessagePanel Message="@errorMessage" />
+    }
+    else if (model is null)
+    {
+        <MessagePanel Message="Loading diagram..." />
     }
     else
     {
@@ -43,17 +47,24 @@
 
             <div class="diagram__wrapper">
 
-                <CascadingValue Value="@isEditMode">
+                @if (emptyMessageVisible)
+                {
+                    <MessagePanel Message="Diagram is empty" CssSufix="empty" />
+                }
+                else
+                {
+                    <CascadingValue Value="@isEditMode">
 
-                    <Block Model="@model.RootBlock" />
+                        <Block Model="@model.RootBlock" />
 
-                </CascadingValue>
+                    </CascadingValue>
+                }
 
             </div>
         }
     }
 
-    <DiagramMenu EditMode="@isEditMode" DiagramOwner="@model?.Owner" CurrentUser="@currentUser"
+    <DiagramMenu EditMode="@isEditMode" DiagramOwner="@model?.Owner" CurrentUser="@currentUser" Disabled="@errorMessageVisible"
                  OnEdit="@HandleEdit" OnPreview="@HandlePreview" OnDelete=@HandleDelete OnDownload="@HandleDownload"
                  OnDuplicate="@HandleDuplicate" OnSave="@HandleSave" />
 
@@ -94,23 +105,28 @@
     bool deleteDialogVisible;
     bool savingDialogVisible;
 
+    string errorMessage;
+    bool errorMessageVisible => !string.IsNullOrEmpty(errorMessage);
+    bool emptyMessageVisible => model.RootBlock is null;
+
     bool savedDialogVisible;
     bool errorDialogVisible;
     bool copiedDialogVisible;
 
-    bool firstBlockSelectorVisible => model?.RootBlock is null;
+    bool firstBlockSelectorVisible => model?.RootBlock is null && isEditMode;
 
 
     protected override async Task OnParametersSetAsync()
     {
+        await SetCurrentUser();
+
         if (Id is not null)
         {
             var diagram = await diagramService.GetDiagramAsync(Id.Value);
 
             if (diagram is null)
             {
-                // show error message
-
+                errorMessage = "Sorry, there was an error loading the diagram";
                 return;
             }
 
@@ -124,10 +140,6 @@
 
         if (firstBlockSelectorVisible)
             isEditMode = true;
-
-        var authState = await authenticationStateTask;
-        var user = authState.User;
-        currentUser = user.Identity.IsAuthenticated ? user.Identity.Name : null;
     }
 
 
@@ -144,6 +156,13 @@
     }
 
     void AppStateChanged() => StateHasChanged();
+
+    async Task SetCurrentUser()
+    {
+        var authState = await authenticationStateTask;
+        var user = authState.User;
+        currentUser = user.Identity.IsAuthenticated ? user.Identity.Name : null;
+    }
 
     void HandleFirstBlockText()
     {
@@ -196,6 +215,8 @@
 
     void HandleNewDiagram()
     {
+        Id = null;
+
         var diagram = DiagramHelpers.GetNewDiagram();
         AppState.SetCurrentDiagram(diagram);
         model = diagram;

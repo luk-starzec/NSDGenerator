@@ -1,22 +1,22 @@
 ﻿using NSDGenerator.Client.Models;
-using NSDGenerator.Client.Pages;
 using NSDGenerator.Shared.Diagram;
 using System.Linq;
 using System.Text.Json;
 
-namespace NSDGenerator.Client.Helpers;
+namespace NSDGenerator.Client.Services;
 
-public class SerializationHelper : ISerializationHelper
+internal class ModelConverterService : IModelConverterService
 {
     private readonly JsonSerializerOptions jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
-    public string SerializeDiagram(DiagramModel diagram)
+    public string DiagramModelToJson(DiagramModel diagram)
     {
-        var blocks = new BlockCollectionDto
+        BlockCollectionDto blocks = null;
+        if (diagram.RootBlock is not null)
         {
-            RootId = diagram.RootBlock.Id,
-        };
-        SerializeBlocks(diagram.RootBlock, blocks);
+            blocks = new BlockCollectionDto { RootId = diagram.RootBlock.Id };
+            BlocksToBlockCollection(diagram.RootBlock, blocks);
+        }
 
         var dto = new DiagramFullDto
         {
@@ -25,21 +25,22 @@ public class SerializationHelper : ISerializationHelper
             IsPrivate = diagram.IsPrivate,
             BlockCollection = blocks,
         };
-
         var json = JsonSerializer.Serialize(dto, jsonOptions);
 
         return json;
     }
 
-    public DiagramModel DeserializeDiagram(string json)
+    public DiagramModel JsonToDiagramModel(string json)
     {
         var dto = JsonSerializer.Deserialize<DiagramFullDto>(json, jsonOptions);
-        return DeserializeDiagram(dto);
+        return DiagramFullDtoToDiagramModel(dto);
     }
 
-    public DiagramModel DeserializeDiagram(DiagramFullDto diagramFullDto)
+    public DiagramModel DiagramFullDtoToDiagramModel(DiagramFullDto diagramFullDto)
     {
-        var rootBlock = DeserializeBlocks(diagramFullDto.BlockCollection, diagramFullDto.BlockCollection.RootId);
+        var rootBlock = diagramFullDto.BlockCollection is not null
+            ? ConvertToBlockModel(diagramFullDto.BlockCollection, diagramFullDto.BlockCollection.RootId)
+            : null;
 
         var diagram = new DiagramModel
         {
@@ -55,76 +56,76 @@ public class SerializationHelper : ISerializationHelper
 
     public BlockCollectionDto RootBlockToBlockCollectionDto(IBlockModel rootBlock)
     {
-        if(rootBlock is null)
+        if (rootBlock is null)
             return null;
 
         var blocks = new BlockCollectionDto { RootId = rootBlock.Id, };
-        SerializeBlocks(rootBlock, blocks);
+        BlocksToBlockCollection(rootBlock, blocks);
 
         return blocks;
     }
 
     public IBlockModel BlockCollectionDtoToRootBlock(BlockCollectionDto blockCollectionDto)
     {
-        return DeserializeBlocks(blockCollectionDto, blockCollectionDto.RootId);
+        return ConvertToBlockModel(blockCollectionDto, blockCollectionDto.RootId);
     }
 
 
-    private void SerializeBlocks(IBlockModel block, BlockCollectionDto result)
+    private void BlocksToBlockCollection(IBlockModel block, BlockCollectionDto result)
     {
         if (block is null)
             return;
 
-        if (TrySerializeTextBlock(block, result))
+        if (TryAddAsTextBlock(block, result))
             return;
 
-        if (TrySerializeBranchBlock(block, result))
+        if (TryAddAsBranchBlock(block, result))
             return;
     }
 
-    private bool TrySerializeTextBlock(IBlockModel block, BlockCollectionDto blockCollectionDto)
+    private bool TryAddAsTextBlock(IBlockModel block, BlockCollectionDto result)
     {
         if (block is not TextBlockModel)
             return false;
 
         var tb = block as TextBlockModel;
-        var jtb = new TextBlockDto(tb.Id, tb.Text, tb.Child?.Id);
-        blockCollectionDto.TextBlocks.Add(jtb);
+        var dto = new TextBlockDto(tb.Id, tb.Text, tb.Child?.Id);
+        result.TextBlocks.Add(dto);
 
-        SerializeBlocks(tb.Child, blockCollectionDto);
+        BlocksToBlockCollection(tb.Child, result);
         return true;
     }
 
-    private bool TrySerializeBranchBlock(IBlockModel block, BlockCollectionDto blockCollectionDto)
+    private bool TryAddAsBranchBlock(IBlockModel block, BlockCollectionDto result)
     {
         if (block is not BranchBlockModel)
             return false;
 
         var bb = block as BranchBlockModel;
-        var jbb = new BranchBlockDto(bb.Id, bb.Condition, bb.LeftBranch, bb.RightBranch, bb.LeftResult?.Id, bb.RightResult?.Id);
-        blockCollectionDto.BranchBlocks.Add(jbb);
+        var dto = new BranchBlockDto(bb.Id, bb.Condition, bb.LeftBranch, bb.RightBranch, bb.LeftResult?.Id, bb.RightResult?.Id);
+        result.BranchBlocks.Add(dto);
 
-        SerializeBlocks(bb.LeftResult, blockCollectionDto);
-        SerializeBlocks(bb.RightResult, blockCollectionDto);
+        BlocksToBlockCollection(bb.LeftResult, result);
+        BlocksToBlockCollection(bb.RightResult, result);
         return true;
     }
 
-    private IBlockModel DeserializeBlocks(BlockCollectionDto blockCollectionDto, Guid currentId)
+    private IBlockModel ConvertToBlockModel(BlockCollectionDto blockCollectionDto, Guid currentId)
     {
         var current = blockCollectionDto.Blocks.Where(r => r.Id == currentId).SingleOrDefault();
 
-        var tb = TryDeserializeTextBlock(current, blockCollectionDto);
+        var tb = TryConvertToTextBlockModel(current, blockCollectionDto);
         if (tb is not null)
             return tb;
 
-        var bb = TryDeserializeBranchBlock(current, blockCollectionDto);
+        var bb = TryConvertToBranchBlockModel(current, blockCollectionDto);
         if (bb is not null)
             return bb;
 
         return null;
     }
 
-    private TextBlockModel TryDeserializeTextBlock(IBlockDto blockDto, BlockCollectionDto blockCollectionDto)
+    private TextBlockModel TryConvertToTextBlockModel(IBlockDto blockDto, BlockCollectionDto blockCollectionDto)
     {
         if (blockDto is not TextBlockDto)
             return null;
@@ -136,12 +137,12 @@ public class SerializationHelper : ISerializationHelper
             Text = tbd.Text,
         };
         if (tbd.ChildId is not null)
-            tb.Child = DeserializeBlocks(blockCollectionDto, tbd.ChildId.Value);
+            tb.Child = ConvertToBlockModel(blockCollectionDto, tbd.ChildId.Value);
 
         return tb;
     }
 
-    private BranchBlockModel TryDeserializeBranchBlock(IBlockDto blockDto, BlockCollectionDto jsonBlockCollection)
+    private BranchBlockModel TryConvertToBranchBlockModel(IBlockDto blockDto, BlockCollectionDto jsonBlockCollection)
     {
         if (blockDto is not BranchBlockDto)
             return null;
@@ -155,9 +156,9 @@ public class SerializationHelper : ISerializationHelper
             RightBranch = bbd.RightBranch,
         };
         if (bbd.LeftResult is not null)
-            bb.LeftResult = DeserializeBlocks(jsonBlockCollection, bbd.LeftResult.Value);
+            bb.LeftResult = ConvertToBlockModel(jsonBlockCollection, bbd.LeftResult.Value);
         if (bbd.RightResult is not null)
-            bb.RightResult = DeserializeBlocks(jsonBlockCollection, bbd.RightResult.Value);
+            bb.RightResult = ConvertToBlockModel(jsonBlockCollection, bbd.RightResult.Value);
 
         return bb;
     }

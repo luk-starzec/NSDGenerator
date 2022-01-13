@@ -1,0 +1,11 @@
+﻿
+<div class="message-panel__wrapper @css">
+    <p>@Message</p>
+</div>
+
+@code {
+    [Parameter] public string Message { get; set; }
+    [Parameter] public string CssSufix { get; set; }
+
+    string css => !string.IsNullOrEmpty(CssSufix) ? $"message-panel__wrapper--{CssSufix}" : "";
+}
