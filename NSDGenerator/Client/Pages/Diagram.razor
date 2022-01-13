@@ -84,11 +84,11 @@
     </div>
 }
 
-<InfoDialog IsVisible="@errorDialogVisible" Message="an error occurred while saving diagram" CssSufix="error" IconUrl="/assets/error-icon.svg" />
+<InfoDialog @bind-IsVisible="@errorDialogVisible" Message="an error occurred while saving diagram" CssSufix="error" IconUrl="/assets/error-icon.svg" />
 
-<InfoDialog IsVisible="@savedDialogVisible" Message="diagram has been saved" IconUrl="/assets/check-icon.svg" />
+<InfoDialog @bind-IsVisible="@savedDialogVisible" Message="diagram has been saved" IconUrl="/assets/check-icon.svg" />
 
-<InfoDialog IsVisible="@copiedDialogVisible" Message="new diagram has been created" IconUrl="/assets/check-icon.svg" />
+<InfoDialog @bind-IsVisible="@copiedDialogVisible" Message="new diagram has been created" IconUrl="/assets/check-icon.svg" />
 
 
 @code {
@@ -134,12 +134,11 @@
         }
 
         if (AppState.CurrentDiagram is null)
+        {
             AppState.SetCurrentDiagram(DiagramHelpers.GetNewDiagram());
-
-        model = AppState.CurrentDiagram;
-
-        if (firstBlockSelectorVisible)
             isEditMode = true;
+        }
+        model = AppState.CurrentDiagram;
     }
 
 
