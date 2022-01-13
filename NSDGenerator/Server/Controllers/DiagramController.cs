@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace NSDGenerator.Server.Controllers;
 
-[Route("api/[controller]")]
 [ApiController]
+[Route("api/[controller]")]
 public class DiagramController : ControllerBase
 {
     private readonly IDbRepo repo;
