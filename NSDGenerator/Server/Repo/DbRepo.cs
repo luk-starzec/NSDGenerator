@@ -57,8 +57,14 @@ public class DbRepo : IDbRepo
             .ToListAsync();
     }
 
+    public async Task<bool> CheckIfDiagramExistsAsync(Guid id)
+    {
+        return await context.Diagrams
+            .AnyAsync(r => r.Id == id);
+    }
 
-    public async Task SaveDiagramAsync(DiagramFullDto diagram, string userName)
+
+    public async Task<bool> SaveDiagramAsync(DiagramFullDto diagram, string userName)
     {
         var diagramRow = await context.Diagrams.SingleOrDefaultAsync(r => r.Id == diagram.Id);
 
@@ -66,6 +72,11 @@ public class DbRepo : IDbRepo
         {
             diagramRow = new Diagram { Id = diagram.Id, UserName = userName, Created = DateTime.Now };
             context.Diagrams.Add(diagramRow);
+        }
+        else
+        {
+            if (diagramRow.UserName.ToLower() != userName.ToLower())
+                return false;
         }
 
         var blockRows = await context.Blocks.Where(r => r.DiagramId == diagram.Id).ToListAsync();
@@ -102,8 +113,33 @@ public class DbRepo : IDbRepo
         diagramRow.Modified = DateTime.Now;
 
         var result = await context.SaveChangesAsync();
+
+        return true;
     }
 
+    public async Task<bool> DeleteDiagramAsync(Guid id, string userName)
+    {
+        var diagramRow = await context.Diagrams
+            .Where(r => r.Id == id)
+            .Where(r => r.UserName == userName)
+            .SingleOrDefaultAsync();
+
+        if (diagramRow is null)
+            return false;
+
+        var blockRows = await context.Blocks
+            .Where(r => r.DiagramId == id)
+            .ToArrayAsync();
+
+        context.Diagrams.Remove(diagramRow);
+
+        if (blockRows.Any())
+            context.Blocks.RemoveRange(blockRows);
+
+        await context.SaveChangesAsync();
+
+        return true;
+    }
 
     public async Task<string> RegisterUserAsync(RegisterDto register)
     {

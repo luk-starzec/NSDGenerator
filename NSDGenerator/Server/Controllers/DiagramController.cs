@@ -27,10 +27,19 @@ public class DiagramController : ControllerBase
     }
 
     [HttpPost, Authorize]
-    public async Task SaveDiagram([FromBody] DiagramFullDto diagram)
+    public async Task<IActionResult> SaveDiagram([FromBody] DiagramFullDto diagram)
     {
         var userName = User.Identity.Name;
-        await repo.SaveDiagramAsync(diagram, userName);
+        var result = await repo.SaveDiagramAsync(diagram, userName);
+        return result ? NoContent() : BadRequest();
+    }
+
+    [HttpDelete("{id}"), Authorize]
+    public async Task<IActionResult> DeleteDiagram(Guid id)
+    {
+        var userName = User.Identity.Name;
+        var result = await repo.DeleteDiagramAsync(id, userName);
+        return result ? NoContent() : BadRequest();
     }
 
     [HttpGet("{id}")]
@@ -38,5 +47,12 @@ public class DiagramController : ControllerBase
     {
         var userName = User.Identity.IsAuthenticated ? User.Identity.Name : null;
         return await repo.GetDiagramAsync(id, userName);
+    }
+
+    [HttpGet("exists/{id}")]
+    public async Task<IActionResult> CheckIfDiagramExists(Guid id)
+    {
+        var exists = await repo.CheckIfDiagramExistsAsync(id);
+        return exists ? Ok() : NotFound();
     }
 }

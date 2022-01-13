@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
-using NSDGenerator.Client.Helpers;
 using NSDGenerator.Client.Models;
+using NSDGenerator.Client.Pages;
 using NSDGenerator.Shared.Diagram;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,14 +25,6 @@ internal class DiagramService : IDiagramService
         this.httpClient = httpClient;
         this.js = js;
         this.serializationHelper = serializationHelper;
-    }
-
-    public async Task DownloadDiagramAsync(DiagramModel diagram)
-    {
-        var name = GetFileName(diagram.Name);
-        string content = serializationHelper.DiagramModelToJson(diagram);
-
-        await js.InvokeVoidAsync("DownloadFile", $"{name}.json", "application/json;charset=utf-8", content);
     }
 
     public async Task<IEnumerable<DiagramDto>> GetMyDiagramsAsync()
@@ -64,6 +56,34 @@ internal class DiagramService : IDiagramService
         }
     }
 
+    public DiagramModel GetDiagram(string fileContent)
+    {
+        return serializationHelper.JsonToDiagramModel(fileContent);
+    }
+
+    public async Task<bool> CheckIfDiagramExistsAsync(Guid id)
+    {
+        try
+        {
+            var result = await httpClient.GetAsync($"api/diagram/exists/{id}");
+            return result.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("Method {Method} thrown exception: {Message}", nameof(CheckIfDiagramExistsAsync), ex.Message);
+            return false;
+        }
+
+    }
+
+    public async Task DownloadDiagramAsync(DiagramModel diagram)
+    {
+        var name = GetFileName(diagram.Name);
+        string content = serializationHelper.DiagramModelToJson(diagram);
+
+        await js.InvokeVoidAsync("DownloadFile", $"{name}.json", "application/json;charset=utf-8", content);
+    }
+
     public async Task<bool> SaveDiagramAsync(DiagramModel diagram)
     {
         try
@@ -80,9 +100,18 @@ internal class DiagramService : IDiagramService
         }
     }
 
-    public DiagramModel GetDiagram(string fileContent)
+    public async Task<bool> DeleteDiagramAsync(Guid id)
     {
-        return serializationHelper.JsonToDiagramModel(fileContent);
+        try
+        {
+            var response = await httpClient.DeleteAsync($"api/diagram/{id}");
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("Method {Method} thrown exception: {Message}", nameof(DeleteDiagramAsync), ex.Message);
+            return false;
+        }
     }
 
     public DiagramModel CreateDiagramCopy(DiagramModel diagram)

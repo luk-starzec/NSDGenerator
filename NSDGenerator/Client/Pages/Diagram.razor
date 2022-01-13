@@ -3,6 +3,7 @@
 
 @inject AppState AppState
 @inject IDiagramService diagramService
+@inject NavigationManager navigationManager
 
 @implements IDisposable
 
@@ -77,14 +78,12 @@
     <DeleteDiagramDialog DiagramName="@model.Name" OnCancel="@HandleDeleteCancel" OnConfirm="@HandleDeleteConfirm" />
 }
 
-@if (savingDialogVisible)
-{
-    <div class="diagram__saving-dialog">
-        Saving diagram...
-    </div>
-}
+<SplashScreenDialog IsVisible="@savingDialogVisible" Message="Saving diagram..." />
 
-<InfoDialog @bind-IsVisible="@errorDialogVisible" Message="an error occurred while saving diagram" CssSufix="error" IconUrl="/assets/error-icon.svg" />
+<SplashScreenDialog IsVisible="@deletingDialogVisible" Message="Deleting diagram..." />
+
+
+<InfoDialog @bind-IsVisible="@errorDialogVisible" Message="@errorDialogMessage" CssSufix="error" IconUrl="/assets/error-icon.svg" />
 
 <InfoDialog @bind-IsVisible="@savedDialogVisible" Message="diagram has been saved" IconUrl="/assets/check-icon.svg" />
 
@@ -104,13 +103,15 @@
     bool isEditMode;
     bool deleteDialogVisible;
     bool savingDialogVisible;
+    bool deletingDialogVisible;
 
     string errorMessage;
     bool errorMessageVisible => !string.IsNullOrEmpty(errorMessage);
     bool emptyMessageVisible => model.RootBlock is null;
 
-    bool savedDialogVisible;
+    string errorDialogMessage;
     bool errorDialogVisible;
+    bool savedDialogVisible;
     bool copiedDialogVisible;
 
     bool firstBlockSelectorVisible => model?.RootBlock is null && isEditMode;
@@ -188,6 +189,7 @@
 
     void HandleDelete()
     {
+        errorDialogVisible = false;
         deleteDialogVisible = true;
     }
 
@@ -196,10 +198,27 @@
         deleteDialogVisible = false;
     }
 
-    void HandleDeleteConfirm()
+    async Task HandleDeleteConfirm()
     {
-        // TODO
         deleteDialogVisible = false;
+        deletingDialogVisible = true;
+
+        var existsOnServer = await diagramService.CheckIfDiagramExistsAsync(model.Id);
+        var result = existsOnServer
+            ? await diagramService.DeleteDiagramAsync(model.Id)
+            : true;
+
+        deletingDialogVisible = false;
+
+        if (result)
+        {
+            navigationManager.NavigateTo("/");
+        }
+        else
+        {
+            errorDialogMessage = "an error occurred while deleting diagram";
+            errorDialogVisible = true;
+        }
     }
 
     void HandleDuplicate()
@@ -240,8 +259,13 @@
         savingDialogVisible = false;
 
         if (result)
+        {
             savedDialogVisible = true;
+        }
         else
+        {
+            errorDialogMessage = "an error occurred while saving diagram";
             errorDialogVisible = true;
+        }
     }
 }
