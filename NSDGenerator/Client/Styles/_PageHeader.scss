@@ -6,6 +6,10 @@
     display: flex;
     align-items: center;
     background-color: $color-95;
+
+    @media print {
+        height: auto;
+    }
 }
 
 .page-header__logo {
@@ -26,6 +30,10 @@
     .result-right {
         fill: $color-98;
     }
+
+    @media print {
+        display: none;
+    }
 }
 
 .page-header__content {
@@ -34,4 +42,8 @@
     margin-right: calc(2rem + 70px + 2rem);
     display: flex;
     justify-content: center;
+
+    @media print {
+        margin-right: 0;
+    }
 }

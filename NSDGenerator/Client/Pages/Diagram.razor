@@ -69,7 +69,7 @@
                  OnEdit="@HandleEdit" OnPreview="@HandlePreview" OnDelete=@HandleDelete OnDownload="@HandleDownload"
                  OnDuplicate="@HandleDuplicate" OnSave="@HandleSave" />
 
-    <NavMenu UserAuthenticated="@isAuthenticated" OnNewDiagram="@HandleNewDiagram" />
+    <NavMenu @bind-IsOpened="@isMenuOpened" UserAuthenticated="@isAuthenticated" OnNewDiagram="@HandleNewDiagram" />
 
 </PageContent>
 
@@ -99,6 +99,8 @@
 
     string currentUser = null;
     bool isAuthenticated => currentUser is not null;
+
+    bool isMenuOpened;
 
     bool isEditMode;
     bool deleteDialogVisible;
@@ -155,7 +157,11 @@
         AppState.SetCurrentDiagram(null);
     }
 
-    void AppStateChanged() => StateHasChanged();
+    void AppStateChanged()
+    {
+        isMenuOpened = false;
+        StateHasChanged();
+    }
 
     async Task SetCurrentUser()
     {
@@ -178,17 +184,20 @@
 
     void HandleEdit()
     {
+        isMenuOpened = false;
         isEditMode = true;
         AppState.SelectBlock(null);
     }
 
     void HandlePreview()
     {
+        isMenuOpened = false;
         isEditMode = false;
     }
 
     void HandleDelete()
     {
+        isMenuOpened = false;
         errorDialogVisible = false;
         deleteDialogVisible = true;
     }
@@ -223,6 +232,8 @@
 
     void HandleDuplicate()
     {
+        isMenuOpened = false;
+
         var copy = diagramService.CreateDiagramCopy(model);
 
         AppState.SetCurrentDiagram(copy);
@@ -243,11 +254,13 @@
 
     async Task HandleDownload()
     {
+        isMenuOpened = false;
         await diagramService.DownloadDiagramAsync(model);
     }
 
     async Task HandleSave()
     {
+        isMenuOpened = false;
         isEditMode = false;
         errorDialogVisible = false;
         savedDialogVisible = false;

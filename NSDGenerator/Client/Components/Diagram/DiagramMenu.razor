@@ -39,11 +39,6 @@
         <span>Duplicate</span>
     </button>
 
-    <button class="diagram-menu__button" title="Switch to print view" disabled @onclick="OnPrint">
-        <img src="/assets/print-icon.svg" />
-        <span>Print</span>
-    </button>
-
 </div>
 
 @code {
@@ -60,7 +55,6 @@
     [Parameter] public EventCallback OnSave { get; set; }
     [Parameter] public EventCallback OnDelete { get; set; }
     [Parameter] public EventCallback OnDuplicate { get; set; }
-    [Parameter] public EventCallback OnPrint { get; set; }
 
     [CascadingParameter] Task<AuthenticationState> authenticationStateTask { get; set; }
 
@@ -73,6 +67,5 @@
     async Task SaveClick() => await OnSave.InvokeAsync();
     async Task DeleteClick() => await OnDelete.InvokeAsync();
     async Task DuplicateClick() => await OnDuplicate.InvokeAsync();
-    async Task PrintClick() => await OnPrint.InvokeAsync();
 
 }

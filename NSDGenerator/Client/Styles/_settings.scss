@@ -12,6 +12,10 @@
         width: 10rem;
         border-radius: .5rem;
     }
+
+    @media print {
+        display: none;
+    }
 }
 
 .settings-menu__content {

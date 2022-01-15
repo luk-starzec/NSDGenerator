@@ -7,7 +7,7 @@
         <SvgIcon SvgUrl="@imgHeader" />
     </button>
 
-    @if (isOpen)
+    @if (IsOpened)
     {
         <ul class="nav-menu__list">
 
@@ -42,19 +42,27 @@
 
 @code {
     [Parameter] public bool UserAuthenticated { get; set; }
+    [Parameter] public bool IsOpened { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenedChanged { get; set; }
     [Parameter] public EventCallback OnNewDiagram { get; set; }
 
-    bool isOpen;
 
-    string cssHeader => isOpen ? "nav-menu__header nav-menu__header--open" : "nav-menu__header";
-    string titleHeader => isOpen ? "Close menu" : "Menu";
-    string imgHeader => isOpen ? "/assets/close-icon.svg" : "/assets/menu-icon.svg";
+    string cssHeader => IsOpened ? "nav-menu__header nav-menu__header--open" : "nav-menu__header";
+    string titleHeader => IsOpened ? "Close menu" : "Menu";
+    string imgHeader => IsOpened ? "/assets/close-icon.svg" : "/assets/menu-icon.svg";
 
-    void HandleHeaderClick() => isOpen = !isOpen;
+    async Task HandleHeaderClick() => await SetIsOpened(!IsOpened);
 
     async Task HandleNewDiagramClick()
     {
         await OnNewDiagram.InvokeAsync();
-        isOpen = false;
+        await SetIsOpened(false);
+    }
+
+    async Task SetIsOpened(bool isOpened)
+    {
+        IsOpened = isOpened;
+        await IsOpenedChanged.InvokeAsync(IsOpened);
+
     }
 }
