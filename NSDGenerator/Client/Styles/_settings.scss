@@ -55,7 +55,7 @@
     color: #fff;
     background-color: $color-70;
 
-    &:hover {
+    &:hover:enabled {
         background-color: $color-30;
 
         span {

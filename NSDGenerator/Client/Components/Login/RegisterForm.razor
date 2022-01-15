@@ -51,7 +51,7 @@
 @code {
     [Parameter] public EventCallback OnSuccess { get; set; }
 
-    private RegistrationModel model = new();
+    private SignInModel model = new();
 
     string resultError = string.Empty;
     bool showResultError => !string.IsNullOrEmpty(resultError);
@@ -69,7 +69,8 @@
 
         resultError = string.Empty;
 
-        var response = await httpClient.PostAsJsonAsync("/api/user/register", model);
+        var dto = new RegisterDto(model.Email, model.Password, model.RegistrationCode);
+        var response = await httpClient.PostAsJsonAsync("/api/user/register", dto);
         var result = await response.Content.ReadFromJsonAsync<RegisterResult>();
 
         if (result.IsSuccessful)

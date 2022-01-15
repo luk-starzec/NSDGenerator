@@ -1,5 +1,5 @@
 ﻿using System;
 
-namespace NSDGenerator.Server.Repo;
+namespace NSDGenerator.Server.Diagram.Models;
 
 public record TextBlockJsonData(string Text, Guid? ChildId);

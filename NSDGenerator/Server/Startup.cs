@@ -6,8 +6,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using NSDGenerator.Server.Data;
-using NSDGenerator.Server.Repo;
+using NSDGenerator.Server.DbData;
+using NSDGenerator.Server.Diagram.Helpers;
+using NSDGenerator.Server.Diagram.Repo;
+using NSDGenerator.Server.User.Helpers;
+using NSDGenerator.Server.User.Models;
+using NSDGenerator.Server.User.Repo;
 
 namespace NSDGenerator.Server;
 
@@ -22,10 +26,15 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IDbRepo, DbRepo>();
-
         services.AddDbContext<NsdContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("NsdDatabase")));
+
+        services.AddScoped<IDiagramRepo, DiagramRepo>();
+        services.AddScoped<IDtoConverters, DtoConverters>();
+
+        services.Configure<HashingSettings>(Configuration.GetSection(HashingSettings.HashingOptionsKey));
+        services.AddScoped<IUserRepo, UserRepo>();
+        services.AddScoped<IPasswordHasher, PasswordHasher>();
 
         services.Configure<JwtSettings>(Configuration.GetSection(JwtSettings.JwtSettingsKey));
         var jwtSettings = Configuration.GetSection(JwtSettings.JwtSettingsKey).Get<JwtSettings>();

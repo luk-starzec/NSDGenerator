@@ -187,13 +187,12 @@
 }
 
 .delete-diagram-dialog__button {
+    @include btn-base;
     margin-inline: 0.5rem;
     padding: .5rem 1rem;
     background-color: #fff;
     color: $color-30;
-    border: none;
     border-radius: 0.25rem;
-    cursor: pointer;
 
     &:hover {
         background-color: $color-95;

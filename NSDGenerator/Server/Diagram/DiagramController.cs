@@ -1,36 +1,36 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NSDGenerator.Server.Repo;
+using NSDGenerator.Server.Diagram.Repo;
 using NSDGenerator.Shared.Diagram;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace NSDGenerator.Server.Controllers;
+namespace NSDGenerator.Server;
 
 [ApiController]
 [Route("api/[controller]")]
 public class DiagramController : ControllerBase
 {
-    private readonly IDbRepo repo;
+    private readonly IDiagramRepo _repo;
 
-    public DiagramController(IDbRepo repo)
+    public DiagramController(IDiagramRepo diagramRepo)
     {
-        this.repo = repo;
+        _repo = diagramRepo ?? throw new ArgumentNullException(nameof(diagramRepo));
     }
 
     [HttpGet, Authorize]
     public async Task<IEnumerable<DiagramDto>> GetDiagrams()
     {
         var userName = User.Identity.Name;
-        return await repo.GetDiagramInfosAsync(userName);
+        return await _repo.GetDiagramInfosAsync(userName);
     }
 
     [HttpPost, Authorize]
     public async Task<IActionResult> SaveDiagram([FromBody] DiagramFullDto diagram)
     {
         var userName = User.Identity.Name;
-        var result = await repo.SaveDiagramAsync(diagram, userName);
+        var result = await _repo.SaveDiagramAsync(diagram, userName);
         return result ? NoContent() : BadRequest();
     }
 
@@ -38,7 +38,7 @@ public class DiagramController : ControllerBase
     public async Task<IActionResult> DeleteDiagram(Guid id)
     {
         var userName = User.Identity.Name;
-        var result = await repo.DeleteDiagramAsync(id, userName);
+        var result = await _repo.DeleteDiagramAsync(id, userName);
         return result ? NoContent() : BadRequest();
     }
 
@@ -46,13 +46,13 @@ public class DiagramController : ControllerBase
     public async Task<DiagramFullDto> GetDiagram(Guid id)
     {
         var userName = User.Identity.IsAuthenticated ? User.Identity.Name : null;
-        return await repo.GetDiagramAsync(id, userName);
+        return await _repo.GetDiagramAsync(id, userName);
     }
 
     [HttpGet("exists/{id}")]
     public async Task<IActionResult> CheckIfDiagramExists(Guid id)
     {
-        var exists = await repo.CheckIfDiagramExistsAsync(id);
+        var exists = await _repo.CheckIfDiagramExistsAsync(id);
         return exists ? Ok() : NotFound();
     }
 }

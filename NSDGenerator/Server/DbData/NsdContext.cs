@@ -1,15 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 
-namespace NSDGenerator.Server.Data;
+namespace NSDGenerator.Server.DbData;
 
 public class NsdContext : DbContext
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Diagram> Diagrams { get; set; }
     public DbSet<Block> Blocks { get; set; }
-    public DbSet<RegistrationCode> RegistrationCodes { get; set; } 
+    public DbSet<RegistrationCode> RegistrationCodes { get; set; }
 
     public NsdContext(DbContextOptions<NsdContext> options)
         : base(options) { }
@@ -22,25 +21,16 @@ public class NsdContext : DbContext
             .Property(e => e.BlockType)
             .HasConversion(v => v.ToString(), v => (EnumBlockType)Enum.Parse(typeof(EnumBlockType), v));
 
-        modelBuilder.Entity<User>().HasData(InitUserData());
         modelBuilder.Entity<RegistrationCode>().HasData(InitRegistrationCodes());
 
         base.OnModelCreating(modelBuilder);
-    }
-
-    private static User[] InitUserData()
-    {
-        return new User[]
-        {
-            new User{ Name="user@starzec.net", Password="123", IsEnabled=true, Created=DateTime.Now},
-        };
     }
 
     private static RegistrationCode[] InitRegistrationCodes()
     {
         return new RegistrationCode[]
         {
-            new RegistrationCode{ Code="test01", IsActive=true },
+            new RegistrationCode{ Code="test01", IsActive=false },
         };
     }
 }

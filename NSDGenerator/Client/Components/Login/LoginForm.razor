@@ -41,18 +41,18 @@
     [Parameter]
     public EventCallback OnClose { get; set; }
 
-    LoginDto model = new();
+    LogInModel model = new();
 
     string error = string.Empty;
     bool showError => !string.IsNullOrEmpty(error);
 
     protected override void OnInitialized()
     {
-        model = new LoginDto
-        {
-            Email = "user@starzec.net",
-            Password = "user1",
-        };
+        model = new LogInModel
+            {
+                Email = "guest@starzec.net",
+                Password = "12345678",
+            };
     }
 
     private async Task CloseForm()
@@ -64,7 +64,8 @@
     {
         error = string.Empty;
 
-        var response = await httpClient.PostAsJsonAsync("/api/user/login", model);
+        var dto = new LoginDto(model.Email, model.Password);
+        var response = await httpClient.PostAsJsonAsync("/api/user/login", dto);
         var result = await response.Content.ReadFromJsonAsync<LoginResult>();
 
         if (result.IsSuccessful)

@@ -1,39 +1,35 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using NSDGenerator.Server.Repo;
-using NSDGenerator.Shared.Login;
+using NSDGenerator.Server.User.Models;
+using NSDGenerator.Server.User.Repo;
+using NSDGenerator.Shared.User;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace NSDGenerator.Server.Controllers
+namespace NSDGenerator.Server.User
 {
     [ApiController, Route("api/[controller]")]
     public class UserController : ControllerBase
     {
         private readonly JwtSettings _jwtSettings;
-        private readonly IDbRepo dbRepo;
+        private readonly IUserRepo _repo;
 
-        public UserController(IOptions<JwtSettings> options, IDbRepo dbRepo)
+        public UserController(IOptions<JwtSettings> options, IUserRepo userRepo)
         {
             _jwtSettings = options.Value;
-            this.dbRepo = dbRepo;
+            _repo = userRepo ?? throw new ArgumentNullException(nameof(userRepo));
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginDto login)
+        public async Task<IActionResult> Login([FromBody] LoginDto login)
         {
-            var result = login.Email == "user@starzec.net" && login.Password == "user1"
-                || login.Email == "guest@starzec.net" && login.Password == "guest";
+            var isValid = await _repo.VerifyUserAsync(login);
 
-            if (!result)
+            if (!isValid)
                 return BadRequest(new LoginResult(false, Error: "Email or password are invalid."));
 
             var stringToken = GetStringToken(login.Email);
@@ -48,7 +44,7 @@ namespace NSDGenerator.Server.Controllers
             if (string.IsNullOrEmpty(registrationCode))
                 return BadRequest(new RegisterResult(false, "Registration code required"));
 
-            var error = await dbRepo.RegisterUserAsync(register);
+            var error = await _repo.RegisterUserAsync(register);
 
             if (!string.IsNullOrEmpty(error))
                 return BadRequest(new RegisterResult(false, error));
@@ -60,16 +56,7 @@ namespace NSDGenerator.Server.Controllers
 
         private string GetStringToken(string name)
         {
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, name),
-            };
-
-            if (name.StartsWith("guest"))
-                claims.Add(new Claim(ClaimTypes.Role, "Viewer"));
-
-            if (name.StartsWith("User"))
-                claims.Add(new Claim(ClaimTypes.Role, "Editor"));
+            var claims = new List<Claim> { new Claim(ClaimTypes.Name, name) };
 
             var creds = new SigningCredentials(_jwtSettings.SigningKey, SecurityAlgorithms.HmacSha256);
             var expiry = DateTime.Now.AddDays(_jwtSettings.ExpiryInDays);

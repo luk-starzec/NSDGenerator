@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace NSDGenerator.Server.Data;
+namespace NSDGenerator.Server.DbData;
 
 [Table("Users")]
 public class User

@@ -7,8 +7,6 @@ public class DiagramModel
     public bool IsPrivate { get; set; }
     public IBlockModel RootBlock { get; set; }
     public string Owner { get; set; }
-    public DiagramModel()
-    {
-        Id = Guid.NewGuid();
-    }
+
+    public DiagramModel() => Id = Guid.NewGuid();
 }

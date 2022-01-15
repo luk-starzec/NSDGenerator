@@ -1,12 +1,11 @@
 ﻿using NSDGenerator.Shared.Diagram;
-using NSDGenerator.Shared.Login;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
 
-namespace NSDGenerator.Server.Repo;
+namespace NSDGenerator.Server.Diagram.Repo;
 
-public interface IDbRepo
+public interface IDiagramRepo
 {
     Task<IEnumerable<DiagramDto>> GetDiagramInfosAsync(string userName);
     Task<DiagramFullDto> GetDiagramAsync(Guid id, string userName);
@@ -17,5 +16,4 @@ public interface IDbRepo
 
     Task<bool> DeleteDiagramAsync(Guid id, string userName);
 
-    Task<string> RegisterUserAsync(RegisterDto register);
 }

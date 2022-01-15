@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using NSDGenerator.Client.Models;
-using NSDGenerator.Client.Pages;
 using NSDGenerator.Shared.Diagram;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,14 +16,14 @@ internal class DiagramService : IDiagramService
     private readonly ILogger<DiagramService> logger;
     private readonly HttpClient httpClient;
     private readonly IJSRuntime js;
-    private readonly IModelConverterService serializationHelper;
+    private readonly IModelConverterService modelConverterService;
 
-    public DiagramService(ILogger<DiagramService> logger, HttpClient httpClient, IJSRuntime js, IModelConverterService serializationHelper)
+    public DiagramService(ILogger<DiagramService> logger, HttpClient httpClient, IJSRuntime js, IModelConverterService modelConverterService)
     {
         this.logger = logger;
         this.httpClient = httpClient;
         this.js = js;
-        this.serializationHelper = serializationHelper;
+        this.modelConverterService = modelConverterService;
     }
 
     public async Task<IEnumerable<DiagramDto>> GetMyDiagramsAsync()
@@ -46,7 +45,7 @@ internal class DiagramService : IDiagramService
         try
         {
             var dto = await httpClient.GetFromJsonAsync<DiagramFullDto>($"api/diagram/{id}");
-            var diagram = serializationHelper.DiagramFullDtoToDiagramModel(dto);
+            var diagram = modelConverterService.DiagramFullDtoToDiagramModel(dto);
             return diagram;
         }
         catch (Exception ex)
@@ -58,7 +57,7 @@ internal class DiagramService : IDiagramService
 
     public DiagramModel GetDiagram(string fileContent)
     {
-        return serializationHelper.JsonToDiagramModel(fileContent);
+        return modelConverterService.JsonToDiagramModel(fileContent);
     }
 
     public async Task<bool> CheckIfDiagramExistsAsync(Guid id)
@@ -79,7 +78,7 @@ internal class DiagramService : IDiagramService
     public async Task DownloadDiagramAsync(DiagramModel diagram)
     {
         var name = GetFileName(diagram.Name);
-        string content = serializationHelper.DiagramModelToJson(diagram);
+        string content = modelConverterService.DiagramModelToJson(diagram);
 
         await js.InvokeVoidAsync("DownloadFile", $"{name}.json", "application/json;charset=utf-8", content);
     }
@@ -88,7 +87,7 @@ internal class DiagramService : IDiagramService
     {
         try
         {
-            var json = serializationHelper.DiagramModelToJson(diagram);
+            var json = modelConverterService.DiagramModelToJson(diagram);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await httpClient.PostAsync($"api/diagram", content);
             return response.IsSuccessStatusCode;
@@ -128,7 +127,7 @@ internal class DiagramService : IDiagramService
 
     private IBlockModel CopyBlockTree(IBlockModel rootBlock)
     {
-        var blockCollection = serializationHelper.RootBlockToBlockCollectionDto(rootBlock);
+        var blockCollection = modelConverterService.RootBlockToBlockCollectionDto(rootBlock);
 
         var map = blockCollection.Blocks.ToDictionary(k => k.Id, v => Guid.NewGuid());
 
@@ -155,7 +154,7 @@ internal class DiagramService : IDiagramService
             BranchBlocks = branchBlocks,
         };
 
-        var copy = serializationHelper.BlockCollectionDtoToRootBlock(newBlockCollection);
+        var copy = modelConverterService.BlockCollectionDtoToRootBlock(newBlockCollection);
 
         return copy;
     }
@@ -164,8 +163,6 @@ internal class DiagramService : IDiagramService
     {
         return string.IsNullOrWhiteSpace(diagramName)
             ? "unnamed-diagram"
-            : diagramName
-                .Replace(" ", "_")
-                .ToLower();
+            : diagramName.Replace(" ", "_").ToLower();
     }
 }

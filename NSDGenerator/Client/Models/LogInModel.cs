@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace NSDGenerator.Shared.Login;
+namespace NSDGenerator.Client.Models;
 
-public class LoginDto
+public class LogInModel
 {
     [Required]
     public string Email { get; set; }

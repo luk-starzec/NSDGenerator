@@ -2,7 +2,6 @@
 
 public partial class BranchBlockModel : IBlockModel
 {
-
     public Guid Id { get; set; }
     public IBlockModel Parent { get; set; }
     public string Condition { get; set; }
@@ -32,8 +31,5 @@ public partial class BranchBlockModel : IBlockModel
         }
     }
 
-    public BranchBlockModel()
-    {
-        Id = Guid.NewGuid();
-    }
+    public BranchBlockModel() => Id = Guid.NewGuid();
 }

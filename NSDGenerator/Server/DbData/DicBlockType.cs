@@ -1,4 +1,4 @@
-﻿namespace NSDGenerator.Server.Data;
+﻿namespace NSDGenerator.Server.DbData;
 
 public enum EnumBlockType
 {

@@ -18,10 +18,7 @@ public partial class TextBlockModel : IBlockModel
         }
     }
 
-    public TextBlockModel()
-    {
-        Id = Guid.NewGuid();
-    }
+    public TextBlockModel() => Id = Guid.NewGuid();
 
     public TextBlockModel(string text, IBlockModel child = null) : this()
         => (Text, Child) = (text, child);

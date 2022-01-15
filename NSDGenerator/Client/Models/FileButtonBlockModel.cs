@@ -2,7 +2,6 @@
 
 public class FileButtonBlockModel : IBlockModel
 {
-
     public IBlockModel Parent { get; set; }
     public Guid Id { get; set; }
     public string ButtonText { get; set; }
@@ -20,10 +19,7 @@ public class FileButtonBlockModel : IBlockModel
         }
     }
 
-    public FileButtonBlockModel()
-    {
-        Id = Guid.NewGuid();
-    }
+    public FileButtonBlockModel() => Id = Guid.NewGuid();
 
     public FileButtonBlockModel(string buttonText, Action<string> onFileSelected) : this()
         => (ButtonText, OnFileSelected) = (buttonText, onFileSelected);
