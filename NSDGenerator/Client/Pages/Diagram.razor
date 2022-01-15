@@ -7,6 +7,8 @@
 
 @implements IDisposable
 
+<PageTitle>@pageTitle</PageTitle>
+
 <PageHeader>
     @if (isEditMode)
     {
@@ -96,6 +98,8 @@
     [CascadingParameter] Task<AuthenticationState> authenticationStateTask { get; set; }
 
     DiagramModel model;
+
+    string pageTitle => $"Nassi–Shneiderman Diagram{(!string.IsNullOrWhiteSpace(model?.Name) ? $": {model.Name}" : "")}";
 
     string currentUser = null;
     bool isAuthenticated => currentUser is not null;
