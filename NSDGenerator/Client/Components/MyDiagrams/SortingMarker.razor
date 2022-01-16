@@ -1,0 +1,34 @@
+﻿
+<div class="@GetCss()" title="@GetTitle()">
+    <SvgIcon SvgUrl="/assets/sort-icon.svg" />
+</div>
+
+@code {
+    [Parameter] public EnumSortDirection SortDirection { get; set; }
+
+    string GetCss()
+    {
+        switch (SortDirection)
+        {
+            case EnumSortDirection.Ascending:
+                return "sorting-marker__wrapper sorting-marker__wrapper--asc";
+            case EnumSortDirection.Descending:
+                return "sorting-marker__wrapper sorting-marker__wrapper--desc";
+            default:
+                return "sorting-marker__wrapper";
+        };
+    }
+
+    string GetTitle()
+    {
+        switch (SortDirection)
+        {
+            case EnumSortDirection.Ascending:
+                return "Ascending sort";
+            case EnumSortDirection.Descending:
+                return "Descending sort";
+            default:
+                return "";
+        };
+    }
+}

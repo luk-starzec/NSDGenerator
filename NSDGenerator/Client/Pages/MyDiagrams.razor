@@ -24,13 +24,13 @@
 
             <Authorized>
 
-                @if (diagrams is null)
+                @if (showDiagrams)
                 {
-                    <p class="my-diagrams__loading-message">Loading...</p>
+                    <DiagramList Diagrams="@diagrams" OnViewDiagram="@HandleViewDiagram" OnDownloadDiagram="@HandleDownloadDiagram" />
                 }
                 else
                 {
-                    <DiagramList Diagrams="@diagrams" OnViewDiagram="@HandleViewDiagram" OnDownloadDiagram="@HandleDownloadDiagram" />
+                    <p class="@cssInfo">@infoMessage</p>
                 }
 
             </Authorized>
@@ -48,6 +48,18 @@
 
     [CascadingParameter] Task<AuthenticationState> authenticationStateTask { get; set; }
 
+    bool showDiagrams => diagrams?.Any() == true;
+    bool showError;
+    bool emptyDiagrams => diagrams?.Any() == false;
+
+    string infoMessage => showError
+        ? "An error occurred while retrieving data"
+        : (emptyDiagrams ? "You have no diagrams saved" : "Loading data...");
+
+    string cssInfo => showError
+        ? "my-diagrams__info my-diagrams__info--error"
+        : (emptyDiagrams ? "my-diagrams__info my-diagrams__info--empty" : "my-diagrams__info");
+
 
     void HandleLogin() => pageHeader.ShowLoginForm();
 
@@ -63,5 +75,7 @@
     {
         var authState = await authenticationStateTask;
         diagrams = await persistenceService.GetMyDiagramsAsync();
+
+        showError = diagrams is null;
     }
 }

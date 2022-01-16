@@ -350,3 +350,4 @@ MigrationBackup/
 .ionide/
 /NSDGenerator/Client/wwwroot/css/style.min.css
 /NSDGenerator/Client/wwwroot/css/style.css
+/NSDGenerator/Server/appsettings.Production.json

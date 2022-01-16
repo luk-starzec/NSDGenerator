@@ -50,6 +50,7 @@ namespace NSDGenerator.Server.Diagram.Repo
         {
             return await context.Diagrams
                 .Where(r => r.UserName == userName)
+                .OrderByDescending(r => r.Created)
                 .Select(r => new DiagramDto(r.Id, r.Name, r.IsPrivate, r.Created, r.Modified))
                 .ToListAsync();
         }

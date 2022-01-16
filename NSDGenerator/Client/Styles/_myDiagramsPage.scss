@@ -29,6 +29,21 @@
     padding: .5rem 1rem;
 }
 
+.my-diagrams__info {
+    text-align: center;
+    margin-top: 3rem;
+    font-size: 1.3em;
+    color: $color-50;
+
+    &--error {
+        color: $color-30;
+    }
+
+    &--empty {
+        color: $color-80;
+    }
+}
+
 .diagram-list__table {
     margin: 2rem 3rem;
     width: 100%;
@@ -39,35 +54,68 @@
         background-color: $color-90;
         color: $color-30;
     }
-
-    td {
-        padding: .5rem 1rem;
-        border-bottom: 1px solid $color-95;
-    }
 }
 
-.diagram-list__cell--created,
-.diagram-list__cell--modified {
-    text-align: center;
-}
-
-.diagram-list__cell--visibility {
-    text-align: center;
-
-    path {
-        fill: $color-30;
-    }
-}
-
-.diagram-list__cell--buttons {
+.diagram-list__sortable-header {
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
 
-    button {
-        @include btn-primary;
-        margin-inline: .5rem;
-        padding: .25rem .5rem;
-        box-shadow: 2px 2px 2px 0 rgba(0, 0, 0, 0.15);
+    span {
+        flex-grow: 1;
+    }
+}
+
+.diagram-list__cell {
+    padding: .5rem 1rem;
+    border-bottom: 1px solid $color-95;
+
+    &--created,
+    &--modified {
+        text-align: center;
+    }
+
+    &--visibility {
+        text-align: center;
+
+        path {
+            fill: $color-30;
+        }
+    }
+
+    &--buttons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        button {
+            @include btn-primary;
+            margin-inline: .5rem;
+            padding: .25rem .5rem;
+            box-shadow: 2px 2px 2px 0 rgba(0, 0, 0, 0.15);
+        }
+    }
+}
+
+
+.sorting-marker__wrapper {
+    .up, .down {
+        fill: $color-98;
+        opacity: .5;
+    }
+
+    &--asc {
+        .up {
+            fill: $color-30;
+            opacity: 1;
+        }
+    }
+
+    &--desc {
+        .down {
+            fill: $color-30;
+            opacity: 1;
+        }
     }
 }

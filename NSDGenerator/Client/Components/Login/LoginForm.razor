@@ -46,15 +46,6 @@
     string error = string.Empty;
     bool showError => !string.IsNullOrEmpty(error);
 
-    protected override void OnInitialized()
-    {
-        model = new LogInModel
-            {
-                Email = "guest@starzec.net",
-                Password = "12345678",
-            };
-    }
-
     private async Task CloseForm()
     {
         await OnClose.InvokeAsync();

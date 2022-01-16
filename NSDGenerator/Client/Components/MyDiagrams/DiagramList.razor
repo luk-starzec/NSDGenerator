@@ -4,16 +4,28 @@
     <thead>
         <tr>
             <th>
-                Name
+                <div class="diagram-list__sortable-header" @onclick="()=>HandleSort(0)">
+                    <span>Name</span>
+                    <SortingMarker SortDirection="@sorting[0]" />
+                </div>
             </th>
             <th>
-                Created
+                <div class="diagram-list__sortable-header" @onclick="()=>HandleSort(1)">
+                    <span>Created</span>
+                    <SortingMarker SortDirection="@sorting[1]" />
+                </div>
             </th>
             <th>
-                Modified
+                <div class="diagram-list__sortable-header" @onclick="()=>HandleSort(2)">
+                    <span>Modified</span>
+                    <SortingMarker SortDirection="@sorting[2]" />
+                </div>
             </th>
             <th>
-                Visibility
+                <div class="diagram-list__sortable-header" @onclick="()=>HandleSort(3)">
+                    <span>Visibility</span>
+                    <SortingMarker SortDirection="@sorting[3]" />
+                </div>
             </th>
             <th>
 
@@ -23,27 +35,27 @@
 
     <tbody>
 
-        @foreach (var diagram in Diagrams)
+        @foreach (var diagram in sortedDiagrams)
         {
             <tr>
 
-                <td>
+                <td class="diagram-list__cell">
                     @diagram.Name
                 </td>
 
-                <td class="diagram-list__cell--created">
+                <td class="diagram-list__cell diagram-list__cell--created">
                     @diagram.Created
                 </td>
 
-                <td class="diagram-list__cell--modified">
+                <td class="diagram-list__cell diagram-list__cell--modified">
                     @diagram.Modified
                 </td>
 
-                <td class="diagram-list__cell--visibility" title="@GetvisibilityInfo(diagram.IsPrivate)">
+                <td class="diagram-list__cell diagram-list__cell--visibility" title="@GetvisibilityInfo(diagram.IsPrivate)">
                     <SvgIcon SvgUrl="@GetvisibilityIcon(diagram.IsPrivate)" />
                 </td>
 
-                <td class="diagram-list__cell--buttons">
+                <td class="diagram-list__cell diagram-list__cell--buttons">
 
                     <button @onclick="(async()=>await ViewClick(diagram.Id))">view</button>
 
@@ -59,14 +71,71 @@
 </table>
 
 @code {
-    [Parameter] public IEnumerable<DiagramDto> Diagrams { get; set; }
+    [Parameter]
+    public IEnumerable<DiagramDto> Diagrams
+    {
+        get => diagrams; set
+        {
+            diagrams = value;
+            SortDiagrams();
+        }
+    }
 
     [Parameter] public EventCallback<Guid> OnViewDiagram { get; set; }
     [Parameter] public EventCallback<Guid> OnDownloadDiagram { get; set; }
+
+    IEnumerable<DiagramDto> diagrams;
+    IEnumerable<DiagramDto> sortedDiagrams;
+
+    EnumSortDirection[] sorting = new EnumSortDirection[4];
 
     async Task ViewClick(Guid id) => await OnViewDiagram.InvokeAsync(id);
     async Task DownloadClick(Guid id) => await OnDownloadDiagram.InvokeAsync(id);
 
     string GetvisibilityIcon(bool isPrivate) => isPrivate ? "/assets/locked-icon.svg" : "/assets/unlocked-icon.svg";
     string GetvisibilityInfo(bool isPrivate) => isPrivate ? "private" : "public";
+
+    void SortDiagrams()
+    {
+        var sorted = diagrams;
+
+        if (sorting[0] == EnumSortDirection.Ascending)
+            sorted = sorted.OrderBy(r => r.Name);
+        if (sorting[0] == EnumSortDirection.Descending)
+            sorted = sorted.OrderByDescending(r => r.Name);
+
+        if (sorting[1] == EnumSortDirection.Ascending)
+            sorted = sorted.OrderBy(r => r.Created);
+        if (sorting[1] == EnumSortDirection.Descending)
+            sorted = sorted.OrderByDescending(r => r.Created);
+
+        if (sorting[2] == EnumSortDirection.Ascending)
+            sorted = sorted.OrderBy(r => r.Modified);
+        if (sorting[2] == EnumSortDirection.Descending)
+            sorted = sorted.OrderByDescending(r => r.Modified);
+
+        if (sorting[3] == EnumSortDirection.Ascending)
+            sorted = sorted.OrderBy(r => r.IsPrivate);
+        if (sorting[3] == EnumSortDirection.Descending)
+            sorted = sorted.OrderByDescending(r => r.IsPrivate);
+
+        sortedDiagrams = sorted.ToList();
+    }
+
+    void HandleSort(int index)
+    {
+        var nextSort = GetNextSortDirection(sorting[index]);
+        ClearSorting();
+        sorting[index] = nextSort;
+        SortDiagrams();
+    }
+
+    void ClearSorting()
+    {
+        for (int i = 0; i < sorting.Length; i++)
+            sorting[i] = EnumSortDirection.None;
+    }
+
+    EnumSortDirection GetNextSortDirection(EnumSortDirection sortDirection)
+        => sortDirection == EnumSortDirection.Ascending ? EnumSortDirection.Descending : EnumSortDirection.Ascending;
 }

@@ -42,7 +42,7 @@
     grid-column: 2/3;
     @include input-base;
     padding: .5rem;
-
+    color: $color-30;
 
     &--password {
         margin-block: 1.5rem 1rem;
