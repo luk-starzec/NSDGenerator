@@ -57,9 +57,11 @@
                 else
                 {
                     <CascadingValue Value="@isEditMode">
+                        <CascadingValue Value="@model?.ColumnWidths">
 
-                        <Block Model="@model.RootBlock" />
+                            <Block Model="@model.RootBlock" />
 
+                        </CascadingValue>
                     </CascadingValue>
                 }
 

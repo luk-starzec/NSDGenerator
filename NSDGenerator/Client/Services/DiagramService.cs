@@ -46,12 +46,53 @@ internal class DiagramService : IDiagramService
         {
             var dto = await httpClient.GetFromJsonAsync<DiagramFullDto>($"api/diagram/{id}");
             var diagram = modelConverterService.DiagramFullDtoToDiagramModel(dto);
+
+            var tc = dto.BlockCollection.TextBlocks.Where(r => r.ChildId is null).Count();
+            var blc = dto.BlockCollection.BranchBlocks.Where(r => r.LeftResult is null).Count();
+            var brc = dto.BlockCollection.BranchBlocks.Where(r => r.RightResult is null).Count();
+            var cc = tc + blc + brc;
+
+            var branchBlocks = modelConverterService.GetBranchBlockModels(diagram.RootBlock);
+
+            if (diagram.RootBlock is BranchBlockModel rbb)
+            {
+                SetBranchBlockColumns(rbb, 0, branchBlocks);
+
+                diagram.ColumnWidths = new int[] { 10, 10, 10, 20, 50 };
+            }
             return diagram;
         }
         catch (Exception ex)
         {
             logger.LogError("Method {Method} thrown exception: {Message}", nameof(GetDiagramAsync), ex.Message);
             return null;
+        }
+    }
+
+    private void SetBranchBlockColumns(BranchBlockModel block, int index, List<BranchBlockModel> branchBlocks)
+    {
+        var leftBranchBlocks = modelConverterService.RootBlockToBlockCollectionDto(block.LeftResult).BranchBlocks;
+        var rightBranchBlocks = modelConverterService.RootBlockToBlockCollectionDto(block.RightResult).BranchBlocks;
+
+        var lStart = index;
+        var lEnd = lStart + leftBranchBlocks.Count + 1;
+        for (int i = lStart; i < lEnd; i++)
+            block.LeftColumns.Add(i);
+        SetChildBranchBlocksColumns(branchBlocks, leftBranchBlocks, lStart);
+
+        var rStart = lEnd;
+        var rEnd = rStart + rightBranchBlocks.Count + 1;
+        for (int i = rStart; i < rEnd; i++)
+            block.RightColumns.Add(i);
+        SetChildBranchBlocksColumns(branchBlocks, rightBranchBlocks, rStart);
+    }
+
+    private void SetChildBranchBlocksColumns(List<BranchBlockModel> branchBlocks, List<BranchBlockDto> childBlocks, int startingColumnIndex)
+    {
+        foreach (var b in childBlocks.OrderBy(r => r.Level))
+        {
+            var bm = branchBlocks.Single(r => r.Id == b.Id);
+            SetBranchBlockColumns(bm, startingColumnIndex++, branchBlocks);
         }
     }
 

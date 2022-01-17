@@ -9,4 +9,6 @@ public class DiagramModel
     public string Owner { get; set; }
 
     public DiagramModel() => Id = Guid.NewGuid();
+
+    public int[] ColumnWidths { get; set; } = new int[0];
 }

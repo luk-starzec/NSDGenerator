@@ -1,4 +1,6 @@
-﻿namespace NSDGenerator.Client.Models;
+﻿using System.Collections.Generic;
+
+namespace NSDGenerator.Client.Models;
 
 public partial class BranchBlockModel : IBlockModel
 {
@@ -7,6 +9,9 @@ public partial class BranchBlockModel : IBlockModel
     public string Condition { get; set; }
     public string LeftBranch { get; set; } = "Yes";
     public string RightBranch { get; set; } = "No";
+
+    public List<int> LeftColumns { get; set; } = new List<int>();
+    public List<int> RightColumns { get; set; } = new List<int>();
 
     private IBlockModel leftResult;
     public IBlockModel LeftResult

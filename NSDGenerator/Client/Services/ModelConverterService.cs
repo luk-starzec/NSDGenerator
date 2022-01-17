@@ -1,5 +1,6 @@
 ﻿using NSDGenerator.Client.Models;
 using NSDGenerator.Shared.Diagram;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 
@@ -70,6 +71,29 @@ internal class ModelConverterService : IModelConverterService
         return ConvertToBlockModel(blockCollectionDto, blockCollectionDto.RootId);
     }
 
+    public List<BranchBlockModel> GetBranchBlockModels(IBlockModel rootBlock)
+    {
+        var blocks = new List<IBlockModel>();
+        GetBranchBlockModels(rootBlock, blocks);
+
+        return blocks
+            .Select(r => r as BranchBlockModel)
+            .Where(r => r is not null)
+            .ToList(); ;
+    }
+
+
+    private void GetBranchBlockModels(IBlockModel block, List<IBlockModel> result)
+    {
+        if (block is null)
+            return;
+
+        if (TryAddAsTextBlock(block, result))
+            return;
+
+        if (TryAddAsBranchBlock(block, result))
+            return;
+    }
 
     private void BlocksToBlockCollection(IBlockModel block, BlockCollectionDto result)
     {
@@ -89,10 +113,24 @@ internal class ModelConverterService : IModelConverterService
             return false;
 
         var tb = block as TextBlockModel;
-        var dto = new TextBlockDto(tb.Id, tb.Text, tb.Child?.Id);
+        var parentLevel = result.Blocks.SingleOrDefault(r => r.Id == block.Parent.Id)?.Level ?? -1;
+        var dto = new TextBlockDto(tb.Id, tb.Text, tb.Child?.Id, parentLevel + 1);
         result.TextBlocks.Add(dto);
 
         BlocksToBlockCollection(tb.Child, result);
+        return true;
+    }
+
+
+    private bool TryAddAsTextBlock(IBlockModel block, List<IBlockModel> result)
+    {
+        if (block is not TextBlockModel)
+            return false;
+
+        var tb = block as TextBlockModel;
+        result.Add(tb);
+
+        GetBranchBlockModels(tb.Child, result);
         return true;
     }
 
@@ -102,11 +140,25 @@ internal class ModelConverterService : IModelConverterService
             return false;
 
         var bb = block as BranchBlockModel;
-        var dto = new BranchBlockDto(bb.Id, bb.Condition, bb.LeftBranch, bb.RightBranch, bb.LeftResult?.Id, bb.RightResult?.Id);
+        var parentLevel = result.Blocks.SingleOrDefault(r => r.Id == block.Parent.Id)?.Level ?? -1;
+        var dto = new BranchBlockDto(bb.Id, bb.Condition, bb.LeftBranch, bb.RightBranch, bb.LeftResult?.Id, bb.RightResult?.Id, parentLevel + 1);
         result.BranchBlocks.Add(dto);
 
         BlocksToBlockCollection(bb.LeftResult, result);
         BlocksToBlockCollection(bb.RightResult, result);
+        return true;
+    }
+
+    private bool TryAddAsBranchBlock(IBlockModel block, List<IBlockModel> result)
+    {
+        if (block is not BranchBlockModel)
+            return false;
+
+        var bb = block as BranchBlockModel;
+        result.Add(bb);
+
+        GetBranchBlockModels(bb.LeftResult, result);
+        GetBranchBlockModels(bb.RightResult, result);
         return true;
     }
 

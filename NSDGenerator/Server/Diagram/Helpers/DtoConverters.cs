@@ -59,5 +59,4 @@ public class DtoConverters : IDtoConverters
         var content = JsonSerializer.Deserialize<BranchBlockJsonData>(block.JsonData, jsonOptions);
         return new BranchBlockDto(block.Id, content.Condition, content.LeftBranch, content.RightBranch, content.LeftResult, content.RightResult);
     }
-
 }
