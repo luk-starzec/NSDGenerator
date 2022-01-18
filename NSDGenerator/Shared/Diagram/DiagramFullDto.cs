@@ -1,11 +1,5 @@
-﻿namespace NSDGenerator.Shared.Diagram;
+﻿using System.Collections.Generic;
 
-public class DiagramFullDto
-{
-    public Guid Id { get; set; }
-    public string Name { get; set; }
-    public bool IsPrivate { get; set; }
+namespace NSDGenerator.Shared.Diagram;
 
-    public string Owner { get; set; }
-    public BlockCollectionDto BlockCollection { get; set; }
-}
+public record DiagramFullDto(Guid Id, string Name, bool IsPrivate, string Owner, BlockCollectionDto BlockCollection, List<int> ColumnWidths);

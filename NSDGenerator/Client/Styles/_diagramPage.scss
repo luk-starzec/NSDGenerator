@@ -456,3 +456,31 @@
         padding: 1rem;
     }
 }
+
+
+.column-settings__wrapper {
+    display: grid;
+    margin-top: 2rem;
+    background-color: $color-90;
+    margin-inline: -1rem;
+    padding: .5rem 1rem 1rem 1rem;
+    border-radius: .25rem;
+    box-shadow: 4px 4px 4px 0 rgba(0, 0, 0, 0.15);
+}
+
+.column-settings__header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: .5rem .75rem;
+    grid-row: 1/2;
+    grid-column: 1/-1;
+    color: $color-50;
+}
+
+.column-settings__input {
+    text-align: center;
+    grid-row: 2/3;
+    border: 1px solid $color-95;
+    color: $color-50;
+}

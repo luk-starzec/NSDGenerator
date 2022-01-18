@@ -19,6 +19,7 @@ public class Diagram
 
     public DateTime Modified { get; set; }
 
+    public string ColumnWidths { get; set; }
 
     [Required]
     public string UserName { get; set; }

@@ -57,11 +57,15 @@
                 else
                 {
                     <CascadingValue Value="@isEditMode">
+
                         <CascadingValue Value="@model?.ColumnWidths">
 
                             <Block Model="@model.RootBlock" />
 
                         </CascadingValue>
+
+                        <ColumnSettings Widths="@model.ColumnWidths" OnWidthsChanged="@HandleComumnWidthChanged" />
+
                     </CascadingValue>
                 }
 
@@ -286,5 +290,10 @@
             errorDialogMessage = "an error occurred while saving diagram";
             errorDialogVisible = true;
         }
+    }
+
+    void HandleComumnWidthChanged()
+    {
+        StateHasChanged();
     }
 }

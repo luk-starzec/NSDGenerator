@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NSDGenerator.Server.DbData;
 
@@ -11,9 +12,10 @@ using NSDGenerator.Server.DbData;
 namespace NSDGenerator.Server.Migrations
 {
     [DbContext(typeof(NsdContext))]
-    partial class NsdContextModelSnapshot : ModelSnapshot
+    [Migration("20220118164552_ColumnWidths")]
+    partial class ColumnWidths
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -10,8 +10,8 @@ public partial class BranchBlockModel : IBlockModel
     public string LeftBranch { get; set; } = "Yes";
     public string RightBranch { get; set; } = "No";
 
-    public List<int> LeftColumns { get; set; } = new List<int>();
-    public List<int> RightColumns { get; set; } = new List<int>();
+    public List<int> LeftColumnIndexes { get; set; } = new List<int>();
+    public List<int> RightColumnIndexes { get; set; } = new List<int>();
 
     private IBlockModel leftResult;
     public IBlockModel LeftResult

@@ -58,7 +58,7 @@
     [Parameter] public RenderFragment LeftResultContent { get; set; }
     [Parameter] public RenderFragment RightResultContent { get; set; }
 
-    [CascadingParameter] int[] ColumnWidths { get; set; }
+    [CascadingParameter] List<int> ColumnWidths { get; set; }
 
     [Parameter] public EventCallback<Guid> OnBlockSelected { get; set; }
 
@@ -66,19 +66,19 @@
 
     string GetWidth()
     {
-        if (Model.LeftColumns?.Any() != true)
+        if (Model.LeftColumnIndexes?.Any() != true)
             return "";
 
         int left = 0;
         int right = 0;
 
-        for (int i = 0; i < Model.LeftColumns.Count; i++)
+        for (int i = 0; i < Model.LeftColumnIndexes.Count; i++)
         {
-            left += ColumnWidths[Model.LeftColumns[i]];
+            left += ColumnWidths[Model.LeftColumnIndexes[i]];
         }
-        for (int i = 0; i < Model.RightColumns.Count; i++)
+        for (int i = 0; i < Model.RightColumnIndexes.Count; i++)
         {
-            right += ColumnWidths[Model.RightColumns[i]];
+            right += ColumnWidths[Model.RightColumnIndexes[i]];
         }
         float width = left + right;
         var percent = (int)(left / width * 100);

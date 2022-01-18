@@ -1,0 +1,58 @@
+﻿@if (isVisible)
+{
+    <div class="column-settings__wrapper" style="@styleWrapper">
+
+        <div class="column-settings__header">
+            Columns width in %
+        </div>
+
+        @for (int i = 0; i < Widths.Count; i++)
+        {
+            int index = i;
+            <input type="number" class="column-settings__input" value="@Widths[index]" min="@minWidth" max="@maxWidth" @onchange="(async(e)=>await ValueChanged(index, e))" />
+        }
+
+    </div>
+}
+
+@code {
+    [Parameter] public List<int> Widths { get; set; }
+    [Parameter] public EventCallback OnWidthsChanged { get; set; }
+
+    [CascadingParameter] bool IsEditMode { get; set; }
+
+    int minWidth => 5;
+    int maxWidth => 100 - minWidth * (Widths.Count - 1);
+
+    bool isVisible => IsEditMode && Widths?.Count > 1;
+
+    string styleWrapper => $"grid-template-columns: {string.Join("% ", Widths)}%;";
+
+    async Task ValueChanged(int index, ChangeEventArgs e)
+    {
+        var diff = int.Parse(e.Value.ToString()) - Widths[index];
+
+        Widths[index] += diff;
+        SetDependentColumnWidth(index, diff);
+
+        await OnWidthsChanged.InvokeAsync();
+    }
+
+    void SetDependentColumnWidth(int index, int diff)
+    {
+        int dependentIndex = GetDependentColumnIndex(index);
+
+        if (Widths[dependentIndex] - diff >= minWidth)
+        {
+            Widths[dependentIndex] -= diff;
+        }
+        else
+        {
+            diff = minWidth - Widths[dependentIndex] + diff;
+            Widths[dependentIndex] = minWidth;
+            SetDependentColumnWidth(dependentIndex, diff);
+        }
+    }
+
+    int GetDependentColumnIndex(int index) => index < Widths.Count - 1 ? index + 1 : 0;
+}

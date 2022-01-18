@@ -33,17 +33,25 @@ namespace NSDGenerator.Server.Diagram.Repo
             if (row == null)
                 return null;
 
-
             var blocks = await GetBlockCollectionAsync(id, row.RootBlockId);
+            var columnWidths = GetColumnWidthList(row.ColumnWidths);
 
-            return new DiagramFullDto
-            {
-                Id = row.Id,
-                Name = row.Name,
-                IsPrivate = row.IsPrivate,
-                Owner = row.UserName,
-                BlockCollection = blocks,
-            };
+            return new DiagramFullDto(row.Id, row.Name, row.IsPrivate, row.UserName, blocks, columnWidths);
+        }
+
+        private static List<int> GetColumnWidthList(string columnWidthsString)
+        {
+            // temp fallback
+            if (string.IsNullOrEmpty(columnWidthsString))
+                return new List<int>();
+
+            var list = columnWidthsString.Split(";");
+            return list.Select(r => int.Parse(r)).ToList();
+        }
+
+        private static string GetColumnWidthString(List<int> columnWidths)
+        {
+            return string.Join(";", columnWidths); ;
         }
 
         public async Task<IEnumerable<DiagramDto>> GetDiagramInfosAsync(string userName)
@@ -109,6 +117,7 @@ namespace NSDGenerator.Server.Diagram.Repo
             diagramRow.RootBlockId = diagram.BlockCollection?.RootId;
             diagramRow.IsPrivate = diagram.IsPrivate;
             diagramRow.Modified = DateTime.Now;
+            diagramRow.ColumnWidths = GetColumnWidthString(diagram.ColumnWidths);
 
             var result = await context.SaveChangesAsync();
 

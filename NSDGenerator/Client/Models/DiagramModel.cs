@@ -1,4 +1,6 @@
-﻿namespace NSDGenerator.Client.Models;
+﻿using System.Collections.Generic;
+
+namespace NSDGenerator.Client.Models;
 
 public class DiagramModel
 {
@@ -10,5 +12,5 @@ public class DiagramModel
 
     public DiagramModel() => Id = Guid.NewGuid();
 
-    public int[] ColumnWidths { get; set; } = new int[0];
+    public List<int> ColumnWidths { get; set; } = new();
 }

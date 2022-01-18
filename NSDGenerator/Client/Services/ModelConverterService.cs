@@ -1,4 +1,5 @@
 ﻿using NSDGenerator.Client.Models;
+using NSDGenerator.Client.Pages;
 using NSDGenerator.Shared.Diagram;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,13 +20,7 @@ internal class ModelConverterService : IModelConverterService
             BlocksToBlockCollection(diagram.RootBlock, blocks);
         }
 
-        var dto = new DiagramFullDto
-        {
-            Id = diagram.Id,
-            Name = diagram.Name,
-            IsPrivate = diagram.IsPrivate,
-            BlockCollection = blocks,
-        };
+        var dto = new DiagramFullDto(diagram.Id, diagram.Name, diagram.IsPrivate, diagram.Owner, blocks, diagram.ColumnWidths);
         var json = JsonSerializer.Serialize(dto, jsonOptions);
 
         return json;
@@ -43,6 +38,9 @@ internal class ModelConverterService : IModelConverterService
             ? ConvertToBlockModel(diagramFullDto.BlockCollection, diagramFullDto.BlockCollection.RootId)
             : null;
 
+        if (rootBlock is not null)
+            SetDiagramBlockColumns(rootBlock, diagramFullDto.BlockCollection.BranchBlocks);
+
         var diagram = new DiagramModel
         {
             Id = diagramFullDto.Id,
@@ -50,10 +48,53 @@ internal class ModelConverterService : IModelConverterService
             IsPrivate = diagramFullDto.IsPrivate,
             Owner = diagramFullDto.Owner,
             RootBlock = rootBlock,
+            ColumnWidths = diagramFullDto.ColumnWidths,
         };
 
         return diagram;
     }
+
+    private void SetDiagramBlockColumns(IBlockModel rootBlock, List<BranchBlockDto> branchBlockDtos)
+    {
+        var rootBranchBlockDto = branchBlockDtos.OrderBy(r => r.Level).FirstOrDefault();
+
+        if (rootBranchBlockDto is null)
+            return;
+
+        var branchBlocks = RootBlockToChildrenBranchBlockModels(rootBlock);
+        var rootBranchBlock = branchBlocks.Single(r => r.Id == rootBranchBlockDto.Id);
+
+        SetBranchBlocksColumnIndexes(rootBranchBlock, 0, branchBlocks);
+    }
+
+
+    private void SetBranchBlocksColumnIndexes(BranchBlockModel block, int index, List<BranchBlockModel> branchBlocks)
+    {
+        var leftBranchBlocks = RootBlockToBlockCollectionDto(block.LeftResult).BranchBlocks;
+        var rightBranchBlocks = RootBlockToBlockCollectionDto(block.RightResult).BranchBlocks;
+
+        var lStart = index;
+        var lEnd = lStart + leftBranchBlocks.Count + 1;
+        for (int i = lStart; i < lEnd; i++)
+            block.LeftColumnIndexes.Add(i);
+        SetChildrenBranchBlocksColumns(branchBlocks, leftBranchBlocks, lStart);
+
+        var rStart = lEnd;
+        var rEnd = rStart + rightBranchBlocks.Count + 1;
+        for (int i = rStart; i < rEnd; i++)
+            block.RightColumnIndexes.Add(i);
+        SetChildrenBranchBlocksColumns(branchBlocks, rightBranchBlocks, rStart);
+    }
+
+    private void SetChildrenBranchBlocksColumns(List<BranchBlockModel> branchBlocks, List<BranchBlockDto> childBlocks, int startingColumnIndex)
+    {
+        foreach (var b in childBlocks.OrderBy(r => r.Level))
+        {
+            var bm = branchBlocks.Single(r => r.Id == b.Id);
+            SetBranchBlocksColumnIndexes(bm, startingColumnIndex++, branchBlocks);
+        }
+    }
+
 
     public BlockCollectionDto RootBlockToBlockCollectionDto(IBlockModel rootBlock)
     {
@@ -71,7 +112,7 @@ internal class ModelConverterService : IModelConverterService
         return ConvertToBlockModel(blockCollectionDto, blockCollectionDto.RootId);
     }
 
-    public List<BranchBlockModel> GetBranchBlockModels(IBlockModel rootBlock)
+    public List<BranchBlockModel> RootBlockToChildrenBranchBlockModels(IBlockModel rootBlock)
     {
         var blocks = new List<IBlockModel>();
         GetBranchBlockModels(rootBlock, blocks);

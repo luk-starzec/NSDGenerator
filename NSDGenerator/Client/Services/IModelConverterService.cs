@@ -14,5 +14,5 @@ internal interface IModelConverterService
     BlockCollectionDto RootBlockToBlockCollectionDto(IBlockModel rootBlock);
     IBlockModel BlockCollectionDtoToRootBlock(BlockCollectionDto blockCollectionDto);
 
-    List<BranchBlockModel> GetBranchBlockModels(IBlockModel rootBlock);
+    List<BranchBlockModel> RootBlockToChildrenBranchBlockModels(IBlockModel rootBlock);
 }
