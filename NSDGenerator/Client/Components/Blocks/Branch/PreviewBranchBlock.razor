@@ -1,8 +1,9 @@
-﻿
+﻿@inject IColumnsHelper columnsHelper;
+
 <div class="@CssClass preview-branch-block__wrapper block__wrapper"
      @onclick="HandleBlockClick" @onclick:stopPropagation="true">
 
-    <div class="preview-branch-block__branch-wrapper ">
+    <div class="preview-branch-block__branch-wrapper" style="@styleBranchColumns">
 
         <div class="preview-branch-block__condition">
             <div class="preview-branch-block__label">
@@ -58,34 +59,12 @@
     [Parameter] public RenderFragment LeftResultContent { get; set; }
     [Parameter] public RenderFragment RightResultContent { get; set; }
 
-    [CascadingParameter] List<int> ColumnWidths { get; set; }
+    [CascadingParameter] List<int> ColumnsWidth { get; set; }
 
     [Parameter] public EventCallback<Guid> OnBlockSelected { get; set; }
 
-    string styleResultColumns => GetWidth();
-
-    string GetWidth()
-    {
-        if (Model.LeftColumnIndexes?.Any() != true)
-            return "";
-
-        int left = 0;
-        int right = 0;
-
-        for (int i = 0; i < Model.LeftColumnIndexes.Count; i++)
-        {
-            left += ColumnWidths[Model.LeftColumnIndexes[i]];
-        }
-        for (int i = 0; i < Model.RightColumnIndexes.Count; i++)
-        {
-            right += ColumnWidths[Model.RightColumnIndexes[i]];
-        }
-        float width = left + right;
-        var percent = (int)(left / width * 100);
-
-        var txt = $"grid-template-columns: {percent}% {100 - percent}%";
-        return txt;
-    }
+    string styleResultColumns => columnsHelper.GetResultWrapperStyle(Model, ColumnsWidth);
+    string styleBranchColumns => columnsHelper.GetBranchWrapperStyle(Model, ColumnsWidth);
 
     async Task HandleBlockClick() => await OnBlockSelected.InvokeAsync(Model.Id);
 

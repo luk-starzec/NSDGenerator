@@ -34,12 +34,12 @@ namespace NSDGenerator.Server.Diagram.Repo
                 return null;
 
             var blocks = await GetBlockCollectionAsync(id, row.RootBlockId);
-            var columnWidths = GetColumnWidthList(row.ColumnWidths);
+            var columnsWidth = GetColumnsWidthList(row.ColumnsWidth);
 
-            return new DiagramFullDto(row.Id, row.Name, row.IsPrivate, row.UserName, blocks, columnWidths);
+            return new DiagramFullDto(row.Id, row.Name, row.IsPrivate, row.UserName, blocks, columnsWidth);
         }
 
-        private static List<int> GetColumnWidthList(string columnWidthsString)
+        private static List<int> GetColumnsWidthList(string columnWidthsString)
         {
             // temp fallback
             if (string.IsNullOrEmpty(columnWidthsString))
@@ -49,7 +49,7 @@ namespace NSDGenerator.Server.Diagram.Repo
             return list.Select(r => int.Parse(r)).ToList();
         }
 
-        private static string GetColumnWidthString(List<int> columnWidths)
+        private static string GetColumnsWidthString(List<int> columnWidths)
         {
             return string.Join(";", columnWidths); ;
         }
@@ -117,7 +117,7 @@ namespace NSDGenerator.Server.Diagram.Repo
             diagramRow.RootBlockId = diagram.BlockCollection?.RootId;
             diagramRow.IsPrivate = diagram.IsPrivate;
             diagramRow.Modified = DateTime.Now;
-            diagramRow.ColumnWidths = GetColumnWidthString(diagram.ColumnWidths);
+            diagramRow.ColumnsWidth = GetColumnsWidthString(diagram.ColumnsWidth);
 
             var result = await context.SaveChangesAsync();
 

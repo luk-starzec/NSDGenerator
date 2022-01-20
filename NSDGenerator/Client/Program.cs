@@ -27,8 +27,9 @@ public class Program
         builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<TokenAuthenticationStateProvider>());
 
         builder.Services.AddScoped<IThemeService, ThemeService>();
-        builder.Services.AddScoped<IModelConverterService, ModelConverterService>();
+        builder.Services.AddSingleton<IModelConverterService, ModelConverterService>();
         builder.Services.AddScoped<IDiagramService, DiagramService>();
+        builder.Services.AddSingleton<IColumnsHelper, ColumnsHelper>();
         builder.Services.AddSingleton<AppState>();
 
         await builder.Build().RunAsync();

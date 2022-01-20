@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace NSDGenerator.Client.Services;
 
-internal interface IModelConverterService
+public interface IModelConverterService
 {
     DiagramModel JsonToDiagramModel(string json);
     DiagramModel DiagramFullDtoToDiagramModel(DiagramFullDto diagramFullDto);

@@ -3,8 +3,8 @@
 
 @if (IsEditMode && isSelected)
 {
-    <EditBranchBlock Model="@Model" CssClass="@CssClass" 
-                     OnChildAdded="@HandleChildAdded" OnDeleted="HandleBlockDeleted" OnUnselected="@HandleBlockUnselected" />
+    <EditBranchBlock Model="@Model" CssClass="@CssClass"
+                 OnChildAdded="@HandleChildAdded" OnDeleted="HandleBlockDeleted" OnUnselected="@HandleBlockUnselected" />
 }
 else
 {
@@ -45,11 +45,13 @@ else
 
     void HandleBlockUnselected() => AppState.SelectBlock(null);
 
-    void HandleBlockDeleted() => AppState.DeleteBlock(Model.Id);
+    void HandleBlockDeleted() => AppState.DeleteBlock(Model);
 
     void HandleChildAdded(bool left)
     {
-        AppState.SelectBlock(left ? Model.LeftResult.Id : Model.RightResult.Id);
+        var child = left ? Model.LeftResult : Model.RightResult;
+        AppState.AddBlock(child);
+        AppState.SelectBlock(child.Id);
         StateHasChanged();
     }
 

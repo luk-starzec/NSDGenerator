@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace NSDGenerator.Client.Services;
 
-internal class ModelConverterService : IModelConverterService
+public class ModelConverterService : IModelConverterService
 {
     private readonly JsonSerializerOptions jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
@@ -20,7 +20,7 @@ internal class ModelConverterService : IModelConverterService
             BlocksToBlockCollection(diagram.RootBlock, blocks);
         }
 
-        var dto = new DiagramFullDto(diagram.Id, diagram.Name, diagram.IsPrivate, diagram.Owner, blocks, diagram.ColumnWidths);
+        var dto = new DiagramFullDto(diagram.Id, diagram.Name, diagram.IsPrivate, diagram.Owner, blocks, diagram.ColumnsWidth);
         var json = JsonSerializer.Serialize(dto, jsonOptions);
 
         return json;
@@ -48,7 +48,7 @@ internal class ModelConverterService : IModelConverterService
             IsPrivate = diagramFullDto.IsPrivate,
             Owner = diagramFullDto.Owner,
             RootBlock = rootBlock,
-            ColumnWidths = diagramFullDto.ColumnWidths,
+            ColumnsWidth = diagramFullDto.ColumnsWidth,
         };
 
         return diagram;
@@ -76,13 +76,13 @@ internal class ModelConverterService : IModelConverterService
         var lStart = index;
         var lEnd = lStart + leftBranchBlocks.Count + 1;
         for (int i = lStart; i < lEnd; i++)
-            block.LeftColumnIndexes.Add(i);
+            block.LeftColumns.Add(i);
         SetChildrenBranchBlocksColumns(branchBlocks, leftBranchBlocks, lStart);
 
         var rStart = lEnd;
         var rEnd = rStart + rightBranchBlocks.Count + 1;
         for (int i = rStart; i < rEnd; i++)
-            block.RightColumnIndexes.Add(i);
+            block.RightColumns.Add(i);
         SetChildrenBranchBlocksColumns(branchBlocks, rightBranchBlocks, rStart);
     }
 

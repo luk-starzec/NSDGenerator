@@ -22,8 +22,6 @@ else
 
     [Parameter] public TextBlockModel Model { get; set; }
 
-    [Parameter] public EventCallback<Guid> OnBlockChanged { get; set; }
-
     [CascadingParameter] bool IsEditMode { get; set; }
 
 
@@ -52,10 +50,11 @@ else
 
     void HandleBlockUnselected() => AppState.SelectBlock(null);
 
-    void HandleBlockDeleted() => AppState.DeleteBlock(Model.Id);
+    void HandleBlockDeleted() => AppState.DeleteBlock(Model);
 
     void HandleChildAdded()
     {
+        AppState.AddBlock(Model.Child);
         AppState.SelectBlock(Model.Child.Id);
         StateHasChanged();
     }

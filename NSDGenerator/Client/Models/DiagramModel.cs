@@ -12,5 +12,5 @@ public class DiagramModel
 
     public DiagramModel() => Id = Guid.NewGuid();
 
-    public List<int> ColumnWidths { get; set; } = new();
+    public List<int> ColumnsWidth { get; set; } = new();
 }

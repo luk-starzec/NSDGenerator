@@ -1,9 +1,10 @@
-﻿
+﻿@inject IColumnsHelper columnsHelper;
+
 <div class="@CssClass edit-branch-block__wrapper block__wrapper">
 
     <div class="edit-branch-block__top-wrapper">
 
-        <div class="edit-branch-block__branch-wrapper ">
+        <div class="edit-branch-block__branch-wrapper" style="@styleBranchColumns">
 
             <CloseButton OnClose="@HandleUnselected" />
 
@@ -23,7 +24,7 @@
 
         </div>
 
-        <div class="edit-branch-block__add-wrapper">
+        <div class="edit-branch-block__add-wrapper" style="@styleAddColumns">
 
             <AddButtons OnAddTextBlock="@HandleAddLeftTextBlock" OnAddBranchBlock="@HandleAddLeftBranchBlock" />
 
@@ -33,7 +34,7 @@
 
     </div>
 
-    <div class="edit-branch-block__result-wrapper">
+    <div class="edit-branch-block__result-wrapper" style="@styleResultColumns">
 
         <div class="edit-branch-block__result edit-branch-block__result--left">
             <Block Model="@Model.LeftResult" />
@@ -57,6 +58,12 @@
     [Parameter] public EventCallback OnUnselected { get; set; }
     [Parameter] public EventCallback OnDeleted { get; set; }
     [Parameter] public EventCallback<bool> OnChildAdded { get; set; }
+
+    [CascadingParameter] List<int> ColumnsWidth { get; set; }
+
+    string styleResultColumns => columnsHelper.GetResultWrapperStyle(Model, ColumnsWidth);
+    string styleBranchColumns => columnsHelper.GetBranchWrapperStyle(Model, ColumnsWidth);
+    string styleAddColumns => columnsHelper.GetButtonsWrapperStyle(Model, ColumnsWidth);
 
     bool deleteDialogVisible;
 

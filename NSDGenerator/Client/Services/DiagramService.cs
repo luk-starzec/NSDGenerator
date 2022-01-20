@@ -49,11 +49,11 @@ internal class DiagramService : IDiagramService
             var diagram = modelConverterService.DiagramFullDtoToDiagramModel(dto);
 
             // temp fallback
-            if (!diagram.ColumnWidths.Any())
+            if (!diagram.ColumnsWidth.Any())
             {
                 var columns = GetColumnsCount(diagram.RootBlock);
                 for (int i = 0; i < columns; i++)
-                    diagram.ColumnWidths.Add(100 / columns);
+                    diagram.ColumnsWidth.Add(100 / columns);
             }
             return diagram;
         }

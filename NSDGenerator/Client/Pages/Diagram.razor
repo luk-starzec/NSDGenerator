@@ -58,13 +58,13 @@
                 {
                     <CascadingValue Value="@isEditMode">
 
-                        <CascadingValue Value="@model?.ColumnWidths">
+                        <CascadingValue Value="@model?.ColumnsWidth">
 
                             <Block Model="@model.RootBlock" />
 
                         </CascadingValue>
 
-                        <ColumnSettings Widths="@model.ColumnWidths" OnWidthsChanged="@HandleComumnWidthChanged" />
+                        <ColumnSettings Widths="@model.ColumnsWidth" OnWidthsChanged="@HandleComumnWidthChanged" />
 
                     </CascadingValue>
                 }
@@ -189,6 +189,7 @@
     void HandleFirstBlockBranch()
     {
         model.RootBlock = new BranchBlockModel();
+        AppState.AddBlock(model.RootBlock);
         AppState.SelectBlock(model.RootBlock.Id);
     }
 

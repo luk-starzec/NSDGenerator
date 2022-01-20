@@ -273,6 +273,7 @@ $border-color: $color-80;
     grid-template-rows: auto 1fr auto;
     grid-template-columns: 1fr 1fr;
     box-shadow: 1px 1px 12px 2px hsla(0, 0, 0, 0.2);
+    z-index: 1;
 
     .block-button__button {
         margin-bottom: 0;
