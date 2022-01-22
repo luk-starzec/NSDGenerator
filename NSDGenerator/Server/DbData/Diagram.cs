@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NSDGenerator.Server.DbData;
 
-[Table("Diagram")]
+[Table("Diagrams")]
 public class Diagram
 {
     [Key]
