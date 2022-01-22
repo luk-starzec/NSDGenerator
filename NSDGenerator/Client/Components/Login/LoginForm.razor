@@ -8,16 +8,16 @@
         <SvgIcon SvgUrl="/assets/close-icon.svg" />
     </button>
 
-    <EditForm class="login-form__from" Model="model" OnValidSubmit="HandleSubmit">
+    <EditForm class="login-form__from" Model="viewModel" OnValidSubmit="HandleSubmit">
         <DataAnnotationsValidator />
 
         <label class="login-form__label" for="login-frm-email">Email:</label>
-        <InputText class="login-form__input" @bind-Value="model.Email" id="login-frm-email" />
-        <ValidationMessage For="() => model.Email" />
+        <InputText class="login-form__input" @bind-Value="viewModel.Email" id="login-frm-email" />
+        <ValidationMessage For="() => viewModel.Email" />
 
         <label class="login-form__label" for="login-frm-pass">Password:</label>
-        <InputText class="login-form__input" type="password" @bind-Value="model.Password" id="login-frm-pass" />
-        <ValidationMessage For="()=>model.Password" />
+        <InputText class="login-form__input" type="password" @bind-Value="viewModel.Password" id="login-frm-pass" />
+        <ValidationMessage For="()=>viewModel.Password" />
 
         @if (showError)
         {
@@ -41,7 +41,7 @@
     [Parameter]
     public EventCallback OnClose { get; set; }
 
-    LogInModel model = new();
+    LogInVM viewModel = new();
 
     string error = string.Empty;
     bool showError => !string.IsNullOrEmpty(error);
@@ -55,7 +55,7 @@
     {
         error = string.Empty;
 
-        var dto = new LoginDto(model.Email, model.Password);
+        var dto = new LoginDTO(viewModel.Email, viewModel.Password);
         var response = await httpClient.PostAsJsonAsync("/api/user/login", dto);
         var result = await response.Content.ReadFromJsonAsync<LoginResult>();
 

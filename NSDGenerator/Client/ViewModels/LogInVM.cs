@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace NSDGenerator.Client.Models;
+namespace NSDGenerator.Client.ViewModels;
 
-public class LogInModel
+public class LogInVM
 {
     [Required]
     public string Email { get; set; }

@@ -1,4 +1,12 @@
-﻿namespace NSDGenerator.Shared.Diagram;
+﻿using System.Collections.Generic;
 
-public record DiagramDto(Guid Id, string Name, bool IsPrivate, DateTime Created, DateTime Modified);
+namespace NSDGenerator.Shared.Diagram;
 
+public record DiagramDTO(
+    Guid Id,
+    string Name,
+    bool IsPrivate,
+    string Owner,
+    BlockCollectionDTO BlockCollection,
+    List<int> ColumnsWidth
+);

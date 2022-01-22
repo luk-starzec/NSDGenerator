@@ -1,28 +1,27 @@
-﻿using NSDGenerator.Client.Components.Blocks.Branch;
-using NSDGenerator.Client.Models;
-using NSDGenerator.Client.Services;
-using System.Linq;
-using System.Reflection;
+﻿using NSDGenerator.Client.Helpers.Columns;
+using NSDGenerator.Client.ViewModels;
 
 namespace NSDGenerator.Client.Helpers;
 
 public class AppState
 {
-    private readonly IColumnsHelper columnsHelper;
+    private readonly IColumnsBlockCalculator columnsBlockCalculator;
 
-    public AppState(IColumnsHelper columnsHelper)
+    public AppState(IColumnsBlockCalculator columnsBlockCalculator)
     {
-        this.columnsHelper = columnsHelper;
+        this.columnsBlockCalculator = columnsBlockCalculator;
     }
 
-    public DiagramModel CurrentDiagram { get; private set; }
+    public DiagramVM CurrentDiagram { get; private set; }
     public Guid? SelectedBlockId { get; private set; }
+
+    public event Action<Guid> OnBlockAdded;
 
     public event Action<Guid> OnBlockDeleted;
 
     public event Action OnChange;
 
-    public void SetCurrentDiagram(DiagramModel diagram)
+    public void SetCurrentDiagram(DiagramVM diagram)
     {
         CurrentDiagram = diagram;
         NotifyStateChanged();
@@ -34,9 +33,9 @@ public class AppState
         NotifyStateChanged();
     }
 
-    public void DeleteBlock(IBlockModel block)
+    public void DeleteBlock(IBlockVM block)
     {
-        columnsHelper.SetColumnsOnBlockDeleted(block, CurrentDiagram);
+        columnsBlockCalculator.SetColumnsOnBlockDeleted(block, CurrentDiagram);
 
         OnBlockDeleted?.Invoke(block.Id);
 
@@ -47,9 +46,11 @@ public class AppState
         }
     }
 
-    public void AddBlock(IBlockModel block)
+    public void AddBlock(IBlockVM block)
     {
-        columnsHelper.SetColumnsOnBlockAdded(block, CurrentDiagram);
+        columnsBlockCalculator.SetColumnsOnBlockAdded(block, CurrentDiagram);
+
+        OnBlockAdded?.Invoke(block.Id);
     }
 
     private void NotifyStateChanged() => OnChange?.Invoke();

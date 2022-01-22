@@ -5,7 +5,7 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace NSDGenerator.Client.Helpers;
+namespace NSDGenerator.Client.Helpers.Auth;
 
 public class TokenAuthenticationStateProvider : AuthenticationStateProvider
 {

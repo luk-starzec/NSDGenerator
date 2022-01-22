@@ -1,15 +1,15 @@
-﻿namespace NSDGenerator.Client.Models;
+﻿namespace NSDGenerator.Client.ViewModels;
 
-public class ButtonBlockModel : IBlockModel
+public class ButtonBlockVM : IBlockVM
 {
-    public IBlockModel Parent { get; set; }
+    public IBlockVM Parent { get; set; }
     public Guid Id { get; set; }
     public string ButtonText { get; set; }
     public string AfterText { get; set; }
     public Action OnClick { get; set; }
 
-    private IBlockModel child;
-    public IBlockModel Child
+    private IBlockVM child;
+    public IBlockVM Child
     {
         get => child;
         set
@@ -20,9 +20,9 @@ public class ButtonBlockModel : IBlockModel
         }
     }
 
-    public ButtonBlockModel() => Id = Guid.NewGuid();
+    public ButtonBlockVM() => Id = Guid.NewGuid();
 
-    public ButtonBlockModel(string buttonText, Action onClick, string afterText = null) : this()
+    public ButtonBlockVM(string buttonText, Action onClick, string afterText = null) : this()
         => (ButtonText, OnClick, AfterText) = (buttonText, onClick, afterText);
 
 }

@@ -16,14 +16,14 @@
 @code {
     [Parameter] public string CssClass { get; set; }
 
-    [Parameter] public TextBlockModel Model { get; set; }
+    [Parameter] public TextBlockVM ViewModel { get; set; }
 
     [Parameter] public RenderFragment ChildContent { get; set; }
 
     [Parameter] public EventCallback<Guid> OnBlockSelected { get; set; }
 
 
-    MarkupString htmlText => (MarkupString)Model.Text?.Replace("\n", "<br/>");
+    MarkupString htmlText => (MarkupString)ViewModel.Text?.Replace("\n", "<br/>");
 
-    async Task HandleBlockClick() => await OnBlockSelected.InvokeAsync(Model.Id);
+    async Task HandleBlockClick() => await OnBlockSelected.InvokeAsync(ViewModel.Id);
 }

@@ -1,4 +1,4 @@
-﻿@inject IColumnsHelper columnsHelper;
+﻿@inject IColumnsViewCalculator columnsViewCalculator;
 
 <div class="@CssClass preview-branch-block__wrapper block__wrapper"
      @onclick="HandleBlockClick" @onclick:stopPropagation="true">
@@ -7,19 +7,19 @@
 
         <div class="preview-branch-block__condition">
             <div class="preview-branch-block__label">
-                @Model.Condition
+                @ViewModel.Condition
             </div>
         </div>
 
         <div class="preview-branch-block__branch preview-branch-block__branch--left">
             <div class="preview-branch-block__label">
-                @Model.LeftBranch
+                @ViewModel.LeftBranch
             </div>
         </div>
 
         <div class="preview-branch-block__branch preview-branch-block__branch--right">
             <div class="preview-branch-block__label">
-                @Model.RightBranch
+                @ViewModel.RightBranch
             </div>
         </div>
     </div>
@@ -33,7 +33,7 @@
             }
             else
             {
-                <Block Model="@Model.LeftResult" />
+                <Block ViewModel="@ViewModel.LeftResult" />
             }
         </div>
 
@@ -44,7 +44,7 @@
             }
             else
             {
-                <Block Model="@Model.RightResult" />
+                <Block ViewModel="@ViewModel.RightResult" />
             }
         </div>
 
@@ -55,7 +55,7 @@
 @code {
     [Parameter] public string CssClass { get; set; }
 
-    [Parameter] public BranchBlockModel Model { get; set; }
+    [Parameter] public BranchBlockVM ViewModel { get; set; }
     [Parameter] public RenderFragment LeftResultContent { get; set; }
     [Parameter] public RenderFragment RightResultContent { get; set; }
 
@@ -63,9 +63,9 @@
 
     [Parameter] public EventCallback<Guid> OnBlockSelected { get; set; }
 
-    string styleResultColumns => columnsHelper.GetResultWrapperStyle(Model, ColumnsWidth);
-    string styleBranchColumns => columnsHelper.GetBranchWrapperStyle(Model, ColumnsWidth);
+    string styleResultColumns => columnsViewCalculator.GetResultWrapperStyle(ViewModel, ColumnsWidth);
+    string styleBranchColumns => columnsViewCalculator.GetBranchWrapperStyle(ViewModel, ColumnsWidth);
 
-    async Task HandleBlockClick() => await OnBlockSelected.InvokeAsync(Model.Id);
+    async Task HandleBlockClick() => await OnBlockSelected.InvokeAsync(ViewModel.Id);
 
 }

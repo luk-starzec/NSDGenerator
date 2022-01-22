@@ -1,4 +1,4 @@
-﻿@inject IColumnsHelper columnsHelper;
+﻿@inject IColumnsViewCalculator columnsViewCalculator;
 
 <div class="@CssClass edit-branch-block__wrapper block__wrapper">
 
@@ -11,37 +11,45 @@
             <DeleteButton OnDeleteBlock="@DeleteBlockClick" />
 
             <div class="edit-branch-block__condition">
-                <input class="edit-branch-block__input" @bind="@Model.Condition" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="condition" />
+                <input class="edit-branch-block__input" @bind="@ViewModel.Condition" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="condition" />
             </div>
 
             <div class="edit-branch-block__branch edit-branch-block__branch--left">
-                <input class="edit-branch-block__input edit-branch-block__input--short" @bind="@Model.LeftBranch" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="yes" />
+                <input class="edit-branch-block__input edit-branch-block__input--short" @bind="@ViewModel.LeftBranch" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="yes" />
             </div>
 
             <div class="edit-branch-block__branch edit-branch-block__branch--right">
-                <input class="edit-branch-block__input edit-branch-block__input--short" @bind="@Model.RightBranch" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="no" />
+                <input class="edit-branch-block__input edit-branch-block__input--short" @bind="@ViewModel.RightBranch" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="no" />
             </div>
 
         </div>
 
-        <div class="edit-branch-block__add-wrapper" style="@styleAddColumns">
 
-            <AddButtons OnAddTextBlock="@HandleAddLeftTextBlock" OnAddBranchBlock="@HandleAddLeftBranchBlock" />
+        @if (addButtonsAvailable)
+        {
+            <div class="edit-branch-block__add-wrapper" style="@styleAddColumns">
+                <AddButtons OnAddTextBlock="@HandleAddLeftTextBlock" OnAddBranchBlock="@HandleAddLeftBranchBlock" />
+                <AddButtons OnAddTextBlock="@HandleAddRightTextBlock" OnAddBranchBlock="@HandleAddRightBranchBlock" />
+            </div>
+        }
+        else
+        {
+            <div class="edit-branch-block__add-disabled">
+                max columns reached
+            </div>
+        }
 
-            <AddButtons OnAddTextBlock="@HandleAddRightTextBlock" OnAddBranchBlock="@HandleAddRightBranchBlock" />
-
-        </div>
 
     </div>
 
     <div class="edit-branch-block__result-wrapper" style="@styleResultColumns">
 
         <div class="edit-branch-block__result edit-branch-block__result--left">
-            <Block Model="@Model.LeftResult" />
+            <Block ViewModel="@ViewModel.LeftResult" />
         </div>
 
         <div class="edit-branch-block__result edit-branch-block__result--right">
-            <Block Model="@Model.RightResult" />
+            <Block ViewModel="@ViewModel.RightResult" />
         </div>
 
     </div>
@@ -53,7 +61,7 @@
 @code {
     [Parameter] public string CssClass { get; set; }
 
-    [Parameter] public BranchBlockModel Model { get; set; }
+    [Parameter] public BranchBlockVM ViewModel { get; set; }
 
     [Parameter] public EventCallback OnUnselected { get; set; }
     [Parameter] public EventCallback OnDeleted { get; set; }
@@ -61,9 +69,12 @@
 
     [CascadingParameter] List<int> ColumnsWidth { get; set; }
 
-    string styleResultColumns => columnsHelper.GetResultWrapperStyle(Model, ColumnsWidth);
-    string styleBranchColumns => columnsHelper.GetBranchWrapperStyle(Model, ColumnsWidth);
-    string styleAddColumns => columnsHelper.GetButtonsWrapperStyle(Model, ColumnsWidth);
+    string styleResultColumns => columnsViewCalculator.GetResultWrapperStyle(ViewModel, ColumnsWidth);
+    string styleBranchColumns => columnsViewCalculator.GetBranchWrapperStyle(ViewModel, ColumnsWidth);
+    string styleAddColumns => columnsViewCalculator.GetButtonsWrapperStyle(ViewModel, ColumnsWidth);
+
+
+    bool addButtonsAvailable => columnsViewCalculator.AddColumnAvailable(ColumnsWidth);
 
     bool deleteDialogVisible;
 
@@ -84,17 +95,17 @@
 
     async Task AddBlock(bool left, bool textBlock)
     {
-        var currentChild = left ? Model.LeftResult : Model.RightResult;
+        var currentChild = left ? ViewModel.LeftResult : ViewModel.RightResult;
 
-        IBlockModel block = textBlock
-            ? new TextBlockModel() { Child = currentChild }
-            : left ? new BranchBlockModel() { LeftResult = currentChild } : new BranchBlockModel() { RightResult = currentChild };
-        block.Parent = Model;
+        IBlockVM block = textBlock
+            ? new TextBlockVM() { Child = currentChild }
+            : left ? new BranchBlockVM() { LeftResult = currentChild } : new BranchBlockVM() { RightResult = currentChild };
+        block.Parent = ViewModel;
 
         if (left)
-            Model.LeftResult = block;
+            ViewModel.LeftResult = block;
         else
-            Model.RightResult = block;
+            ViewModel.RightResult = block;
 
         if (currentChild is not null)
             currentChild.Parent = block;

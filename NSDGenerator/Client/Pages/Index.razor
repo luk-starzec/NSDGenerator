@@ -14,25 +14,25 @@
 <PageContent>
     <section class="index__block-wrapper">
 
-        <PreviewTextBlock Model="@(new TextBlockModel("Start work"))" CssClass="index__block index__title-block">
+        <PreviewTextBlock ViewModel="@(new TextBlockVM("Start work"))" CssClass="index__block index__title-block">
             <ChildContent>
 
-                <PreviewBranchBlock Model="@(new BranchBlockModel { Condition = "Open existing diagram?" })" CssClass="index__block">
+                <PreviewBranchBlock ViewModel="@(new BranchBlockVM { Condition = "Open existing diagram?" })" CssClass="index__block">
                     <LeftResultContent>
 
-                        <PreviewBranchBlock Model="@(new BranchBlockModel { Condition = "From file?" })">
+                        <PreviewBranchBlock ViewModel="@(new BranchBlockVM { Condition = "From file?" })">
 
                             <LeftResultContent>
-                                <FileButtonBlock Model="@(new FileButtonBlockModel("Select file", SelectFileClick ))" CssClass="index__action-block" />
+                                <FileButtonBlock ViewModel="@(new FileButtonBlockVM("Select file", SelectFileClick ))" CssClass="index__action-block" />
                             </LeftResultContent>
 
                             <RightResultContent>
                                 <AuthorizeView>
                                     <Authorized>
-                                        <ButtonBlock Model="@(new ButtonBlockModel("View list",  ViewListClick))" CssClass="index__action-block" />
+                                        <ButtonBlock ViewModel="@(new ButtonBlockVM("View list",  ViewListClick))" CssClass="index__action-block" />
                                     </Authorized>
                                     <NotAuthorized>
-                                        <ButtonBlock Model="@(new ButtonBlockModel("Log in", LoginClick,"to view your diagrams") )"
+                                        <ButtonBlock ViewModel="@(new ButtonBlockVM("Log in", LoginClick,"to view your diagrams") )"
                                                      CssClass=" index__action-block index__action-block--login" />
                                     </NotAuthorized>
                                 </AuthorizeView>
@@ -42,7 +42,7 @@
                     </LeftResultContent>
 
                     <RightResultContent>
-                        <ButtonBlock Model="@(new ButtonBlockModel("New diagram", NewDiagramClick ))" CssClass="index__action-block index__action-block--big" />
+                        <ButtonBlock ViewModel="@(new ButtonBlockVM("New diagram", NewDiagramClick ))" CssClass="index__action-block index__action-block--big" />
                     </RightResultContent>
 
                 </PreviewBranchBlock>
@@ -51,9 +51,9 @@
         </PreviewTextBlock>
     </section>
 
-@*
-    <button @onclick="TestDiagramClick">Test diagram</button>
-*@
+    @*
+        <button @onclick="TestDiagramClick">Test diagram</button>
+    *@
 
 </PageContent>
 
@@ -76,36 +76,36 @@
 
     void TestDiagramClick()
     {
-        var test = new TextBlockModel
+        var test = new TextBlockVM
             {
                 Id = Guid.NewGuid(),
                 Text = "Start block",
-                Child = new TextBlockModel
+                Child = new TextBlockVM
                 {
                     Id = Guid.NewGuid(),
                     Text = "Second block",
-                    Child = new TextBlockModel("Third")
+                    Child = new TextBlockVM("Third")
                 }
             };
-        var diagram = new DiagramModel
+        var diagram = new DiagramVM
             {
                 Name = "New diagram",
                 RootBlock = test,
             };
 
-        var fileBlock = new BranchBlockModel
+        var fileBlock = new BranchBlockVM
             {
                 Condition = "From file?",
-                LeftResult = new TextBlockModel("Select file"),
-                RightResult = new TextBlockModel("View list", test),
+                LeftResult = new TextBlockVM("Select file"),
+                RightResult = new TextBlockVM("View list", test),
             };
-        var openBlock = new BranchBlockModel
+        var openBlock = new BranchBlockVM
             {
                 Condition = "Open existing diagram?",
                 LeftResult = fileBlock,
-                RightResult = new TextBlockModel("New diagram"),
+                RightResult = new TextBlockVM("New diagram"),
             };
-        var home = new DiagramModel
+        var home = new DiagramVM
             {
                 Name = "Start page",
                 RootBlock = openBlock

@@ -22,7 +22,7 @@ namespace NSDGenerator.Server.User.Repo
             this.passwordHasher = passwordHasher;
         }
 
-        public async Task<string> RegisterUserAsync(RegisterDto register)
+        public async Task<string> RegisterUserAsync(RegisterDTO register)
         {
             var code = await context.RegistrationCodes
                 .Where(r => r.Code == register.RegistrationCode)
@@ -54,7 +54,7 @@ namespace NSDGenerator.Server.User.Repo
             return null;
         }
 
-        public async Task<bool> VerifyUserAsync(LoginDto user)
+        public async Task<bool> VerifyUserAsync(LoginDTO user)
         {
             var dbUser = await context.Users.SingleOrDefaultAsync(r => r.Name == user.Email);
 

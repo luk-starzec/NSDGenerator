@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using NSDGenerator.Client.Helpers;
+using NSDGenerator.Client.Helpers.Auth;
+using NSDGenerator.Client.Helpers.Columns;
 using NSDGenerator.Client.Services;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -27,9 +29,10 @@ public class Program
         builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<TokenAuthenticationStateProvider>());
 
         builder.Services.AddScoped<IThemeService, ThemeService>();
-        builder.Services.AddSingleton<IModelConverterService, ModelConverterService>();
+        builder.Services.AddSingleton<IModelConverter, ModelConverter>();
         builder.Services.AddScoped<IDiagramService, DiagramService>();
-        builder.Services.AddSingleton<IColumnsHelper, ColumnsHelper>();
+        builder.Services.AddSingleton<IColumnsViewCalculator, ColumnsViewCalculator>();
+        builder.Services.AddSingleton<IColumnsBlockCalculator, ColumnsBlockCalculator>();
         builder.Services.AddSingleton<AppState>();
 
         await builder.Build().RunAsync();

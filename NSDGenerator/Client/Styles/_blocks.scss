@@ -159,6 +159,7 @@ $border-color: $color-80;
     @include input-base;
     text-align: center;
     padding: .25em .5em;
+    max-width: 90%;
 
     &--short {
         width: 50%;
@@ -176,6 +177,11 @@ $border-color: $color-80;
     button:nth-child(3) {
         margin-left: 1px;
     }
+}
+
+.edit-branch-block__add-disabled {
+    background-color: $color-90;
+    padding-block: .5rem;
 }
 
 .edit-branch-block__result-wrapper {

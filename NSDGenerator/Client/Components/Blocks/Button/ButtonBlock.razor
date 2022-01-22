@@ -1,12 +1,12 @@
 ﻿
 <div class="@CssClass button-block__wrapper">
 
-    <button class="button-block__button" @onclick="Model.OnClick">
-        @Model.ButtonText
+    <button class="button-block__button" @onclick="ViewModel.OnClick">
+        @ViewModel.ButtonText
     </button>
 
     <span class="button-block__after-text">
-        @Model.AfterText
+        @ViewModel.AfterText
     </span>
 
 </div>
@@ -14,6 +14,6 @@
 @code {
     [Parameter] public string CssClass { get; set; }
 
-    [Parameter] public ButtonBlockModel Model { get; set; }
+    [Parameter] public ButtonBlockVM ViewModel { get; set; }
 
 }

@@ -461,7 +461,7 @@
 .column-settings__wrapper {
     display: grid;
     margin-top: 2rem;
-    background-color: $color-90;
+    background-color: $color-95;
     margin-inline: -1rem;
     padding: .5rem 1rem 1rem 1rem;
     border-radius: .25rem;
@@ -483,4 +483,61 @@
     grid-row: 2/3;
     border: 1px solid $color-95;
     color: $color-50;
+}
+
+.column-settings__label {
+    grid-row: 3/4;
+    justify-self: center;
+    width: 90%;
+    padding-block: .5rem .25rem;
+    margin-bottom: .5rem;
+    margin-left: -1rem;
+    text-align: center;
+    color: $color-80;
+    cursor: pointer;
+}
+
+.column-settings__checkbox {
+    margin-left: .25rem;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.column-settings__footer {
+    grid-row: 4/5;
+    grid-column: 1/-1;
+    display: flex;
+    gap: .5rem;
+}
+
+.column-settings__button {
+    @include btn-primary;
+    padding: .25rem 1rem;
+    border-radius: .25rem;
+    background-color: $color-70;
+
+    &--primary {
+        flex-grow: 1;
+
+        &:hover:enabled {
+            transform: scale(1.01);
+        }
+
+        &:hover:active:enabled {
+            transform: scale(.99);
+        }
+    }
+
+    svg {
+        margin-right: .5rem;
+
+        .border, 
+        .shadow {
+            fill: $color-50;
+        }
+
+        .box {
+            fill: $color-98;
+        }
+    }
 }

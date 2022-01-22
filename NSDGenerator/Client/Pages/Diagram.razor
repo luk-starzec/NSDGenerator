@@ -12,12 +12,12 @@
 <PageHeader>
     @if (isEditMode)
     {
-        <DiagramEditHeader Model="@model" />
+        <DiagramEditHeader ViewModel="@viewModel" />
     }
     else
     {
         <h1 class="diagram__name">
-            @model?.Name
+            @viewModel?.Name
         </h1>
     }
 </PageHeader>
@@ -28,7 +28,7 @@
     {
         <MessagePanel Message="@errorMessage" />
     }
-    else if (model is null)
+    else if (viewModel is null)
     {
         <MessagePanel Message="Loading diagram..." />
     }
@@ -58,13 +58,13 @@
                 {
                     <CascadingValue Value="@isEditMode">
 
-                        <CascadingValue Value="@model?.ColumnsWidth">
+                        <CascadingValue Value="@viewModel?.ColumnsWidth">
 
-                            <Block Model="@model.RootBlock" />
+                            <Block ViewModel="@viewModel.RootBlock" />
 
                         </CascadingValue>
 
-                        <ColumnSettings Widths="@model.ColumnsWidth" OnWidthsChanged="@HandleComumnWidthChanged" />
+                        <ColumnSettings Widths="@viewModel.ColumnsWidth" OnWidthsChanged="@HandleComumnWidthChanged" />
 
                     </CascadingValue>
                 }
@@ -73,7 +73,7 @@
         }
     }
 
-    <DiagramMenu EditMode="@isEditMode" DiagramOwner="@model?.Owner" CurrentUser="@currentUser" Disabled="@errorMessageVisible"
+    <DiagramMenu EditMode="@isEditMode" DiagramOwner="@viewModel?.Owner" CurrentUser="@currentUser" Disabled="@errorMessageVisible"
                  OnEdit="@HandleEdit" OnPreview="@HandlePreview" OnDelete=@HandleDelete OnDownload="@HandleDownload"
                  OnDuplicate="@HandleDuplicate" OnSave="@HandleSave" />
 
@@ -83,7 +83,7 @@
 
 @if (deleteDialogVisible)
 {
-    <DeleteDiagramDialog DiagramName="@model.Name" OnCancel="@HandleDeleteCancel" OnConfirm="@HandleDeleteConfirm" />
+    <DeleteDiagramDialog DiagramName="@viewModel.Name" OnCancel="@HandleDeleteCancel" OnConfirm="@HandleDeleteConfirm" />
 }
 
 <SplashScreenDialog IsVisible="@savingDialogVisible" Message="Saving diagram..." />
@@ -103,9 +103,9 @@
 
     [CascadingParameter] Task<AuthenticationState> authenticationStateTask { get; set; }
 
-    DiagramModel model;
+    DiagramVM viewModel;
 
-    string pageTitle => $"Nassi–Shneiderman Diagram{(!string.IsNullOrWhiteSpace(model?.Name) ? $": {model.Name}" : "")}";
+    string pageTitle => $"Nassi–Shneiderman Diagram{(!string.IsNullOrWhiteSpace(viewModel?.Name) ? $": {viewModel.Name}" : "")}";
 
     string currentUser = null;
     bool isAuthenticated => currentUser is not null;
@@ -119,14 +119,14 @@
 
     string errorMessage;
     bool errorMessageVisible => !string.IsNullOrEmpty(errorMessage);
-    bool emptyMessageVisible => model.RootBlock is null;
+    bool emptyMessageVisible => viewModel.RootBlock is null;
 
     string errorDialogMessage;
     bool errorDialogVisible;
     bool savedDialogVisible;
     bool copiedDialogVisible;
 
-    bool firstBlockSelectorVisible => model?.RootBlock is null && isEditMode;
+    bool firstBlockSelectorVisible => viewModel?.RootBlock is null && isEditMode;
 
 
     protected override async Task OnParametersSetAsync()
@@ -148,10 +148,10 @@
 
         if (AppState.CurrentDiagram is null)
         {
-            AppState.SetCurrentDiagram(DiagramHelpers.GetNewDiagram());
+            AppState.SetCurrentDiagram(diagramService.CreateNewDiagram());
             isEditMode = true;
         }
-        model = AppState.CurrentDiagram;
+        viewModel = AppState.CurrentDiagram;
     }
 
 
@@ -182,15 +182,15 @@
 
     void HandleFirstBlockText()
     {
-        model.RootBlock = new TextBlockModel();
-        AppState.SelectBlock(model.RootBlock.Id);
+        viewModel.RootBlock = new TextBlockVM();
+        AppState.SelectBlock(viewModel.RootBlock.Id);
     }
 
     void HandleFirstBlockBranch()
     {
-        model.RootBlock = new BranchBlockModel();
-        AppState.AddBlock(model.RootBlock);
-        AppState.SelectBlock(model.RootBlock.Id);
+        viewModel.RootBlock = new BranchBlockVM();
+        AppState.AddBlock(viewModel.RootBlock);
+        AppState.SelectBlock(viewModel.RootBlock.Id);
     }
 
     void HandleEdit()
@@ -223,9 +223,9 @@
         deleteDialogVisible = false;
         deletingDialogVisible = true;
 
-        var existsOnServer = await diagramService.CheckIfDiagramExistsAsync(model.Id);
+        var existsOnServer = await diagramService.CheckIfDiagramExistsAsync(viewModel.Id);
         var result = existsOnServer
-            ? await diagramService.DeleteDiagramAsync(model.Id)
+            ? await diagramService.DeleteDiagramAsync(viewModel.Id)
             : true;
 
         deletingDialogVisible = false;
@@ -245,10 +245,10 @@
     {
         isMenuOpened = false;
 
-        var copy = diagramService.CreateDiagramCopy(model);
+        var copy = diagramService.CreateDiagramCopy(viewModel);
 
         AppState.SetCurrentDiagram(copy);
-        model = copy;
+        viewModel = copy;
 
         copiedDialogVisible = true;
     }
@@ -257,16 +257,16 @@
     {
         Id = null;
 
-        var diagram = DiagramHelpers.GetNewDiagram();
+        var diagram = diagramService.CreateNewDiagram();
         AppState.SetCurrentDiagram(diagram);
-        model = diagram;
+        viewModel = diagram;
         isEditMode = true;
     }
 
     async Task HandleDownload()
     {
         isMenuOpened = false;
-        await diagramService.DownloadDiagramAsync(model);
+        await diagramService.DownloadDiagramAsync(viewModel);
     }
 
     async Task HandleSave()
@@ -278,7 +278,7 @@
 
         savingDialogVisible = true;
 
-        var result = await diagramService.SaveDiagramAsync(model);
+        var result = await diagramService.SaveDiagramAsync(viewModel);
 
         savingDialogVisible = false;
 

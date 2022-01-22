@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
-using NSDGenerator.Client.Models;
-using NSDGenerator.Client.Pages;
+using NSDGenerator.Client.Helpers;
+using NSDGenerator.Client.ViewModels;
 using NSDGenerator.Shared.Diagram;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,21 +17,21 @@ internal class DiagramService : IDiagramService
     private readonly ILogger<DiagramService> logger;
     private readonly HttpClient httpClient;
     private readonly IJSRuntime js;
-    private readonly IModelConverterService modelConverterService;
+    private readonly IModelConverter modelConverter;
 
-    public DiagramService(ILogger<DiagramService> logger, HttpClient httpClient, IJSRuntime js, IModelConverterService modelConverterService)
+    public DiagramService(ILogger<DiagramService> logger, HttpClient httpClient, IJSRuntime js, IModelConverter modelConverter)
     {
         this.logger = logger;
         this.httpClient = httpClient;
         this.js = js;
-        this.modelConverterService = modelConverterService;
+        this.modelConverter = modelConverter;
     }
 
-    public async Task<IEnumerable<DiagramDto>> GetMyDiagramsAsync()
+    public async Task<IEnumerable<DiagramInfoDTO>> GetMyDiagramsAsync()
     {
         try
         {
-            var diagrams = await httpClient.GetFromJsonAsync<IEnumerable<DiagramDto>>("api/diagram");
+            var diagrams = await httpClient.GetFromJsonAsync<IEnumerable<DiagramInfoDTO>>("api/diagram");
             return diagrams;
         }
         catch (Exception ex)
@@ -41,12 +41,12 @@ internal class DiagramService : IDiagramService
         }
     }
 
-    public async Task<DiagramModel> GetDiagramAsync(Guid id)
+    public async Task<DiagramVM> GetDiagramAsync(Guid id)
     {
         try
         {
-            var dto = await httpClient.GetFromJsonAsync<DiagramFullDto>($"api/diagram/{id}");
-            var diagram = modelConverterService.DiagramFullDtoToDiagramModel(dto);
+            var dto = await httpClient.GetFromJsonAsync<DiagramDTO>($"api/diagram/{id}");
+            var diagram = modelConverter.DiagramFullDtoToDiagramModel(dto);
 
             // temp fallback
             if (!diagram.ColumnsWidth.Any())
@@ -64,15 +64,15 @@ internal class DiagramService : IDiagramService
         }
     }
 
-    public int GetColumnsCount(IBlockModel rootBlock)
+    public int GetColumnsCount(IBlockVM rootBlock)
     {
-        var branchBlocks = modelConverterService.RootBlockToChildrenBranchBlockModels(rootBlock);
+        var branchBlocks = modelConverter.RootBlockToChildrenBranchBlockModels(rootBlock);
         return branchBlocks.Count + 1;
     }
 
-    public DiagramModel GetDiagram(string fileContent)
+    public DiagramVM GetDiagram(string fileContent)
     {
-        return modelConverterService.JsonToDiagramModel(fileContent);
+        return modelConverter.JsonToDiagramModel(fileContent);
     }
 
     public async Task<bool> CheckIfDiagramExistsAsync(Guid id)
@@ -90,19 +90,19 @@ internal class DiagramService : IDiagramService
 
     }
 
-    public async Task DownloadDiagramAsync(DiagramModel diagram)
+    public async Task DownloadDiagramAsync(DiagramVM diagram)
     {
         var name = GetFileName(diagram.Name);
-        string content = modelConverterService.DiagramModelToJson(diagram);
+        string content = modelConverter.DiagramModelToJson(diagram);
 
         await js.InvokeVoidAsync("DownloadFile", $"{name}.json", "application/json;charset=utf-8", content);
     }
 
-    public async Task<bool> SaveDiagramAsync(DiagramModel diagram)
+    public async Task<bool> SaveDiagramAsync(DiagramVM diagram)
     {
         try
         {
-            var json = modelConverterService.DiagramModelToJson(diagram);
+            var json = modelConverter.DiagramModelToJson(diagram);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await httpClient.PostAsync($"api/diagram", content);
             return response.IsSuccessStatusCode;
@@ -128,11 +128,16 @@ internal class DiagramService : IDiagramService
         }
     }
 
-    public DiagramModel CreateDiagramCopy(DiagramModel diagram)
+    public DiagramVM CreateNewDiagram()
+    {
+        return new DiagramVM { Name = "New diagram" };
+    }
+
+    public DiagramVM CreateDiagramCopy(DiagramVM diagram)
     {
         var rootBlockCopy = diagram.RootBlock is not null ? CopyBlockTree(diagram.RootBlock) : null;
 
-        var copy = new DiagramModel
+        var copy = new DiagramVM
         {
             Name = $"Copy {diagram.Name}",
             RootBlock = rootBlockCopy,
@@ -140,9 +145,9 @@ internal class DiagramService : IDiagramService
         return copy;
     }
 
-    private IBlockModel CopyBlockTree(IBlockModel rootBlock)
+    private IBlockVM CopyBlockTree(IBlockVM rootBlock)
     {
-        var blockCollection = modelConverterService.RootBlockToBlockCollectionDto(rootBlock);
+        var blockCollection = modelConverter.RootBlockToBlockCollectionDto(rootBlock);
 
         var map = blockCollection.Blocks.ToDictionary(k => k.Id, v => Guid.NewGuid());
 
@@ -162,14 +167,14 @@ internal class DiagramService : IDiagramService
             })
             .ToList();
 
-        var newBlockCollection = new BlockCollectionDto
+        var newBlockCollection = new BlockCollectionDTO
         {
             RootId = map[rootBlock.Id],
             TextBlocks = textBlocks,
             BranchBlocks = branchBlocks,
         };
 
-        var copy = modelConverterService.BlockCollectionDtoToRootBlock(newBlockCollection);
+        var copy = modelConverter.BlockCollectionDtoToRootBlock(newBlockCollection);
 
         return copy;
     }

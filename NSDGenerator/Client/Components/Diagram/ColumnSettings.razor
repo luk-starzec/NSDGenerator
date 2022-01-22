@@ -1,17 +1,46 @@
-﻿@if (isVisible)
+﻿@inject IColumnsViewCalculator columnsViewCalculator
+@inject AppState AppState
+
+@implements IDisposable
+
+@if (isVisible)
 {
     <div class="column-settings__wrapper" style="@styleWrapper">
 
         <div class="column-settings__header">
+
             Columns width in %
+
         </div>
 
         @for (int i = 0; i < Widths.Count; i++)
         {
             int index = i;
-            <input type="number" class="column-settings__input" value="@Widths[index]" min="@minWidth" max="@maxWidth" @onchange="(async(e)=>await ValueChanged(index, e))" />
+            <input type="number" class="column-settings__input" value="@Widths[index]" min="@minWidth" max="@maxWidth" @onchange="(async(e)=>await OnValueChanged(index, e))" />
+
+            <label class="column-settings__label">
+                #@(i+1)
+                <input type="checkbox" class="column-settings__checkbox" @onchange="(e)=>OnColumnCheck(index, e)" checked="@GetCheckValue(index)" />
+            </label>
         }
 
+        <div class="column-settings__footer">
+
+            <button class="column-settings__button" @onclick="UnselectAll" disabled="@disableUnselectAllButton">
+                <SvgIcon SvgUrl="/assets/uncheck-all-icon.svg" />
+                <span>Unselect all</span>
+            </button>
+
+            <button class="column-settings__button column-settings__button--primary" @onclick="OnMakeEqual" disabled="@disableEqualButton">
+                Make selected columns equal
+            </button>
+
+            <button class="column-settings__button" @onclick="SelectAll" disabled="@disableSelectAllButton">
+                <SvgIcon SvgUrl="/assets/check-all-icon.svg" />
+                <span>Select all</span>
+            </button>
+
+        </div>
     </div>
 }
 
@@ -21,38 +50,71 @@
 
     [CascadingParameter] bool IsEditMode { get; set; }
 
-    int minWidth => 5;
-    int maxWidth => 100 - minWidth * (Widths.Count - 1);
-
     bool isVisible => IsEditMode && Widths?.Count > 1;
+
+    int minWidth => columnsViewCalculator.GetMinColumnWidth();
+    int maxWidth => columnsViewCalculator.GetMaxColumnWidth(Widths);
 
     string styleWrapper => $"grid-template-columns: {string.Join("% ", Widths)}%;";
 
-    async Task ValueChanged(int index, ChangeEventArgs e)
-    {
-        var diff = int.Parse(e.Value.ToString()) - Widths[index];
+    List<int> checkedColumns = new();
 
-        Widths[index] += diff;
-        SetDependentColumnWidth(index, diff);
+    bool disableUnselectAllButton => !checkedColumns.Any();
+    bool disableSelectAllButton => checkedColumns.Count == Widths.Count;
+    bool disableEqualButton => checkedColumns.Count < 2;
+
+    protected override void OnInitialized()
+    {
+        AppState.OnBlockAdded += BlocksChanged;
+        AppState.OnBlockDeleted += BlocksChanged;
+    }
+
+    public void Dispose()
+    {
+        AppState.OnBlockAdded -= BlocksChanged;
+        AppState.OnBlockDeleted -= BlocksChanged;
+    }
+
+    void BlocksChanged(Guid id)
+    {
+        UnselectAll();
+    }
+
+    async Task OnValueChanged(int index, ChangeEventArgs e)
+    {
+        var value = int.Parse(e.Value.ToString());
+        Widths = columnsViewCalculator.ChangeColumnsWidth(index, value, Widths);
 
         await OnWidthsChanged.InvokeAsync();
     }
 
-    void SetDependentColumnWidth(int index, int diff)
+    void OnColumnCheck(int index, ChangeEventArgs e)
     {
-        int dependentIndex = GetDependentColumnIndex(index);
+        var value = bool.Parse(e.Value.ToString());
+        var current = GetCheckValue(index);
 
-        if (Widths[dependentIndex] - diff >= minWidth)
-        {
-            Widths[dependentIndex] -= diff;
-        }
-        else
-        {
-            diff = minWidth - Widths[dependentIndex] + diff;
-            Widths[dependentIndex] = minWidth;
-            SetDependentColumnWidth(dependentIndex, diff);
-        }
+        if (value && !current)
+            checkedColumns.Add(index);
+        if (!value && current)
+            checkedColumns.Remove(index);
     }
 
-    int GetDependentColumnIndex(int index) => index < Widths.Count - 1 ? index + 1 : 0;
+    bool GetCheckValue(int index) => checkedColumns.Contains(index);
+
+
+    async Task OnMakeEqual()
+    {
+        columnsViewCalculator.MakeColumnsEqual(checkedColumns, Widths);
+        await OnWidthsChanged.InvokeAsync();
+    }
+
+    void UnselectAll() => checkedColumns.Clear();
+
+    void SelectAll()
+    {
+        checkedColumns.Clear();
+        for (int i = 0; i < Widths.Count; i++)
+            checkedColumns.Add(i);
+    }
+
 }

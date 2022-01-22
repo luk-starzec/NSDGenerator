@@ -17,7 +17,7 @@ public class DtoConverters : IDtoConverters
             this.jsonOptions = jsonOptions;
     }
 
-    public BlockCollectionDto BlocksToBlockCollectionDto(Block[] blocks, Guid rootId)
+    public BlockCollectionDTO BlocksToBlockCollectionDto(Block[] blocks, Guid rootId)
     {
         var text = blocks
             .Where(r => r.BlockType == EnumBlockType.Text)
@@ -28,7 +28,7 @@ public class DtoConverters : IDtoConverters
             .Select(r => BlockToBranchBlockDto(r))
             .ToList();
 
-        return new BlockCollectionDto
+        return new BlockCollectionDTO
         {
             RootId = rootId,
             TextBlocks = text,
@@ -36,27 +36,27 @@ public class DtoConverters : IDtoConverters
         };
     }
 
-    public string TextBlockDtoToJson(TextBlockDto dto)
+    public string TextBlockDtoToJson(TextBlockDTO dto)
     {
         var content = new TextBlockJsonData(dto.Text, dto.ChildId);
         return JsonSerializer.Serialize(content, jsonOptions);
     }
 
-    public string BranchBlockDtoToJson(BranchBlockDto dto)
+    public string BranchBlockDtoToJson(BranchBlockDTO dto)
     {
         var content = new BranchBlockJsonData(dto.Condition, dto.LeftBranch, dto.RightBranch, dto.LeftResult, dto.RightResult);
         return JsonSerializer.Serialize(content, jsonOptions);
     }
 
-    private TextBlockDto BlockToTextBlockDto(Block block)
+    private TextBlockDTO BlockToTextBlockDto(Block block)
     {
         var content = JsonSerializer.Deserialize<TextBlockJsonData>(block.JsonData, jsonOptions);
-        return new TextBlockDto(block.Id, content.Text, content.ChildId);
+        return new TextBlockDTO(block.Id, content.Text, content.ChildId);
     }
 
-    private BranchBlockDto BlockToBranchBlockDto(Block block)
+    private BranchBlockDTO BlockToBranchBlockDto(Block block)
     {
         var content = JsonSerializer.Deserialize<BranchBlockJsonData>(block.JsonData, jsonOptions);
-        return new BranchBlockDto(block.Id, content.Condition, content.LeftBranch, content.RightBranch, content.LeftResult, content.RightResult);
+        return new BranchBlockDTO(block.Id, content.Condition, content.LeftBranch, content.RightBranch, content.LeftResult, content.RightResult);
     }
 }

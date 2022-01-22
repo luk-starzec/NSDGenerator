@@ -72,7 +72,7 @@
 
 @code {
     [Parameter]
-    public IEnumerable<DiagramDto> Diagrams
+    public IEnumerable<DiagramInfoDTO> Diagrams
     {
         get => diagrams; set
         {
@@ -84,10 +84,10 @@
     [Parameter] public EventCallback<Guid> OnViewDiagram { get; set; }
     [Parameter] public EventCallback<Guid> OnDownloadDiagram { get; set; }
 
-    IEnumerable<DiagramDto> diagrams;
-    IEnumerable<DiagramDto> sortedDiagrams;
+    IEnumerable<DiagramInfoDTO> diagrams;
+    IEnumerable<DiagramInfoDTO> sortedDiagrams;
 
-    EnumSortDirection[] sorting = new EnumSortDirection[4];
+    SortDirectionEnum[] sorting = new SortDirectionEnum[4];
 
     async Task ViewClick(Guid id) => await OnViewDiagram.InvokeAsync(id);
     async Task DownloadClick(Guid id) => await OnDownloadDiagram.InvokeAsync(id);
@@ -99,24 +99,24 @@
     {
         var sorted = diagrams;
 
-        if (sorting[0] == EnumSortDirection.Ascending)
+        if (sorting[0] == SortDirectionEnum.Ascending)
             sorted = sorted.OrderBy(r => r.Name);
-        if (sorting[0] == EnumSortDirection.Descending)
+        if (sorting[0] == SortDirectionEnum.Descending)
             sorted = sorted.OrderByDescending(r => r.Name);
 
-        if (sorting[1] == EnumSortDirection.Ascending)
+        if (sorting[1] == SortDirectionEnum.Ascending)
             sorted = sorted.OrderBy(r => r.Created);
-        if (sorting[1] == EnumSortDirection.Descending)
+        if (sorting[1] == SortDirectionEnum.Descending)
             sorted = sorted.OrderByDescending(r => r.Created);
 
-        if (sorting[2] == EnumSortDirection.Ascending)
+        if (sorting[2] == SortDirectionEnum.Ascending)
             sorted = sorted.OrderBy(r => r.Modified);
-        if (sorting[2] == EnumSortDirection.Descending)
+        if (sorting[2] == SortDirectionEnum.Descending)
             sorted = sorted.OrderByDescending(r => r.Modified);
 
-        if (sorting[3] == EnumSortDirection.Ascending)
+        if (sorting[3] == SortDirectionEnum.Ascending)
             sorted = sorted.OrderBy(r => r.IsPrivate);
-        if (sorting[3] == EnumSortDirection.Descending)
+        if (sorting[3] == SortDirectionEnum.Descending)
             sorted = sorted.OrderByDescending(r => r.IsPrivate);
 
         sortedDiagrams = sorted.ToList();
@@ -133,9 +133,9 @@
     void ClearSorting()
     {
         for (int i = 0; i < sorting.Length; i++)
-            sorting[i] = EnumSortDirection.None;
+            sorting[i] = SortDirectionEnum.None;
     }
 
-    EnumSortDirection GetNextSortDirection(EnumSortDirection sortDirection)
-        => sortDirection == EnumSortDirection.Ascending ? EnumSortDirection.Descending : EnumSortDirection.Ascending;
+    SortDirectionEnum GetNextSortDirection(SortDirectionEnum sortDirection)
+        => sortDirection == SortDirectionEnum.Ascending ? SortDirectionEnum.Descending : SortDirectionEnum.Ascending;
 }

@@ -1,38 +1,37 @@
-﻿using NSDGenerator.Client.Models;
-using NSDGenerator.Client.Pages;
+﻿using NSDGenerator.Client.ViewModels;
 using NSDGenerator.Shared.Diagram;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 
-namespace NSDGenerator.Client.Services;
+namespace NSDGenerator.Client.Helpers;
 
-public class ModelConverterService : IModelConverterService
+public class ModelConverter : IModelConverter
 {
     private readonly JsonSerializerOptions jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
-    public string DiagramModelToJson(DiagramModel diagram)
+    public string DiagramModelToJson(DiagramVM diagram)
     {
-        BlockCollectionDto blocks = null;
+        BlockCollectionDTO blocks = null;
         if (diagram.RootBlock is not null)
         {
-            blocks = new BlockCollectionDto { RootId = diagram.RootBlock.Id };
+            blocks = new BlockCollectionDTO { RootId = diagram.RootBlock.Id };
             BlocksToBlockCollection(diagram.RootBlock, blocks);
         }
 
-        var dto = new DiagramFullDto(diagram.Id, diagram.Name, diagram.IsPrivate, diagram.Owner, blocks, diagram.ColumnsWidth);
+        var dto = new DiagramDTO(diagram.Id, diagram.Name, diagram.IsPrivate, diagram.Owner, blocks, diagram.ColumnsWidth);
         var json = JsonSerializer.Serialize(dto, jsonOptions);
 
         return json;
     }
 
-    public DiagramModel JsonToDiagramModel(string json)
+    public DiagramVM JsonToDiagramModel(string json)
     {
-        var dto = JsonSerializer.Deserialize<DiagramFullDto>(json, jsonOptions);
+        var dto = JsonSerializer.Deserialize<DiagramDTO>(json, jsonOptions);
         return DiagramFullDtoToDiagramModel(dto);
     }
 
-    public DiagramModel DiagramFullDtoToDiagramModel(DiagramFullDto diagramFullDto)
+    public DiagramVM DiagramFullDtoToDiagramModel(DiagramDTO diagramFullDto)
     {
         var rootBlock = diagramFullDto.BlockCollection is not null
             ? ConvertToBlockModel(diagramFullDto.BlockCollection, diagramFullDto.BlockCollection.RootId)
@@ -41,7 +40,7 @@ public class ModelConverterService : IModelConverterService
         if (rootBlock is not null)
             SetDiagramBlockColumns(rootBlock, diagramFullDto.BlockCollection.BranchBlocks);
 
-        var diagram = new DiagramModel
+        var diagram = new DiagramVM
         {
             Id = diagramFullDto.Id,
             Name = diagramFullDto.Name,
@@ -54,7 +53,7 @@ public class ModelConverterService : IModelConverterService
         return diagram;
     }
 
-    private void SetDiagramBlockColumns(IBlockModel rootBlock, List<BranchBlockDto> branchBlockDtos)
+    private void SetDiagramBlockColumns(IBlockVM rootBlock, List<BranchBlockDTO> branchBlockDtos)
     {
         var rootBranchBlockDto = branchBlockDtos.OrderBy(r => r.Level).FirstOrDefault();
 
@@ -68,7 +67,7 @@ public class ModelConverterService : IModelConverterService
     }
 
 
-    private void SetBranchBlocksColumnIndexes(BranchBlockModel block, int index, List<BranchBlockModel> branchBlocks)
+    private void SetBranchBlocksColumnIndexes(BranchBlockVM block, int index, List<BranchBlockVM> branchBlocks)
     {
         var leftBranchBlocks = RootBlockToBlockCollectionDto(block.LeftResult).BranchBlocks;
         var rightBranchBlocks = RootBlockToBlockCollectionDto(block.RightResult).BranchBlocks;
@@ -86,7 +85,7 @@ public class ModelConverterService : IModelConverterService
         SetChildrenBranchBlocksColumns(branchBlocks, rightBranchBlocks, rStart);
     }
 
-    private void SetChildrenBranchBlocksColumns(List<BranchBlockModel> branchBlocks, List<BranchBlockDto> childBlocks, int startingColumnIndex)
+    private void SetChildrenBranchBlocksColumns(List<BranchBlockVM> branchBlocks, List<BranchBlockDTO> childBlocks, int startingColumnIndex)
     {
         foreach (var b in childBlocks.OrderBy(r => r.Level))
         {
@@ -96,35 +95,35 @@ public class ModelConverterService : IModelConverterService
     }
 
 
-    public BlockCollectionDto RootBlockToBlockCollectionDto(IBlockModel rootBlock)
+    public BlockCollectionDTO RootBlockToBlockCollectionDto(IBlockVM rootBlock)
     {
         if (rootBlock is null)
             return null;
 
-        var blocks = new BlockCollectionDto { RootId = rootBlock.Id, };
+        var blocks = new BlockCollectionDTO { RootId = rootBlock.Id, };
         BlocksToBlockCollection(rootBlock, blocks);
 
         return blocks;
     }
 
-    public IBlockModel BlockCollectionDtoToRootBlock(BlockCollectionDto blockCollectionDto)
+    public IBlockVM BlockCollectionDtoToRootBlock(BlockCollectionDTO blockCollectionDto)
     {
         return ConvertToBlockModel(blockCollectionDto, blockCollectionDto.RootId);
     }
 
-    public List<BranchBlockModel> RootBlockToChildrenBranchBlockModels(IBlockModel rootBlock)
+    public List<BranchBlockVM> RootBlockToChildrenBranchBlockModels(IBlockVM rootBlock)
     {
-        var blocks = new List<IBlockModel>();
+        var blocks = new List<IBlockVM>();
         GetBranchBlockModels(rootBlock, blocks);
 
         return blocks
-            .Select(r => r as BranchBlockModel)
+            .Select(r => r as BranchBlockVM)
             .Where(r => r is not null)
             .ToList(); ;
     }
 
 
-    private void GetBranchBlockModels(IBlockModel block, List<IBlockModel> result)
+    private void GetBranchBlockModels(IBlockVM block, List<IBlockVM> result)
     {
         if (block is null)
             return;
@@ -136,7 +135,7 @@ public class ModelConverterService : IModelConverterService
             return;
     }
 
-    private void BlocksToBlockCollection(IBlockModel block, BlockCollectionDto result)
+    private void BlocksToBlockCollection(IBlockVM block, BlockCollectionDTO result)
     {
         if (block is null)
             return;
@@ -148,14 +147,14 @@ public class ModelConverterService : IModelConverterService
             return;
     }
 
-    private bool TryAddAsTextBlock(IBlockModel block, BlockCollectionDto result)
+    private bool TryAddAsTextBlock(IBlockVM block, BlockCollectionDTO result)
     {
-        if (block is not TextBlockModel)
+        if (block is not TextBlockVM)
             return false;
 
-        var tb = block as TextBlockModel;
+        var tb = block as TextBlockVM;
         var parentLevel = result.Blocks.SingleOrDefault(r => r.Id == block.Parent.Id)?.Level ?? -1;
-        var dto = new TextBlockDto(tb.Id, tb.Text, tb.Child?.Id, parentLevel + 1);
+        var dto = new TextBlockDTO(tb.Id, tb.Text, tb.Child?.Id, parentLevel + 1);
         result.TextBlocks.Add(dto);
 
         BlocksToBlockCollection(tb.Child, result);
@@ -163,26 +162,26 @@ public class ModelConverterService : IModelConverterService
     }
 
 
-    private bool TryAddAsTextBlock(IBlockModel block, List<IBlockModel> result)
+    private bool TryAddAsTextBlock(IBlockVM block, List<IBlockVM> result)
     {
-        if (block is not TextBlockModel)
+        if (block is not TextBlockVM)
             return false;
 
-        var tb = block as TextBlockModel;
+        var tb = block as TextBlockVM;
         result.Add(tb);
 
         GetBranchBlockModels(tb.Child, result);
         return true;
     }
 
-    private bool TryAddAsBranchBlock(IBlockModel block, BlockCollectionDto result)
+    private bool TryAddAsBranchBlock(IBlockVM block, BlockCollectionDTO result)
     {
-        if (block is not BranchBlockModel)
+        if (block is not BranchBlockVM)
             return false;
 
-        var bb = block as BranchBlockModel;
+        var bb = block as BranchBlockVM;
         var parentLevel = result.Blocks.SingleOrDefault(r => r.Id == block.Parent.Id)?.Level ?? -1;
-        var dto = new BranchBlockDto(bb.Id, bb.Condition, bb.LeftBranch, bb.RightBranch, bb.LeftResult?.Id, bb.RightResult?.Id, parentLevel + 1);
+        var dto = new BranchBlockDTO(bb.Id, bb.Condition, bb.LeftBranch, bb.RightBranch, bb.LeftResult?.Id, bb.RightResult?.Id, parentLevel + 1);
         result.BranchBlocks.Add(dto);
 
         BlocksToBlockCollection(bb.LeftResult, result);
@@ -190,12 +189,12 @@ public class ModelConverterService : IModelConverterService
         return true;
     }
 
-    private bool TryAddAsBranchBlock(IBlockModel block, List<IBlockModel> result)
+    private bool TryAddAsBranchBlock(IBlockVM block, List<IBlockVM> result)
     {
-        if (block is not BranchBlockModel)
+        if (block is not BranchBlockVM)
             return false;
 
-        var bb = block as BranchBlockModel;
+        var bb = block as BranchBlockVM;
         result.Add(bb);
 
         GetBranchBlockModels(bb.LeftResult, result);
@@ -203,7 +202,7 @@ public class ModelConverterService : IModelConverterService
         return true;
     }
 
-    private IBlockModel ConvertToBlockModel(BlockCollectionDto blockCollectionDto, Guid currentId)
+    private IBlockVM ConvertToBlockModel(BlockCollectionDTO blockCollectionDto, Guid currentId)
     {
         var current = blockCollectionDto.Blocks.Where(r => r.Id == currentId).SingleOrDefault();
 
@@ -218,13 +217,13 @@ public class ModelConverterService : IModelConverterService
         return null;
     }
 
-    private TextBlockModel TryConvertToTextBlockModel(IBlockDto blockDto, BlockCollectionDto blockCollectionDto)
+    private TextBlockVM TryConvertToTextBlockModel(IBlockDTO blockDto, BlockCollectionDTO blockCollectionDto)
     {
-        if (blockDto is not TextBlockDto)
+        if (blockDto is not TextBlockDTO)
             return null;
 
-        var tbd = blockDto as TextBlockDto;
-        var tb = new TextBlockModel
+        var tbd = blockDto as TextBlockDTO;
+        var tb = new TextBlockVM
         {
             Id = tbd.Id,
             Text = tbd.Text,
@@ -235,13 +234,13 @@ public class ModelConverterService : IModelConverterService
         return tb;
     }
 
-    private BranchBlockModel TryConvertToBranchBlockModel(IBlockDto blockDto, BlockCollectionDto jsonBlockCollection)
+    private BranchBlockVM TryConvertToBranchBlockModel(IBlockDTO blockDto, BlockCollectionDTO jsonBlockCollection)
     {
-        if (blockDto is not BranchBlockDto)
+        if (blockDto is not BranchBlockDTO)
             return null;
 
-        var bbd = blockDto as BranchBlockDto;
-        var bb = new BranchBlockModel
+        var bbd = blockDto as BranchBlockDTO;
+        var bb = new BranchBlockVM
         {
             Id = bbd.Id,
             Condition = bbd.Condition,

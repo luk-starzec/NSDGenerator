@@ -1,34 +1,32 @@
-﻿using NSDGenerator.Client.Models;
+﻿using NSDGenerator.Client.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NSDGenerator.Client.Helpers
+namespace NSDGenerator.Client.Helpers.Columns
 {
-    public partial class ColumnsHelper : IColumnsHelper
+    public class DeleteBlockChildBranch
     {
-        public void SetColumnsOnBlockDeleted(IBlockModel block, DiagramModel diagram)
+        private readonly IModelConverter modelConverter;
+
+        public DeleteBlockChildBranch(IModelConverter modelConverter)
         {
-            (var parent, var isLeftChild) = GetParentBranchBlock(block);
+            this.modelConverter = modelConverter;
+        }
 
-            if (parent is null)
-            {
-                diagram.ColumnsWidth = new() { 100 };
-                return;
-            }
-
-            var blocks = modelConverterService.RootBlockToChildrenBranchBlockModels(diagram.RootBlock);
-
-            var parentColumns = isLeftChild ? parent.LeftColumns.ToList() : parent.RightColumns.ToList();
+        public void ApplyChanges(List<int> parentColumns, DiagramVM diagram)
+        {
             var deleted = parentColumns.Where(r => r > parentColumns.Min()).ToList();
-
             if (!deleted.Any())
                 return;
 
-            SetIndexesOnDelete(deleted, blocks);
-            SetWidthsOnDelete(parentColumns, diagram);
+            var blocks = modelConverter.RootBlockToChildrenBranchBlockModels(diagram.RootBlock);
+
+            SetColumns(deleted, blocks);
+            SetColumnsWidth(parentColumns, diagram);
+
         }
 
-        private void SetIndexesOnDelete(List<int> deleted, List<BranchBlockModel> blocks)
+        private void SetColumns(List<int> deleted, List<BranchBlockVM> blocks)
         {
             int maxIndex = deleted.Max();
             int count = deleted.Count();
@@ -53,7 +51,7 @@ namespace NSDGenerator.Client.Helpers
                 b.RightColumns = ShiftColumnsLeft(b.RightColumns, maxIndex, count);
         }
 
-        private void SetWidthsOnDelete(List<int> parentColumns, DiagramModel diagram)
+        private void SetColumnsWidth(List<int> parentColumns, DiagramVM diagram)
         {
             var min = parentColumns.Min();
             var max = parentColumns.Max();

@@ -1,19 +1,19 @@
 ﻿@inject HttpClient httpClient
 @inject TokenAuthenticationStateProvider tokenAuthStateProvider
 
-<EditForm Model="@model" OnValidSubmit="@HandleValidSubmit" class="register-form__form">
+<EditForm Model="@viewModel" OnValidSubmit="@HandleValidSubmit" class="register-form__form">
     <DataAnnotationsValidator />
 
     <label class="register-form__label register-form__label--email" for="register-email">
         Email:
     </label>
-    <InputText class="register-form__input register-form__input--email" id="register-email" @bind-Value="model.Email" />
+    <InputText class="register-form__input register-form__input--email" id="register-email" @bind-Value="viewModel.Email" />
 
     <label class="register-form__label register-form__label--password" for="register-password">
         Password:
     </label>
     <InputText type="password" class="register-form__input register-form__input--password" id="register-password"
-               @bind-Value="model.Password" />
+               @bind-Value="viewModel.Password" />
     <div class="register-form__info register-form__info--password" title="password should contain at least 8 characters">
         <SvgIcon SvgUrl="/assets/info-icon.svg" />
     </div>
@@ -22,13 +22,13 @@
         Confirm:
     </label>
     <InputText type="password" class="register-form__input register-form__input--confirm" id="register-confirm"
-               @bind-Value="model.PasswordConfirmation" />
+               @bind-Value="viewModel.PasswordConfirmation" />
 
     <label class="register-form__label register-form__label--code" for="register-code">
         Registration code:
     </label>
     <InputText class="register-form__input register-form__input--code" id="register-code"
-               @bind-Value="model.RegistrationCode" />
+               @bind-Value="viewModel.RegistrationCode" />
     <div class="register-form__info register-form__info--code" title="temporarily, creating new accounts is only available to users with a referral code">
         <SvgIcon SvgUrl="/assets/info-icon.svg" />
     </div>
@@ -51,7 +51,7 @@
 @code {
     [Parameter] public EventCallback OnSuccess { get; set; }
 
-    private SignInModel model = new();
+    private SignInVM viewModel = new();
 
     string resultError = string.Empty;
     bool showResultError => !string.IsNullOrEmpty(resultError);
@@ -69,7 +69,7 @@
 
         resultError = string.Empty;
 
-        var dto = new RegisterDto(model.Email, model.Password, model.RegistrationCode);
+        var dto = new RegisterDTO(viewModel.Email, viewModel.Password, viewModel.RegistrationCode);
         var response = await httpClient.PostAsJsonAsync("/api/user/register", dto);
         var result = await response.Content.ReadFromJsonAsync<RegisterResult>();
 

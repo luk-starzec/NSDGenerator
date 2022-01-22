@@ -6,8 +6,8 @@ namespace NSDGenerator.Server.Diagram.Helpers;
 
 public interface IDtoConverters
 {
-    BlockCollectionDto BlocksToBlockCollectionDto(Block[] blocks, Guid rootId);
-    string TextBlockDtoToJson(TextBlockDto dto);
-    string BranchBlockDtoToJson(BranchBlockDto dto);
+    BlockCollectionDTO BlocksToBlockCollectionDto(Block[] blocks, Guid rootId);
+    string TextBlockDtoToJson(TextBlockDTO dto);
+    string BranchBlockDtoToJson(BranchBlockDTO dto);
 
 }

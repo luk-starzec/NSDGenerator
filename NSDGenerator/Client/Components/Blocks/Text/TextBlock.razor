@@ -3,29 +3,29 @@
 
 @if (IsEditMode && isSelected)
 {
-    <EditTextBlock Model="@Model" CssClass="@CssClass" 
-                   OnChildAdded="@HandleChildAdded" OnDeleted="HandleBlockDeleted" OnUnselected="@HandleBlockUnselected" />
+    <EditTextBlock ViewModel="@ViewModel" CssClass="@CssClass"
+               OnChildAdded="@HandleChildAdded" OnDeleted="HandleBlockDeleted" OnUnselected="@HandleBlockUnselected" />
 }
 else
 {
-    <PreviewTextBlock Model="@Model" CssClass="@cssPreview" OnBlockSelected="@HandleBlockSelected" />
+    <PreviewTextBlock ViewModel="@ViewModel" CssClass="@cssPreview" OnBlockSelected="@HandleBlockSelected" />
 }
 
-@if (@Model.Child is not null)
+@if (@ViewModel.Child is not null)
 {
-    <Block Model=@Model.Child CssClass="block__child" />
+    <Block ViewModel=@ViewModel.Child CssClass="block__child" />
 }
 
 
 @code {
     [Parameter] public string CssClass { get; set; }
 
-    [Parameter] public TextBlockModel Model { get; set; }
+    [Parameter] public TextBlockVM ViewModel { get; set; }
 
     [CascadingParameter] bool IsEditMode { get; set; }
 
 
-    bool isSelected => Model.Id == AppState.SelectedBlockId;
+    bool isSelected => ViewModel.Id == AppState.SelectedBlockId;
 
     string cssMask => IsEditMode && AppState.SelectedBlockId is not null && !isSelected ? "block__masked" : "";
 
@@ -50,20 +50,20 @@ else
 
     void HandleBlockUnselected() => AppState.SelectBlock(null);
 
-    void HandleBlockDeleted() => AppState.DeleteBlock(Model);
+    void HandleBlockDeleted() => AppState.DeleteBlock(ViewModel);
 
     void HandleChildAdded()
     {
-        AppState.AddBlock(Model.Child);
-        AppState.SelectBlock(Model.Child.Id);
+        AppState.AddBlock(ViewModel.Child);
+        AppState.SelectBlock(ViewModel.Child.Id);
         StateHasChanged();
     }
 
     void HandleChildDeleted(Guid id)
     {
-        if (Model?.Child?.Id == id)
+        if (ViewModel?.Child?.Id == id)
         {
-            Model.Child = null;
+            ViewModel.Child = null;
             AppState.SelectBlock(null);
         }
     }

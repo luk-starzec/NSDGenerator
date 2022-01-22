@@ -1,3 +1,3 @@
 ﻿namespace NSDGenerator.Shared.User;
 
-public record RegisterDto(string Email, string Password, string RegistrationCode);
+public record RegisterDTO(string Email, string Password, string RegistrationCode);

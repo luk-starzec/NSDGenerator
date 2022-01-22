@@ -6,7 +6,7 @@
     <DeleteButton OnDeleteBlock="@DeleteBlockClick" />
 
     <div class="edit-text-block__text">
-        <textarea @bind="@Model.Text" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="text" />
+        <textarea @bind="@ViewModel.Text" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="text" />
     </div>
 
     <AddButtons OnAddTextBlock="@HandleAddTextBlock" OnAddBranchBlock="@HandleAddBranchBlock" />
@@ -18,7 +18,7 @@
 @code {
     [Parameter] public string CssClass { get; set; }
 
-    [Parameter] public TextBlockModel Model { get; set; }
+    [Parameter] public TextBlockVM ViewModel { get; set; }
 
     [Parameter] public EventCallback OnUnselected { get; set; }
     [Parameter] public EventCallback OnChildAdded { get; set; }
@@ -38,13 +38,13 @@
 
     async Task AddChildBlock(bool textBlock)
     {
-        var currentChild = Model.Child;
+        var currentChild = ViewModel.Child;
 
-        IBlockModel block = textBlock
-            ? new TextBlockModel() { Child = currentChild }
-            : new BranchBlockModel() { LeftResult = currentChild };
-        block.Parent = Model;
-        Model.Child = block;
+        IBlockVM block = textBlock
+            ? new TextBlockVM() { Child = currentChild }
+            : new BranchBlockVM() { LeftResult = currentChild };
+        block.Parent = ViewModel;
+        ViewModel.Child = block;
 
         if (currentChild is not null)
             currentChild.Parent = block;

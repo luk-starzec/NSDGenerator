@@ -1,4 +1,4 @@
-﻿using NSDGenerator.Client.Models;
+﻿using NSDGenerator.Client.ViewModels;
 using NSDGenerator.Shared.Diagram;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -7,18 +7,19 @@ namespace NSDGenerator.Client.Services
 {
     internal interface IDiagramService
     {
-        Task<IEnumerable<DiagramDto>> GetMyDiagramsAsync();
+        Task<IEnumerable<DiagramInfoDTO>> GetMyDiagramsAsync();
 
-        Task<DiagramModel> GetDiagramAsync(Guid id);
-        DiagramModel GetDiagram(string fileContent);
+        Task<DiagramVM> GetDiagramAsync(Guid id);
+        DiagramVM GetDiagram(string fileContent);
         Task<bool> CheckIfDiagramExistsAsync(Guid id);
 
-        Task<bool> SaveDiagramAsync(DiagramModel diagram);
-        Task DownloadDiagramAsync(DiagramModel diagram);
+        Task<bool> SaveDiagramAsync(DiagramVM diagram);
+        Task DownloadDiagramAsync(DiagramVM diagram);
 
         Task<bool> DeleteDiagramAsync(Guid id);
 
-        DiagramModel CreateDiagramCopy(DiagramModel diagram);
+        DiagramVM CreateNewDiagram();
+        DiagramVM CreateDiagramCopy(DiagramVM diagram);
 
     }
 }

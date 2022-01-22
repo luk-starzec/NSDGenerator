@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace NSDGenerator.Client.Models;
+namespace NSDGenerator.Client.ViewModels;
 
-public class SignInModel
+public class SignInVM
 {
     [Required, EmailAddress]
     public string Email { get; set; }

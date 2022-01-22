@@ -1,6 +1,6 @@
 ﻿namespace NSDGenerator.Shared.Diagram;
 
-public interface IBlockDto
+public interface IBlockDTO
 {
     public Guid Id { get; }
     public int Level { get; }

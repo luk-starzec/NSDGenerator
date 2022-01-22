@@ -3,7 +3,7 @@
 <div class="@CssClass file-button-block__wrapper">
 
     <label class="file-button-block__button">
-        @Model.ButtonText
+        @ViewModel.ButtonText
         <InputFile class="file-button-block__input" OnChange="OpenFile" accept="application/JSON" />
     </label>
 
@@ -12,7 +12,7 @@
 @code {
     [Parameter] public string CssClass { get; set; }
 
-    [Parameter] public FileButtonBlockModel Model { get; set; }
+    [Parameter] public FileButtonBlockVM ViewModel { get; set; }
 
     async Task OpenFile(InputFileChangeEventArgs e)
     {
@@ -21,6 +21,6 @@
         await file.OpenReadStream().ReadAsync(buffers);
         var stringData = System.Text.Encoding.UTF8.GetString(buffers);
 
-        Model.OnFileSelected(stringData);
+        ViewModel.OnFileSelected(stringData);
     }
 }

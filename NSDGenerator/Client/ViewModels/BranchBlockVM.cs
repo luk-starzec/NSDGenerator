@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace NSDGenerator.Client.Models;
+namespace NSDGenerator.Client.ViewModels;
 
-public partial class BranchBlockModel : IBlockModel
+public partial class BranchBlockVM : IBlockVM
 {
     public Guid Id { get; set; }
-    public IBlockModel Parent { get; set; }
+    public IBlockVM Parent { get; set; }
     public string Condition { get; set; }
     public string LeftBranch { get; set; } = "Yes";
     public string RightBranch { get; set; } = "No";
@@ -13,8 +13,8 @@ public partial class BranchBlockModel : IBlockModel
     public List<int> LeftColumns { get; set; } = new List<int>();
     public List<int> RightColumns { get; set; } = new List<int>();
 
-    private IBlockModel leftResult;
-    public IBlockModel LeftResult
+    private IBlockVM leftResult;
+    public IBlockVM LeftResult
     {
         get => leftResult;
         set
@@ -24,8 +24,8 @@ public partial class BranchBlockModel : IBlockModel
                 leftResult.Parent = this;
         }
     }
-    private IBlockModel rightResult;
-    public IBlockModel RightResult
+    private IBlockVM rightResult;
+    public IBlockVM RightResult
     {
         get => rightResult;
         set
@@ -36,5 +36,5 @@ public partial class BranchBlockModel : IBlockModel
         }
     }
 
-    public BranchBlockModel() => Id = Guid.NewGuid();
+    public BranchBlockVM() => Id = Guid.NewGuid();
 }

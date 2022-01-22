@@ -23,7 +23,7 @@ namespace NSDGenerator.Server.Diagram.Repo
             this.diagramConverters = diagramConverters;
         }
 
-        public async Task<DiagramFullDto> GetDiagramAsync(Guid id, string userName)
+        public async Task<DiagramDTO> GetDiagramAsync(Guid id, string userName)
         {
             var row = await context.Diagrams
                 .Where(r => r.Id == id)
@@ -36,7 +36,7 @@ namespace NSDGenerator.Server.Diagram.Repo
             var blocks = await GetBlockCollectionAsync(id, row.RootBlockId);
             var columnsWidth = GetColumnsWidthList(row.ColumnsWidth);
 
-            return new DiagramFullDto(row.Id, row.Name, row.IsPrivate, row.UserName, blocks, columnsWidth);
+            return new DiagramDTO(row.Id, row.Name, row.IsPrivate, row.UserName, blocks, columnsWidth);
         }
 
         private static List<int> GetColumnsWidthList(string columnWidthsString)
@@ -54,12 +54,12 @@ namespace NSDGenerator.Server.Diagram.Repo
             return string.Join(";", columnWidths); ;
         }
 
-        public async Task<IEnumerable<DiagramDto>> GetDiagramInfosAsync(string userName)
+        public async Task<IEnumerable<DiagramInfoDTO>> GetDiagramInfosAsync(string userName)
         {
             return await context.Diagrams
                 .Where(r => r.UserName == userName)
                 .OrderByDescending(r => r.Created)
-                .Select(r => new DiagramDto(r.Id, r.Name, r.IsPrivate, r.Created, r.Modified))
+                .Select(r => new DiagramInfoDTO(r.Id, r.Name, r.IsPrivate, r.Created, r.Modified))
                 .ToListAsync();
         }
 
@@ -70,7 +70,7 @@ namespace NSDGenerator.Server.Diagram.Repo
         }
 
 
-        public async Task<bool> SaveDiagramAsync(DiagramFullDto diagram, string userName)
+        public async Task<bool> SaveDiagramAsync(DiagramDTO diagram, string userName)
         {
             var diagramRow = await context.Diagrams.SingleOrDefaultAsync(r => r.Id == diagram.Id);
 
@@ -148,7 +148,7 @@ namespace NSDGenerator.Server.Diagram.Repo
             return true;
         }
 
-        private async Task<BlockCollectionDto> GetBlockCollectionAsync(Guid diagramId, Guid? rootId)
+        private async Task<BlockCollectionDTO> GetBlockCollectionAsync(Guid diagramId, Guid? rootId)
         {
             if (rootId is null)
                 return null;
@@ -160,16 +160,16 @@ namespace NSDGenerator.Server.Diagram.Repo
             return diagramConverters.BlocksToBlockCollectionDto(blocks, rootId.Value);
         }
 
-        private void UpdateBlock(Block block, IBlockDto dto)
+        private void UpdateBlock(Block block, IBlockDTO dto)
         {
             string jsonData = null;
-            if (dto is TextBlockDto tb)
+            if (dto is TextBlockDTO tb)
             {
                 block.BlockType = EnumBlockType.Text;
                 jsonData = diagramConverters.TextBlockDtoToJson(tb);
             }
 
-            if (dto is BranchBlockDto bb)
+            if (dto is BranchBlockDTO bb)
             {
                 block.BlockType = EnumBlockType.Branch;
                 jsonData = diagramConverters.BranchBlockDtoToJson(bb);

@@ -3,13 +3,13 @@ using System.Linq;
 
 namespace NSDGenerator.Shared.Diagram;
 
-public record BlockCollectionDto
+public record BlockCollectionDTO
 {
     public Guid RootId { get; init; }
-    public List<TextBlockDto> TextBlocks { get; init; } = new();
-    public List<BranchBlockDto> BranchBlocks { get; init; } = new();
+    public List<TextBlockDTO> TextBlocks { get; init; } = new();
+    public List<BranchBlockDTO> BranchBlocks { get; init; } = new();
 
-    public IEnumerable<IBlockDto> Blocks
-        => TextBlocks.Select(r => r as IBlockDto)
-            .Union(BranchBlocks.Select(r => r as IBlockDto));
+    public IEnumerable<IBlockDTO> Blocks
+        => TextBlocks.Select(r => r as IBlockDTO)
+            .Union(BranchBlocks.Select(r => r as IBlockDTO));
 }

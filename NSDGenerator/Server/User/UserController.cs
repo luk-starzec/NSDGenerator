@@ -25,7 +25,7 @@ namespace NSDGenerator.Server.User
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto login)
+        public async Task<IActionResult> Login([FromBody] LoginDTO login)
         {
             var isValid = await _repo.VerifyUserAsync(login);
 
@@ -38,7 +38,7 @@ namespace NSDGenerator.Server.User
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto register)
+        public async Task<IActionResult> Register([FromBody] RegisterDTO register)
         {
             var registrationCode = register.RegistrationCode;
             if (string.IsNullOrEmpty(registrationCode))

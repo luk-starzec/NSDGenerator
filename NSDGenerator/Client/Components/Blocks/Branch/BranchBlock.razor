@@ -3,24 +3,24 @@
 
 @if (IsEditMode && isSelected)
 {
-    <EditBranchBlock Model="@Model" CssClass="@CssClass"
+    <EditBranchBlock ViewModel="@ViewModel" CssClass="@CssClass"
                  OnChildAdded="@HandleChildAdded" OnDeleted="HandleBlockDeleted" OnUnselected="@HandleBlockUnselected" />
 }
 else
 {
-    <PreviewBranchBlock Model="@Model" CssClass="@cssPreview" OnBlockSelected="@HandleBlockSelected" />
+    <PreviewBranchBlock ViewModel="@ViewModel" CssClass="@cssPreview" OnBlockSelected="@HandleBlockSelected" />
 }
 
 
 @code {
     [Parameter] public string CssClass { get; set; }
 
-    [Parameter] public BranchBlockModel Model { get; set; }
+    [Parameter] public BranchBlockVM ViewModel { get; set; }
 
     [CascadingParameter] bool IsEditMode { get; set; }
 
 
-    bool isSelected => Model.Id == AppState.SelectedBlockId;
+    bool isSelected => ViewModel.Id == AppState.SelectedBlockId;
 
     string cssMask => IsEditMode && AppState.SelectedBlockId is not null && !isSelected ? "block__masked" : "";
 
@@ -45,11 +45,11 @@ else
 
     void HandleBlockUnselected() => AppState.SelectBlock(null);
 
-    void HandleBlockDeleted() => AppState.DeleteBlock(Model);
+    void HandleBlockDeleted() => AppState.DeleteBlock(ViewModel);
 
     void HandleChildAdded(bool left)
     {
-        var child = left ? Model.LeftResult : Model.RightResult;
+        var child = left ? ViewModel.LeftResult : ViewModel.RightResult;
         AppState.AddBlock(child);
         AppState.SelectBlock(child.Id);
         StateHasChanged();
@@ -57,14 +57,14 @@ else
 
     void HandleChildDeleted(Guid id)
     {
-        if (Model?.LeftResult?.Id == id)
+        if (ViewModel?.LeftResult?.Id == id)
         {
-            Model.LeftResult = null;
+            ViewModel.LeftResult = null;
             AppState.SelectBlock(null);
         }
-        if (Model?.RightResult?.Id == id)
+        if (ViewModel?.RightResult?.Id == id)
         {
-            Model.RightResult = null;
+            ViewModel.RightResult = null;
             AppState.SelectBlock(null);
         }
     }

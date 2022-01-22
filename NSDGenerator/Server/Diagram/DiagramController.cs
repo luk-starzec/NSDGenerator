@@ -20,14 +20,14 @@ public class DiagramController : ControllerBase
     }
 
     [HttpGet, Authorize]
-    public async Task<IEnumerable<DiagramDto>> GetDiagrams()
+    public async Task<IEnumerable<DiagramInfoDTO>> GetDiagrams()
     {
         var userName = User.Identity.Name;
         return await _repo.GetDiagramInfosAsync(userName);
     }
 
     [HttpPost, Authorize]
-    public async Task<IActionResult> SaveDiagram([FromBody] DiagramFullDto diagram)
+    public async Task<IActionResult> SaveDiagram([FromBody] DiagramDTO diagram)
     {
         var userName = User.Identity.Name;
         var result = await _repo.SaveDiagramAsync(diagram, userName);
@@ -43,7 +43,7 @@ public class DiagramController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<DiagramFullDto> GetDiagram(Guid id)
+    public async Task<DiagramDTO> GetDiagram(Guid id)
     {
         var userName = User.Identity.IsAuthenticated ? User.Identity.Name : null;
         return await _repo.GetDiagramAsync(id, userName);

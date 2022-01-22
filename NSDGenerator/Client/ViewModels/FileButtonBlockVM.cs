@@ -1,14 +1,14 @@
-﻿namespace NSDGenerator.Client.Models;
+﻿namespace NSDGenerator.Client.ViewModels;
 
-public class FileButtonBlockModel : IBlockModel
+public class FileButtonBlockVM : IBlockVM
 {
-    public IBlockModel Parent { get; set; }
+    public IBlockVM Parent { get; set; }
     public Guid Id { get; set; }
     public string ButtonText { get; set; }
     public Action<string> OnFileSelected { get; set; }
 
-    private IBlockModel child;
-    public IBlockModel Child
+    private IBlockVM child;
+    public IBlockVM Child
     {
         get => child;
         set
@@ -19,9 +19,9 @@ public class FileButtonBlockModel : IBlockModel
         }
     }
 
-    public FileButtonBlockModel() => Id = Guid.NewGuid();
+    public FileButtonBlockVM() => Id = Guid.NewGuid();
 
-    public FileButtonBlockModel(string buttonText, Action<string> onFileSelected) : this()
+    public FileButtonBlockVM(string buttonText, Action<string> onFileSelected) : this()
         => (ButtonText, OnFileSelected) = (buttonText, onFileSelected);
 
 }

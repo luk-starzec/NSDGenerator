@@ -4,15 +4,15 @@
 </div>
 
 @code {
-    [Parameter] public EnumSortDirection SortDirection { get; set; }
+    [Parameter] public SortDirectionEnum SortDirection { get; set; }
 
     string GetCss()
     {
         switch (SortDirection)
         {
-            case EnumSortDirection.Ascending:
+            case SortDirectionEnum.Ascending:
                 return "sorting-marker__wrapper sorting-marker__wrapper--asc";
-            case EnumSortDirection.Descending:
+            case SortDirectionEnum.Descending:
                 return "sorting-marker__wrapper sorting-marker__wrapper--desc";
             default:
                 return "sorting-marker__wrapper";
@@ -23,9 +23,9 @@
     {
         switch (SortDirection)
         {
-            case EnumSortDirection.Ascending:
+            case SortDirectionEnum.Ascending:
                 return "Ascending sort";
-            case EnumSortDirection.Descending:
+            case SortDirectionEnum.Descending:
                 return "Descending sort";
             default:
                 return "";

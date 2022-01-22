@@ -1,24 +1,23 @@
-﻿
-@if (textModel is not null)
+﻿@if (textViewModel is not null)
 {
-    <TextBlock Model="@textModel" CssClass="@cssTextBlock" />
+    <TextBlock ViewModel="@textViewModel" CssClass="@cssTextBlock" />
 }
 
-@if (branchModel is not null)
+@if (branchViewModel is not null)
 {
-    <BranchBlock Model="@branchModel" />
+    <BranchBlock ViewModel="@branchViewModel" />
 }
 
 
 @code {
     [Parameter] public string CssClass { get; set; }
 
-    [Parameter] public IBlockModel Model { get; set; }
+    [Parameter] public IBlockVM ViewModel { get; set; }
 
 
-    TextBlockModel textModel => Model as TextBlockModel;
-    BranchBlockModel branchModel => Model as BranchBlockModel;
+    TextBlockVM textViewModel => ViewModel as TextBlockVM;
+    BranchBlockVM branchViewModel => ViewModel as BranchBlockVM;
 
-    string cssTextBlock => (textModel?.Child is not null) ? $"block__parent {CssClass}" : CssClass;
+    string cssTextBlock => (textViewModel?.Child is not null) ? $"block__parent {CssClass}" : CssClass;
 
 }
