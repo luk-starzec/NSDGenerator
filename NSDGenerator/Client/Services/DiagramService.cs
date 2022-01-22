@@ -46,15 +46,7 @@ internal class DiagramService : IDiagramService
         try
         {
             var dto = await httpClient.GetFromJsonAsync<DiagramDTO>($"api/diagram/{id}");
-            var diagram = modelConverter.DiagramFullDtoToDiagramModel(dto);
-
-            // temp fallback
-            if (!diagram.ColumnsWidth.Any())
-            {
-                var columns = GetColumnsCount(diagram.RootBlock);
-                for (int i = 0; i < columns; i++)
-                    diagram.ColumnsWidth.Add(100 / columns);
-            }
+            var diagram = modelConverter.DiagramDtoToDiagramViewModel(dto);
             return diagram;
         }
         catch (Exception ex)
@@ -66,13 +58,13 @@ internal class DiagramService : IDiagramService
 
     public int GetColumnsCount(IBlockVM rootBlock)
     {
-        var branchBlocks = modelConverter.RootBlockToChildrenBranchBlockModels(rootBlock);
+        var branchBlocks = modelConverter.RootBlockToChildrenBranchBlockViewModels(rootBlock);
         return branchBlocks.Count + 1;
     }
 
     public DiagramVM GetDiagram(string fileContent)
     {
-        return modelConverter.JsonToDiagramModel(fileContent);
+        return modelConverter.JsonToDiagramViewModel(fileContent);
     }
 
     public async Task<bool> CheckIfDiagramExistsAsync(Guid id)
@@ -93,16 +85,16 @@ internal class DiagramService : IDiagramService
     public async Task DownloadDiagramAsync(DiagramVM diagram)
     {
         var name = GetFileName(diagram.Name);
-        string content = modelConverter.DiagramModelToJson(diagram);
+        string content = modelConverter.DiagramViewModelToJson(diagram);
 
-        await js.InvokeVoidAsync("DownloadFile", $"{name}.json", "application/json;charset=utf-8", content);
+        await js.InvokeVoidAsync("DownloadFile", $"{name}.nsd", "application/json;charset=utf-8", content);
     }
 
     public async Task<bool> SaveDiagramAsync(DiagramVM diagram)
     {
         try
         {
-            var json = modelConverter.DiagramModelToJson(diagram);
+            var json = modelConverter.DiagramViewModelToJson(diagram);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await httpClient.PostAsync($"api/diagram", content);
             return response.IsSuccessStatusCode;

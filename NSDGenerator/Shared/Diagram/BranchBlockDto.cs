@@ -1,4 +1,6 @@
-﻿namespace NSDGenerator.Shared.Diagram;
+﻿using System.Collections.Generic;
+
+namespace NSDGenerator.Shared.Diagram;
 
 public record BranchBlockDTO(
     Guid Id,
@@ -7,5 +9,6 @@ public record BranchBlockDTO(
     string RightBranch,
     Guid? LeftResult,
     Guid? RightResult,
-    int Level = 0
+    List<int> LeftColumns,
+    List<int> RightColumns
 ) : IBlockDTO;

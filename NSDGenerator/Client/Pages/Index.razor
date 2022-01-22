@@ -51,10 +51,6 @@
         </PreviewTextBlock>
     </section>
 
-    @*
-        <button @onclick="TestDiagramClick">Test diagram</button>
-    *@
-
 </PageContent>
 
 @code {
@@ -73,46 +69,4 @@
     }
 
     void NewDiagramClick() => navigationManager.NavigateTo("/diagram");
-
-    void TestDiagramClick()
-    {
-        var test = new TextBlockVM
-            {
-                Id = Guid.NewGuid(),
-                Text = "Start block",
-                Child = new TextBlockVM
-                {
-                    Id = Guid.NewGuid(),
-                    Text = "Second block",
-                    Child = new TextBlockVM("Third")
-                }
-            };
-        var diagram = new DiagramVM
-            {
-                Name = "New diagram",
-                RootBlock = test,
-            };
-
-        var fileBlock = new BranchBlockVM
-            {
-                Condition = "From file?",
-                LeftResult = new TextBlockVM("Select file"),
-                RightResult = new TextBlockVM("View list", test),
-            };
-        var openBlock = new BranchBlockVM
-            {
-                Condition = "Open existing diagram?",
-                LeftResult = fileBlock,
-                RightResult = new TextBlockVM("New diagram"),
-            };
-        var home = new DiagramVM
-            {
-                Name = "Start page",
-                RootBlock = openBlock
-            };
-
-        AppState.SetCurrentDiagram(home);
-
-        navigationManager.NavigateTo("/diagram");
-    }
 }

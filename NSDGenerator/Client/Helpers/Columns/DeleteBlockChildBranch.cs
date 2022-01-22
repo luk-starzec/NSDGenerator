@@ -19,7 +19,7 @@ namespace NSDGenerator.Client.Helpers.Columns
             if (!deleted.Any())
                 return;
 
-            var blocks = modelConverter.RootBlockToChildrenBranchBlockModels(diagram.RootBlock);
+            var blocks = modelConverter.RootBlockToChildrenBranchBlockViewModels(diagram.RootBlock);
 
             SetColumns(deleted, blocks);
             SetColumnsWidth(parentColumns, diagram);

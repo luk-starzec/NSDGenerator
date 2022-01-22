@@ -44,7 +44,7 @@ public class DtoConverters : IDtoConverters
 
     public string BranchBlockDtoToJson(BranchBlockDTO dto)
     {
-        var content = new BranchBlockJsonData(dto.Condition, dto.LeftBranch, dto.RightBranch, dto.LeftResult, dto.RightResult);
+        var content = new BranchBlockJsonData(dto.Condition, dto.LeftBranch, dto.RightBranch, dto.LeftResult, dto.RightResult, dto.LeftColumns, dto.RightColumns);
         return JsonSerializer.Serialize(content, jsonOptions);
     }
 
@@ -57,6 +57,6 @@ public class DtoConverters : IDtoConverters
     private BranchBlockDTO BlockToBranchBlockDto(Block block)
     {
         var content = JsonSerializer.Deserialize<BranchBlockJsonData>(block.JsonData, jsonOptions);
-        return new BranchBlockDTO(block.Id, content.Condition, content.LeftBranch, content.RightBranch, content.LeftResult, content.RightResult);
+        return new BranchBlockDTO(block.Id, content.Condition, content.LeftBranch, content.RightBranch, content.LeftResult, content.RightResult, content.LeftColumns, content.RightColumns);
     }
 }

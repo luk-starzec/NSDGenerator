@@ -6,13 +6,13 @@ namespace NSDGenerator.Client.Helpers;
 
 public interface IModelConverter
 {
-    DiagramVM JsonToDiagramModel(string json);
-    DiagramVM DiagramFullDtoToDiagramModel(DiagramDTO diagramFullDto);
+    DiagramVM JsonToDiagramViewModel(string json);
+    DiagramVM DiagramDtoToDiagramViewModel(DiagramDTO diagramDto);
 
-    string DiagramModelToJson(DiagramVM diagram);
+    string DiagramViewModelToJson(DiagramVM diagram);
 
     BlockCollectionDTO RootBlockToBlockCollectionDto(IBlockVM rootBlock);
     IBlockVM BlockCollectionDtoToRootBlock(BlockCollectionDTO blockCollectionDto);
 
-    List<BranchBlockVM> RootBlockToChildrenBranchBlockModels(IBlockVM rootBlock);
+    List<BranchBlockVM> RootBlockToChildrenBranchBlockViewModels(IBlockVM rootBlock);
 }

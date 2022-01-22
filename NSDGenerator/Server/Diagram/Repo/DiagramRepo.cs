@@ -41,10 +41,6 @@ namespace NSDGenerator.Server.Diagram.Repo
 
         private static List<int> GetColumnsWidthList(string columnWidthsString)
         {
-            // temp fallback
-            if (string.IsNullOrEmpty(columnWidthsString))
-                return new List<int>();
-
             var list = columnWidthsString.Split(";");
             return list.Select(r => int.Parse(r)).ToList();
         }

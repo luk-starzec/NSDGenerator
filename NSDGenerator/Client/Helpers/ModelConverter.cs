@@ -10,7 +10,7 @@ public class ModelConverter : IModelConverter
 {
     private readonly JsonSerializerOptions jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
-    public string DiagramModelToJson(DiagramVM diagram)
+    public string DiagramViewModelToJson(DiagramVM diagram)
     {
         BlockCollectionDTO blocks = null;
         if (diagram.RootBlock is not null)
@@ -25,20 +25,17 @@ public class ModelConverter : IModelConverter
         return json;
     }
 
-    public DiagramVM JsonToDiagramModel(string json)
+    public DiagramVM JsonToDiagramViewModel(string json)
     {
         var dto = JsonSerializer.Deserialize<DiagramDTO>(json, jsonOptions);
-        return DiagramFullDtoToDiagramModel(dto);
+        return DiagramDtoToDiagramViewModel(dto);
     }
 
-    public DiagramVM DiagramFullDtoToDiagramModel(DiagramDTO diagramFullDto)
+    public DiagramVM DiagramDtoToDiagramViewModel(DiagramDTO diagramFullDto)
     {
         var rootBlock = diagramFullDto.BlockCollection is not null
-            ? ConvertToBlockModel(diagramFullDto.BlockCollection, diagramFullDto.BlockCollection.RootId)
+            ? ConvertToBlockViewModel(diagramFullDto.BlockCollection, diagramFullDto.BlockCollection.RootId)
             : null;
-
-        if (rootBlock is not null)
-            SetDiagramBlockColumns(rootBlock, diagramFullDto.BlockCollection.BranchBlocks);
 
         var diagram = new DiagramVM
         {
@@ -53,48 +50,6 @@ public class ModelConverter : IModelConverter
         return diagram;
     }
 
-    private void SetDiagramBlockColumns(IBlockVM rootBlock, List<BranchBlockDTO> branchBlockDtos)
-    {
-        var rootBranchBlockDto = branchBlockDtos.OrderBy(r => r.Level).FirstOrDefault();
-
-        if (rootBranchBlockDto is null)
-            return;
-
-        var branchBlocks = RootBlockToChildrenBranchBlockModels(rootBlock);
-        var rootBranchBlock = branchBlocks.Single(r => r.Id == rootBranchBlockDto.Id);
-
-        SetBranchBlocksColumnIndexes(rootBranchBlock, 0, branchBlocks);
-    }
-
-
-    private void SetBranchBlocksColumnIndexes(BranchBlockVM block, int index, List<BranchBlockVM> branchBlocks)
-    {
-        var leftBranchBlocks = RootBlockToBlockCollectionDto(block.LeftResult).BranchBlocks;
-        var rightBranchBlocks = RootBlockToBlockCollectionDto(block.RightResult).BranchBlocks;
-
-        var lStart = index;
-        var lEnd = lStart + leftBranchBlocks.Count + 1;
-        for (int i = lStart; i < lEnd; i++)
-            block.LeftColumns.Add(i);
-        SetChildrenBranchBlocksColumns(branchBlocks, leftBranchBlocks, lStart);
-
-        var rStart = lEnd;
-        var rEnd = rStart + rightBranchBlocks.Count + 1;
-        for (int i = rStart; i < rEnd; i++)
-            block.RightColumns.Add(i);
-        SetChildrenBranchBlocksColumns(branchBlocks, rightBranchBlocks, rStart);
-    }
-
-    private void SetChildrenBranchBlocksColumns(List<BranchBlockVM> branchBlocks, List<BranchBlockDTO> childBlocks, int startingColumnIndex)
-    {
-        foreach (var b in childBlocks.OrderBy(r => r.Level))
-        {
-            var bm = branchBlocks.Single(r => r.Id == b.Id);
-            SetBranchBlocksColumnIndexes(bm, startingColumnIndex++, branchBlocks);
-        }
-    }
-
-
     public BlockCollectionDTO RootBlockToBlockCollectionDto(IBlockVM rootBlock)
     {
         if (rootBlock is null)
@@ -108,13 +63,13 @@ public class ModelConverter : IModelConverter
 
     public IBlockVM BlockCollectionDtoToRootBlock(BlockCollectionDTO blockCollectionDto)
     {
-        return ConvertToBlockModel(blockCollectionDto, blockCollectionDto.RootId);
+        return ConvertToBlockViewModel(blockCollectionDto, blockCollectionDto.RootId);
     }
 
-    public List<BranchBlockVM> RootBlockToChildrenBranchBlockModels(IBlockVM rootBlock)
+    public List<BranchBlockVM> RootBlockToChildrenBranchBlockViewModels(IBlockVM rootBlock)
     {
         var blocks = new List<IBlockVM>();
-        GetBranchBlockModels(rootBlock, blocks);
+        GetBranchBlockViewModels(rootBlock, blocks);
 
         return blocks
             .Select(r => r as BranchBlockVM)
@@ -123,7 +78,7 @@ public class ModelConverter : IModelConverter
     }
 
 
-    private void GetBranchBlockModels(IBlockVM block, List<IBlockVM> result)
+    private void GetBranchBlockViewModels(IBlockVM block, List<IBlockVM> result)
     {
         if (block is null)
             return;
@@ -153,14 +108,12 @@ public class ModelConverter : IModelConverter
             return false;
 
         var tb = block as TextBlockVM;
-        var parentLevel = result.Blocks.SingleOrDefault(r => r.Id == block.Parent.Id)?.Level ?? -1;
-        var dto = new TextBlockDTO(tb.Id, tb.Text, tb.Child?.Id, parentLevel + 1);
+        var dto = new TextBlockDTO(tb.Id, tb.Text, tb.Child?.Id);
         result.TextBlocks.Add(dto);
 
         BlocksToBlockCollection(tb.Child, result);
         return true;
     }
-
 
     private bool TryAddAsTextBlock(IBlockVM block, List<IBlockVM> result)
     {
@@ -170,7 +123,7 @@ public class ModelConverter : IModelConverter
         var tb = block as TextBlockVM;
         result.Add(tb);
 
-        GetBranchBlockModels(tb.Child, result);
+        GetBranchBlockViewModels(tb.Child, result);
         return true;
     }
 
@@ -180,8 +133,7 @@ public class ModelConverter : IModelConverter
             return false;
 
         var bb = block as BranchBlockVM;
-        var parentLevel = result.Blocks.SingleOrDefault(r => r.Id == block.Parent.Id)?.Level ?? -1;
-        var dto = new BranchBlockDTO(bb.Id, bb.Condition, bb.LeftBranch, bb.RightBranch, bb.LeftResult?.Id, bb.RightResult?.Id, parentLevel + 1);
+        var dto = new BranchBlockDTO(bb.Id, bb.Condition, bb.LeftBranch, bb.RightBranch, bb.LeftResult?.Id, bb.RightResult?.Id, bb.LeftColumns, bb.RightColumns);
         result.BranchBlocks.Add(dto);
 
         BlocksToBlockCollection(bb.LeftResult, result);
@@ -197,27 +149,27 @@ public class ModelConverter : IModelConverter
         var bb = block as BranchBlockVM;
         result.Add(bb);
 
-        GetBranchBlockModels(bb.LeftResult, result);
-        GetBranchBlockModels(bb.RightResult, result);
+        GetBranchBlockViewModels(bb.LeftResult, result);
+        GetBranchBlockViewModels(bb.RightResult, result);
         return true;
     }
 
-    private IBlockVM ConvertToBlockModel(BlockCollectionDTO blockCollectionDto, Guid currentId)
+    private IBlockVM ConvertToBlockViewModel(BlockCollectionDTO blockCollectionDto, Guid currentId)
     {
         var current = blockCollectionDto.Blocks.Where(r => r.Id == currentId).SingleOrDefault();
 
-        var tb = TryConvertToTextBlockModel(current, blockCollectionDto);
+        var tb = TryConvertToTextBlockViewModel(current, blockCollectionDto);
         if (tb is not null)
             return tb;
 
-        var bb = TryConvertToBranchBlockModel(current, blockCollectionDto);
+        var bb = TryConvertToBranchBlockViewModel(current, blockCollectionDto);
         if (bb is not null)
             return bb;
 
         return null;
     }
 
-    private TextBlockVM TryConvertToTextBlockModel(IBlockDTO blockDto, BlockCollectionDTO blockCollectionDto)
+    private TextBlockVM TryConvertToTextBlockViewModel(IBlockDTO blockDto, BlockCollectionDTO blockCollectionDto)
     {
         if (blockDto is not TextBlockDTO)
             return null;
@@ -229,12 +181,12 @@ public class ModelConverter : IModelConverter
             Text = tbd.Text,
         };
         if (tbd.ChildId is not null)
-            tb.Child = ConvertToBlockModel(blockCollectionDto, tbd.ChildId.Value);
+            tb.Child = ConvertToBlockViewModel(blockCollectionDto, tbd.ChildId.Value);
 
         return tb;
     }
 
-    private BranchBlockVM TryConvertToBranchBlockModel(IBlockDTO blockDto, BlockCollectionDTO jsonBlockCollection)
+    private BranchBlockVM TryConvertToBranchBlockViewModel(IBlockDTO blockDto, BlockCollectionDTO jsonBlockCollection)
     {
         if (blockDto is not BranchBlockDTO)
             return null;
@@ -246,11 +198,13 @@ public class ModelConverter : IModelConverter
             Condition = bbd.Condition,
             LeftBranch = bbd.LeftBranch,
             RightBranch = bbd.RightBranch,
+            LeftColumns = bbd.LeftColumns,
+            RightColumns = bbd.RightColumns,
         };
         if (bbd.LeftResult is not null)
-            bb.LeftResult = ConvertToBlockModel(jsonBlockCollection, bbd.LeftResult.Value);
+            bb.LeftResult = ConvertToBlockViewModel(jsonBlockCollection, bbd.LeftResult.Value);
         if (bbd.RightResult is not null)
-            bb.RightResult = ConvertToBlockModel(jsonBlockCollection, bbd.RightResult.Value);
+            bb.RightResult = ConvertToBlockViewModel(jsonBlockCollection, bbd.RightResult.Value);
 
         return bb;
     }

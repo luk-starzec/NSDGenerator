@@ -28,7 +28,7 @@ namespace NSDGenerator.Client.Helpers.Columns
 
         private void SetColumns(BranchBlockVM block, int index, IBlockVM diagramRootBlock)
         {
-            var blocks = modelConverter.RootBlockToChildrenBranchBlockModels(diagramRootBlock);
+            var blocks = modelConverter.RootBlockToChildrenBranchBlockViewModels(diagramRootBlock);
 
             var greaterLeft = blocks.Where(r => r.LeftColumns.Where(rr => rr >= index).Any()).ToArray();
             var greaterRight = blocks.Where(r => r.RightColumns.Where(rr => rr >= index).Any()).ToArray();
