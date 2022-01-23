@@ -11,15 +11,18 @@
             <DeleteButton OnDeleteBlock="@DeleteBlockClick" />
 
             <div class="edit-branch-block__condition">
-                <input class="edit-branch-block__input" @bind="@ViewModel.Condition" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="condition" />
+                <input class="edit-branch-block__input" @bind="@ViewModel.Condition" @bind:event="oninput"
+                       @onclick:stopPropagation="true" placeholder="condition" @ref="conditionInputRef" />
             </div>
 
             <div class="edit-branch-block__branch edit-branch-block__branch--left">
-                <input class="edit-branch-block__input edit-branch-block__input--short" @bind="@ViewModel.LeftBranch" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="yes" />
+                <input class="edit-branch-block__input edit-branch-block__input--short" @bind="@ViewModel.LeftBranch"
+                       @bind:event="oninput" @onclick:stopPropagation="true" placeholder="yes" />
             </div>
 
             <div class="edit-branch-block__branch edit-branch-block__branch--right">
-                <input class="edit-branch-block__input edit-branch-block__input--short" @bind="@ViewModel.RightBranch" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="no" />
+                <input class="edit-branch-block__input edit-branch-block__input--short" @bind="@ViewModel.RightBranch"
+                       @bind:event="oninput" @onclick:stopPropagation="true" placeholder="no" />
             </div>
 
         </div>
@@ -69,14 +72,21 @@
 
     [CascadingParameter] List<int> ColumnsWidth { get; set; }
 
+    ElementReference conditionInputRef;
+
     string styleResultColumns => columnsViewCalculator.GetResultWrapperStyle(ViewModel, ColumnsWidth);
     string styleBranchColumns => columnsViewCalculator.GetBranchWrapperStyle(ViewModel, ColumnsWidth);
     string styleAddColumns => columnsViewCalculator.GetButtonsWrapperStyle(ViewModel, ColumnsWidth);
 
-
     bool addButtonsAvailable => columnsViewCalculator.AddColumnAvailable(ColumnsWidth);
 
     bool deleteDialogVisible;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await conditionInputRef.FocusAsync();
+    }
 
     void DeleteBlockClick() => deleteDialogVisible = true;
 
@@ -91,7 +101,6 @@
     async Task HandleAddRightTextBlock() => await AddBlock(false, true);
 
     async Task HandleAddRightBranchBlock() => await AddBlock(false, false);
-
 
     async Task AddBlock(bool left, bool textBlock)
     {

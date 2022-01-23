@@ -9,7 +9,8 @@
         </button>
     }
 
-    <input class="diagram-edit-header__name-input @cssInput" @bind="@ViewModel.Name" @bind:event="oninput" placeholder="diagram name" />
+    <input class="diagram-edit-header__name-input @cssInput" @bind="@ViewModel.Name" @bind:event="oninput"
+           placeholder="diagram name" @ref="inputRef" />
 
 </div>
 
@@ -18,6 +19,10 @@
 
     [CascadingParameter] Task<AuthenticationState> authenticationStateTask { get; set; }
 
+    public async Task Focus() => await inputRef.FocusAsync();
+
+    ElementReference inputRef;
+
     bool isAuthenticated;
 
     string buttonTitle => ViewModel.IsPrivate ? "Diagram visible to me only. Click to make public." : "Diagram visible to everyone. Click to make private.";
@@ -25,12 +30,12 @@
 
     string cssInput => isAuthenticated ? "diagram-edit-header__name-input--with-button" : "";
 
-    void ChangeIsPrivate() => ViewModel.IsPrivate = !ViewModel.IsPrivate;
-
     protected override async Task OnParametersSetAsync()
     {
         var authState = await authenticationStateTask;
         isAuthenticated = authState.User.Identity.IsAuthenticated;
     }
+
+    void ChangeIsPrivate() => ViewModel.IsPrivate = !ViewModel.IsPrivate;
 
 }

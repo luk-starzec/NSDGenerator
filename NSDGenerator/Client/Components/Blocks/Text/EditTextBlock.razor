@@ -6,7 +6,7 @@
     <DeleteButton OnDeleteBlock="@DeleteBlockClick" />
 
     <div class="edit-text-block__text">
-        <textarea @bind="@ViewModel.Text" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="text" />
+        <textarea @bind="@ViewModel.Text" @bind:event="oninput" @onclick:stopPropagation="true" placeholder="text" @ref="textAreaRef" />
     </div>
 
     <AddButtons OnAddTextBlock="@HandleAddTextBlock" OnAddBranchBlock="@HandleAddBranchBlock" />
@@ -24,7 +24,15 @@
     [Parameter] public EventCallback OnChildAdded { get; set; }
     [Parameter] public EventCallback OnDeleted { get; set; }
 
+    ElementReference textAreaRef;
+
     bool deleteDialogVisible;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await textAreaRef.FocusAsync();
+    }
 
     void DeleteBlockClick() => deleteDialogVisible = true;
 

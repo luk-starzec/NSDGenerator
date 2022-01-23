@@ -25,16 +25,9 @@ $color-98: getColor(98);
 $color-dark-text: getColor(dark-text);
 $color-light-text: getColor(light-text);
 
-/*
-$color-hue: 230;
-$color-30: hsl($color-hue, 40%, 30%);
-$color-50: hsl($color-hue, 40%, 50%);
-$color-70: hsl($color-hue, 40%, 70%);
-$color-80: hsl($color-hue, 40%, 80%);
-$color-90: hsl($color-hue, 40%, 90%);
-$color-95: hsl($color-hue, 40%, 95%);
-$color-98: hsl($color-hue, 40%, 98%);
-*/
+* {
+    outline-color: $color-50;
+}
 
 @mixin btn-base {
     display: flex;
@@ -96,6 +89,7 @@ $color-98: hsl($color-hue, 40%, 98%);
 @mixin input-base {
     border: none;
     border-radius: 0.25rem;
+    outline-color: $color-70;
     color: $color-50;
 
     &::-webkit-input-placeholder {
