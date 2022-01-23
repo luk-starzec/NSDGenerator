@@ -133,6 +133,7 @@ internal class DiagramService : IDiagramService
         {
             Name = $"Copy {diagram.Name}",
             RootBlock = rootBlockCopy,
+            ColumnsWidth = diagram.ColumnsWidth.ToList(),
         };
         return copy;
     }
@@ -147,7 +148,7 @@ internal class DiagramService : IDiagramService
             .Select(r => r with
             {
                 Id = map[r.Id],
-                ChildId = r.ChildId.HasValue ? map[r.ChildId.Value] : null
+                ChildId = r.ChildId.HasValue ? map[r.ChildId.Value] : null,
             })
             .ToList();
         var branchBlocks = blockCollection.BranchBlocks
@@ -155,7 +156,9 @@ internal class DiagramService : IDiagramService
             {
                 Id = map[r.Id],
                 LeftResult = r.LeftResult.HasValue ? map[r.LeftResult.Value] : null,
-                RightResult = r.RightResult.HasValue ? map[r.RightResult.Value] : null
+                RightResult = r.RightResult.HasValue ? map[r.RightResult.Value] : null,
+                LeftColumns = r.LeftColumns.ToList(),
+                RightColumns = r.RightColumns.ToList(),
             })
             .ToList();
 
