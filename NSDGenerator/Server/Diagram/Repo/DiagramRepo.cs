@@ -14,9 +14,9 @@ namespace NSDGenerator.Server.Diagram.Repo
     {
         private readonly ILogger<DiagramRepo> logger;
         private readonly NsdContext context;
-        private readonly IDtoConverters diagramConverters;
+        private readonly IDtoConverter diagramConverters;
 
-        public DiagramRepo(ILogger<DiagramRepo> logger, NsdContext context, IDtoConverters diagramConverters)
+        public DiagramRepo(ILogger<DiagramRepo> logger, NsdContext context, IDtoConverter diagramConverters)
         {
             this.logger = logger;
             this.context = context;

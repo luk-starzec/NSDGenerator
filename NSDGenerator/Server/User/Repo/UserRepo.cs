@@ -56,13 +56,21 @@ namespace NSDGenerator.Server.User.Repo
 
         public async Task<bool> VerifyUserAsync(LoginDTO user)
         {
-            var dbUser = await context.Users.SingleOrDefaultAsync(r => r.Name == user.Email);
+            try
+            {
+                var dbUser = await context.Users.SingleOrDefaultAsync(r => r.Name == user.Email);
 
-            if (dbUser?.Password is null)
-                return false;
+                if (dbUser?.Password is null)
+                    return false;
 
-            var (verified, needsUpgrade) = passwordHasher.Check(dbUser.Password, user.Password);
-            return verified;
+                var (verified, needsUpgrade) = passwordHasher.Check(dbUser.Password, user.Password);
+                return verified;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("{Module} Method {Method} thrown exception: {Message}", nameof(UserRepo), nameof(VerifyUserAsync), ex.Message);
+            }
+            return false;
         }
     }
 }

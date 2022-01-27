@@ -4,7 +4,7 @@ using System;
 
 namespace NSDGenerator.Server.Diagram.Helpers;
 
-public interface IDtoConverters
+public interface IDtoConverter
 {
     BlockCollectionDTO BlocksToBlockCollectionDto(Block[] blocks, Guid rootId);
     string TextBlockDtoToJson(TextBlockDTO dto);

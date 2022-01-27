@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NSDGenerator.Server.User.Models;
@@ -17,11 +19,13 @@ namespace NSDGenerator.Server.User
     {
         private readonly JwtSettings _jwtSettings;
         private readonly IUserRepo _repo;
+        private readonly ILogger<UserController> _logger;
 
-        public UserController(IOptions<JwtSettings> options, IUserRepo userRepo)
+        public UserController(IOptions<JwtSettings> options, IUserRepo userRepo, ILogger<UserController> logger)
         {
             _jwtSettings = options.Value;
             _repo = userRepo ?? throw new ArgumentNullException(nameof(userRepo));
+            _logger = logger;
         }
 
         [HttpPost("login")]
@@ -34,7 +38,9 @@ namespace NSDGenerator.Server.User
 
             var stringToken = GetStringToken(login.Email);
 
-            return Ok(new LoginResult(true, Token: stringToken));
+            return stringToken is not null
+                ? Ok(new LoginResult(true, Token: stringToken))
+                : StatusCode(StatusCodes.Status500InternalServerError);
         }
 
         [HttpPost("register")]
@@ -56,20 +62,28 @@ namespace NSDGenerator.Server.User
 
         private string GetStringToken(string name)
         {
-            var claims = new List<Claim> { new Claim(ClaimTypes.Name, name) };
+            try
+            {
+                var claims = new List<Claim> { new Claim(ClaimTypes.Name, name) };
 
-            var creds = new SigningCredentials(_jwtSettings.SigningKey, SecurityAlgorithms.HmacSha256);
-            var expiry = DateTime.Now.AddDays(_jwtSettings.ExpiryInDays);
+                var creds = new SigningCredentials(_jwtSettings.SigningKey, SecurityAlgorithms.HmacSha256);
+                var expiry = DateTime.Now.AddDays(_jwtSettings.ExpiryInDays);
 
-            var token = new JwtSecurityToken(
-                _jwtSettings.Issuer,
-                _jwtSettings.Audience,
-                claims,
-                expires: expiry,
-                signingCredentials: creds
-            );
-            var stringToken = new JwtSecurityTokenHandler().WriteToken(token);
-            return stringToken;
+                var token = new JwtSecurityToken(
+                    _jwtSettings.Issuer,
+                    _jwtSettings.Audience,
+                    claims,
+                    expires: expiry,
+                    signingCredentials: creds
+                );
+                var stringToken = new JwtSecurityTokenHandler().WriteToken(token);
+                return stringToken;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Method {Method} thrown exception: {Message}", nameof(GetStringToken), ex.Message);
+                return null;
+            }
         }
     }
 }

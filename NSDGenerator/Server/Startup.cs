@@ -30,7 +30,7 @@ public class Startup
             options.UseSqlServer(Configuration.GetConnectionString("NsdDatabase")));
 
         services.AddScoped<IDiagramRepo, DiagramRepo>();
-        services.AddScoped<IDtoConverters, DtoConverters>();
+        services.AddScoped<IDtoConverter, DtoConverter>();
 
         services.Configure<HashingSettings>(Configuration.GetSection(HashingSettings.HashingOptionsKey));
         services.AddScoped<IUserRepo, UserRepo>();

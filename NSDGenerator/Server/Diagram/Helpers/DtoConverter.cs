@@ -7,11 +7,11 @@ using NSDGenerator.Server.Diagram.Models;
 
 namespace NSDGenerator.Server.Diagram.Helpers;
 
-public class DtoConverters : IDtoConverters
+public class DtoConverter : IDtoConverter
 {
     private readonly JsonSerializerOptions jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
-    public DtoConverters(JsonSerializerOptions jsonOptions = null)
+    public DtoConverter(JsonSerializerOptions jsonOptions = null)
     {
         if (jsonOptions is not null)
             this.jsonOptions = jsonOptions;
