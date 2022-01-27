@@ -5,6 +5,6 @@ namespace NSDGenerator.Server.User.Repo;
 
 public interface IUserRepo
 {
-    Task<string> RegisterUserAsync(RegisterDTO register);
-    Task<bool> VerifyUserAsync(LoginDTO user);
+    Task<string> RegisterUserAsync(RegisterRequest register);
+    Task<bool> VerifyUserAsync(AuthenticateRequest user);
 }

@@ -28,15 +28,15 @@ namespace NSDGenerator.Server.User
             _logger = logger;
         }
 
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDTO login)
+        [HttpPost("authenticate")]
+        public async Task<IActionResult> Authenticate([FromBody] AuthenticateRequest user)
         {
-            var isValid = await _repo.VerifyUserAsync(login);
+            var isValid = await _repo.VerifyUserAsync(user);
 
             if (!isValid)
                 return BadRequest(new LoginResult(false, Error: "Email or password are invalid."));
 
-            var stringToken = GetStringToken(login.Email);
+            var stringToken = GetStringToken(user.Email);
 
             return stringToken is not null
                 ? Ok(new LoginResult(true, Token: stringToken))
@@ -44,7 +44,7 @@ namespace NSDGenerator.Server.User
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDTO register)
+        public async Task<IActionResult> Register([FromBody] RegisterRequest register)
         {
             var registrationCode = register.RegistrationCode;
             if (string.IsNullOrEmpty(registrationCode))

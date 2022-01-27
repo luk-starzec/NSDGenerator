@@ -55,8 +55,8 @@
     {
         error = string.Empty;
 
-        var dto = new LoginDTO(viewModel.Email, viewModel.Password);
-        var response = await httpClient.PostAsJsonAsync("/api/user/login", dto);
+        var request = new AuthenticateRequest(viewModel.Email, viewModel.Password);
+        var response = await httpClient.PostAsJsonAsync("/api/user/authenticate", request);
         var result = await response.Content.ReadFromJsonAsync<LoginResult>();
 
         if (result.IsSuccessful)

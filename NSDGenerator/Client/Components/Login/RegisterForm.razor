@@ -69,8 +69,8 @@
 
         resultError = string.Empty;
 
-        var dto = new RegisterDTO(viewModel.Email, viewModel.Password, viewModel.RegistrationCode);
-        var response = await httpClient.PostAsJsonAsync("/api/user/register", dto);
+        var request = new RegisterRequest(viewModel.Email, viewModel.Password, viewModel.RegistrationCode);
+        var response = await httpClient.PostAsJsonAsync("/api/user/register", request);
         var result = await response.Content.ReadFromJsonAsync<RegisterResult>();
 
         if (result.IsSuccessful)

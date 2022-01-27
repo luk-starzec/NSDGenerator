@@ -16,8 +16,8 @@ namespace NSDGenerator.Server.Tests.User
     {
         private readonly WebApplicationFactory<Startup> factory;
 
-        private readonly LoginDTO validLoginData = new LoginDTO("test@test.com", "12345678");
-        private readonly RegisterDTO validRegisterData = new RegisterDTO("test@test.com", "12345678", "test1");
+        private readonly AuthenticateRequest validAuthenticateRequest = new("test@test.com", "12345678");
+        private readonly RegisterRequest validRegisterRequest = new("test@test.com", "12345678", "test1");
         private readonly JwtSettings jwtSettings = new() { SecurityKey = "RANDOM_KEY_FOR_TESTS" };
 
         public UserControllerTests()
@@ -29,16 +29,16 @@ namespace NSDGenerator.Server.Tests.User
 
             var userRepoMock = new Mock<IUserRepo>();
             userRepoMock
-                .Setup(r => r.VerifyUserAsync(It.IsAny<LoginDTO>()))
+                .Setup(r => r.VerifyUserAsync(It.IsAny<AuthenticateRequest>()))
                 .Returns(Task.FromResult(false));
             userRepoMock
-                .Setup(r => r.VerifyUserAsync(validLoginData))
+                .Setup(r => r.VerifyUserAsync(validAuthenticateRequest))
                 .Returns(Task.FromResult(true));
             userRepoMock
-                .Setup(r => r.RegisterUserAsync(It.IsAny<RegisterDTO>()))
+                .Setup(r => r.RegisterUserAsync(It.IsAny<RegisterRequest>()))
                 .Returns(Task.FromResult("error"));
             userRepoMock
-                .Setup(r => r.RegisterUserAsync(validRegisterData))
+                .Setup(r => r.RegisterUserAsync(validRegisterRequest))
                 .Returns(Task.FromResult((string?)null));
 
             factory = new WebApplicationFactory<Startup>()
@@ -54,12 +54,12 @@ namespace NSDGenerator.Server.Tests.User
 
 
         [Fact]
-        public async Task Login_ForValidUserReturnsSuccessfulResult()
+        public async Task Authenticate_ForValidUserReturnsSuccessfulResult()
         {
             var client = factory.CreateClient();
 
-            var user = validLoginData;
-            var response = await client.PostAsJsonAsync("/api/user/login", user);
+            var request = validAuthenticateRequest;
+            var response = await client.PostAsJsonAsync("/api/user/authenticate", request);
 
             response.EnsureSuccessStatusCode();
             var actual = await response.Content.ReadFromJsonAsync<LoginResult>();
@@ -69,12 +69,12 @@ namespace NSDGenerator.Server.Tests.User
         }
 
         [Fact]
-        public async Task Login_ForInvalidUserReturnsErrorResult()
+        public async Task Authenticate_ForInvalidUserReturnsErrorResult()
         {
             var client = factory.CreateClient();
 
-            var user = validLoginData with { Password = "abc" };
-            var response = await client.PostAsJsonAsync("/api/user/login", user);
+            var request = validAuthenticateRequest with { Password = "abc" };
+            var response = await client.PostAsJsonAsync("/api/user/authenticate", request);
 
             var actual = await response.Content.ReadFromJsonAsync<LoginResult>();
 
@@ -88,8 +88,8 @@ namespace NSDGenerator.Server.Tests.User
         {
             var client = factory.CreateClient();
 
-            var register = validRegisterData;
-            var response = await client.PostAsJsonAsync("/api/user/register", register);
+            var request = validRegisterRequest;
+            var response = await client.PostAsJsonAsync("/api/user/register", request);
 
             response.EnsureSuccessStatusCode();
             var actual = await response.Content.ReadFromJsonAsync<RegisterResult>();
@@ -103,8 +103,8 @@ namespace NSDGenerator.Server.Tests.User
         {
             var client = factory.CreateClient();
 
-            var register = validRegisterData with { RegistrationCode = null };
-            var response = await client.PostAsJsonAsync("/api/user/register", register);
+            var request = validRegisterRequest with { RegistrationCode = null };
+            var response = await client.PostAsJsonAsync("/api/user/register", request);
 
             var actual = await response.Content.ReadFromJsonAsync<RegisterResult>();
 
@@ -118,8 +118,8 @@ namespace NSDGenerator.Server.Tests.User
         {
             var client = factory.CreateClient();
 
-            var register = validRegisterData with { Email = "aaa@aaa.aa" };
-            var response = await client.PostAsJsonAsync("/api/user/register", register);
+            var request = validRegisterRequest with { Email = "aaa@aaa.aa" };
+            var response = await client.PostAsJsonAsync("/api/user/register", request);
 
             var actual = await response.Content.ReadFromJsonAsync<RegisterResult>();
 
