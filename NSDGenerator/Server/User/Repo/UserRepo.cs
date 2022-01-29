@@ -7,70 +7,69 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace NSDGenerator.Server.User.Repo
+namespace NSDGenerator.Server.User.Repo;
+
+public class UserRepo : IUserRepo
 {
-    public class UserRepo : IUserRepo
+    private readonly ILogger<UserRepo> logger;
+    private readonly NsdContext context;
+    private readonly IPasswordHasher passwordHasher;
+
+    public UserRepo(ILogger<UserRepo> logger, NsdContext context, IPasswordHasher passwordHasher)
     {
-        private readonly ILogger<UserRepo> logger;
-        private readonly NsdContext context;
-        private readonly IPasswordHasher passwordHasher;
+        this.logger = logger;
+        this.context = context;
+        this.passwordHasher = passwordHasher;
+    }
 
-        public UserRepo(ILogger<UserRepo> logger, NsdContext context, IPasswordHasher passwordHasher)
+    public async Task<string> RegisterUserAsync(RegisterRequest register)
+    {
+        var code = await context.RegistrationCodes
+            .Where(r => r.Code == register.RegistrationCode)
+            .Where(r => r.IsActive)
+            .Where(r => !r.ValidTo.HasValue || r.ValidTo >= DateTime.Now)
+            .SingleOrDefaultAsync();
+
+        if (code is null)
+            return "Invalid registration code";
+
+        var existingUser = await context.Users.AnyAsync(r => r.Name == register.Email);
+
+        if (existingUser)
+            return $"User {register.Email} already exists";
+
+        var user = new DbData.User
         {
-            this.logger = logger;
-            this.context = context;
-            this.passwordHasher = passwordHasher;
-        }
+            Name = register.Email,
+            Password = passwordHasher.Hash(register.Password),
+            IsEnabled = true,
+            Created = DateTime.Now,
+        };
+        context.Users.Add(user);
 
-        public async Task<string> RegisterUserAsync(RegisterRequest register)
+        code.IsActive = false;
+
+        await context.SaveChangesAsync();
+
+        return null;
+    }
+
+    public async Task<bool> VerifyUserAsync(AuthenticateRequest user)
+    {
+        try
         {
-            var code = await context.RegistrationCodes
-                .Where(r => r.Code == register.RegistrationCode)
-                .Where(r => r.IsActive)
-                .Where(r => !r.ValidTo.HasValue || r.ValidTo >= DateTime.Now)
-                .SingleOrDefaultAsync();
+            var dbUser = await context.Users.SingleOrDefaultAsync(r => r.Name == user.Email);
 
-            if (code is null)
-                return "Invalid registration code";
+            if (dbUser?.Password is null)
+                return false;
 
-            var existingUser = await context.Users.AnyAsync(r => r.Name == register.Email);
-
-            if (existingUser)
-                return $"User {register.Email} already exists";
-
-            var user = new DbData.User
-            {
-                Name = register.Email,
-                Password = passwordHasher.Hash(register.Password),
-                IsEnabled = true,
-                Created = DateTime.Now,
-            };
-            context.Users.Add(user);
-
-            code.IsActive = false;
-
-            await context.SaveChangesAsync();
-
-            return null;
+            var (verified, needsUpgrade) = passwordHasher.Check(dbUser.Password, user.Password);
+            return verified;
         }
-
-        public async Task<bool> VerifyUserAsync(AuthenticateRequest user)
+        catch (Exception ex)
         {
-            try
-            {
-                var dbUser = await context.Users.SingleOrDefaultAsync(r => r.Name == user.Email);
-
-                if (dbUser?.Password is null)
-                    return false;
-
-                var (verified, needsUpgrade) = passwordHasher.Check(dbUser.Password, user.Password);
-                return verified;
-            }
-            catch (Exception ex)
-            {
-                logger.LogError("{Module} Method {Method} thrown exception: {Message}", nameof(UserRepo), nameof(VerifyUserAsync), ex.Message);
-            }
-            return false;
+            logger.LogError("{Module} Method {Method} thrown exception: {Message}", nameof(UserRepo), nameof(VerifyUserAsync), ex.Message);
         }
+        return false;
     }
 }

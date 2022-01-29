@@ -43,10 +43,11 @@ public class DiagramController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<DiagramDTO> GetDiagram(Guid id)
+    public async Task<ActionResult<DiagramDTO>> GetDiagram(Guid id)
     {
         var userName = User.Identity.IsAuthenticated ? User.Identity.Name : null;
-        return await _repo.GetDiagramAsync(id, userName);
+        var diagram = await _repo.GetDiagramAsync(id, userName);
+        return diagram is not null ? Ok(diagram) : NotFound();
     }
 
     [HttpGet("exists/{id}")]

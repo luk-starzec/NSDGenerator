@@ -1,8 +1,7 @@
-﻿namespace NSDGenerator.Server.User.Helpers
+﻿namespace NSDGenerator.Server.User.Helpers;
+
+public interface IPasswordHasher
 {
-    public interface IPasswordHasher
-    {
-        string Hash(string password);
-        (bool Verified, bool NeedsUpgrade) Check(string hash, string password);
-    }
+    string Hash(string password);
+    (bool Verified, bool NeedsUpgrade) Check(string hash, string password);
 }

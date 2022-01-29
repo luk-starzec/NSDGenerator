@@ -4,63 +4,62 @@ using System;
 using System.Linq;
 using NSDGenerator.Server.User.Models;
 
-namespace NSDGenerator.Server.User.Helpers
+namespace NSDGenerator.Server.User.Helpers;
+
+public class PasswordHasher : IPasswordHasher
 {
-    public class PasswordHasher : IPasswordHasher
+    private const int SaltSize = 16; // 128 bit 
+    private const int KeySize = 32; // 256 bit
+
+    private HashingSettings settings;
+
+    public PasswordHasher(IOptions<HashingSettings> options)
     {
-        private const int SaltSize = 16; // 128 bit 
-        private const int KeySize = 32; // 256 bit
+        this.settings = options.Value;
+    }
 
-        private HashingSettings settings;
-
-        public PasswordHasher(IOptions<HashingSettings> options)
+    public string Hash(string password)
+    {
+        using (var algorithm = new Rfc2898DeriveBytes(
+          password,
+          SaltSize,
+          settings.Iterations,
+          HashAlgorithmName.SHA256))
         {
-            this.settings = options.Value;
+            var key = Convert.ToBase64String(algorithm.GetBytes(KeySize));
+            var salt = Convert.ToBase64String(algorithm.Salt);
+
+            return $"{settings.Iterations}.{salt}.{key}";
+        }
+    }
+
+    public (bool Verified, bool NeedsUpgrade) Check(string hash, string password)
+    {
+        var parts = hash.Split('.', 3);
+
+        if (parts.Length != 3)
+        {
+            throw new FormatException("Unexpected hash format. " +
+              "Should be formatted as `{iterations}.{salt}.{hash}`");
         }
 
-        public string Hash(string password)
+        var iterations = Convert.ToInt32(parts[0]);
+        var salt = Convert.FromBase64String(parts[1]);
+        var key = Convert.FromBase64String(parts[2]);
+
+        var needsUpgrade = iterations != settings.Iterations;
+
+        using (var algorithm = new Rfc2898DeriveBytes(
+          password,
+          salt,
+          iterations,
+          HashAlgorithmName.SHA256))
         {
-            using (var algorithm = new Rfc2898DeriveBytes(
-              password,
-              SaltSize,
-              settings.Iterations,
-              HashAlgorithmName.SHA256))
-            {
-                var key = Convert.ToBase64String(algorithm.GetBytes(KeySize));
-                var salt = Convert.ToBase64String(algorithm.Salt);
+            var keyToCheck = algorithm.GetBytes(KeySize);
 
-                return $"{settings.Iterations}.{salt}.{key}";
-            }
-        }
+            var verified = keyToCheck.SequenceEqual(key);
 
-        public (bool Verified, bool NeedsUpgrade) Check(string hash, string password)
-        {
-            var parts = hash.Split('.', 3);
-
-            if (parts.Length != 3)
-            {
-                throw new FormatException("Unexpected hash format. " +
-                  "Should be formatted as `{iterations}.{salt}.{hash}`");
-            }
-
-            var iterations = Convert.ToInt32(parts[0]);
-            var salt = Convert.FromBase64String(parts[1]);
-            var key = Convert.FromBase64String(parts[2]);
-
-            var needsUpgrade = iterations != settings.Iterations;
-
-            using (var algorithm = new Rfc2898DeriveBytes(
-              password,
-              salt,
-              iterations,
-              HashAlgorithmName.SHA256))
-            {
-                var keyToCheck = algorithm.GetBytes(KeySize);
-
-                var verified = keyToCheck.SequenceEqual(key);
-
-                return (verified, needsUpgrade);
-            }
+            return (verified, needsUpgrade);
         }
     }
 }

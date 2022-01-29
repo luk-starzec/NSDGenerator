@@ -2,7 +2,7 @@
 
 namespace NSDGenerator.Client.ViewModels;
 
-public partial class BranchBlockVM : IBlockVM
+public class BranchBlockVM : IBlockVM
 {
     public Guid Id { get; set; }
     public IBlockVM Parent { get; set; }

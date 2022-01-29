@@ -56,12 +56,6 @@ internal class DiagramService : IDiagramService
         }
     }
 
-    public int GetColumnsCount(IBlockVM rootBlock)
-    {
-        var branchBlocks = modelConverter.RootBlockToChildrenBranchBlockViewModels(rootBlock);
-        return branchBlocks.Count + 1;
-    }
-
     public DiagramVM GetDiagram(string fileContent)
     {
         return modelConverter.JsonToDiagramViewModel(fileContent);
@@ -79,7 +73,6 @@ internal class DiagramService : IDiagramService
             logger.LogError("Method {Method} thrown exception: {Message}", nameof(CheckIfDiagramExistsAsync), ex.Message);
             return false;
         }
-
     }
 
     public async Task DownloadDiagramAsync(DiagramVM diagram)

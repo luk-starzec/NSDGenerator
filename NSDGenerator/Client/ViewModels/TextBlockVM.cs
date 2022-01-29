@@ -1,6 +1,6 @@
 ﻿namespace NSDGenerator.Client.ViewModels;
 
-public partial class TextBlockVM : IBlockVM
+public class TextBlockVM : IBlockVM
 {
     public IBlockVM Parent { get; set; }
     public Guid Id { get; set; }

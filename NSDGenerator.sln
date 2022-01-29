@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NSDGenerator.Shared", "NSDG
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{7415C23A-7A32-4A1C-8EB3-56086CC0CDB6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSDGenerator.Server.Tests", "NSDGenerator\Tests\NSDGenerator.Server.Tests\NSDGenerator.Server.Tests.csproj", "{D99C39FA-24B9-40CD-8DF2-840C47C062BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NSDGenerator.Server.Tests", "NSDGenerator\Tests\NSDGenerator.Server.Tests\NSDGenerator.Server.Tests.csproj", "{D99C39FA-24B9-40CD-8DF2-840C47C062BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NSDGenerator.Client.Tests", "NSDGenerator\Tests\NSDGenerator.Client.Tests\NSDGenerator.Client.Tests.csproj", "{FDF43E8C-C2A0-417C-AA12-089E7D6A9FB9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,12 +37,17 @@ Global
 		{D99C39FA-24B9-40CD-8DF2-840C47C062BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D99C39FA-24B9-40CD-8DF2-840C47C062BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D99C39FA-24B9-40CD-8DF2-840C47C062BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDF43E8C-C2A0-417C-AA12-089E7D6A9FB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDF43E8C-C2A0-417C-AA12-089E7D6A9FB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDF43E8C-C2A0-417C-AA12-089E7D6A9FB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDF43E8C-C2A0-417C-AA12-089E7D6A9FB9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{D99C39FA-24B9-40CD-8DF2-840C47C062BC} = {7415C23A-7A32-4A1C-8EB3-56086CC0CDB6}
+		{FDF43E8C-C2A0-417C-AA12-089E7D6A9FB9} = {7415C23A-7A32-4A1C-8EB3-56086CC0CDB6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0FCEBCCC-04E6-4AC3-9456-AE5280E54425}
