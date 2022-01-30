@@ -516,12 +516,13 @@
     border-radius: .25rem;
     background-color: $color-70;
 
+    &:hover:enabled {
+        background-color: $color-50;
+        transform: scale(1.01);
+    }
+
     &--primary {
         flex-grow: 1;
-
-        &:hover:enabled {
-            transform: scale(1.01);
-        }
 
         &:hover:active:enabled {
             transform: scale(.99);
@@ -531,7 +532,7 @@
     svg {
         margin-right: .5rem;
 
-        .border, 
+        .border,
         .shadow {
             fill: $color-50;
         }

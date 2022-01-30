@@ -12,6 +12,7 @@ using NSDGenerator.Server.Diagram.Repo;
 using NSDGenerator.Server.User.Helpers;
 using NSDGenerator.Server.User.Models;
 using NSDGenerator.Server.User.Repo;
+using System;
 
 namespace NSDGenerator.Server;
 
@@ -51,6 +52,8 @@ public class Startup
                     ValidIssuer = jwtSettings.Issuer,
                     ValidAudience = jwtSettings.Audience,
                     IssuerSigningKey = jwtSettings.SigningKey,
+                    ClockSkew = TimeSpan.Zero,
+                    RequireExpirationTime = true,
                 };
             });
 

@@ -1,5 +1,6 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
@@ -21,15 +22,32 @@ public class TokenAuthenticationStateProvider : AuthenticationStateProvider
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         var token = await _localStorage.GetItemAsync<string>("token");
-        var identity = string.IsNullOrWhiteSpace(token)
-            ? new ClaimsIdentity()
-            : new ClaimsIdentity(token.ParseClaimsFromJwt(), "jwt");
 
-        _httpClient.DefaultRequestHeaders.Authorization = string.IsNullOrWhiteSpace(token)
-            ? null
-            : new AuthenticationHeaderValue("bearer", token);
+        var isValid = !string.IsNullOrWhiteSpace(token) && CheckExpTime(token);
+
+        var identity = isValid
+            ? new ClaimsIdentity(token.ParseClaimsFromJwt(), "jwt")
+            : new ClaimsIdentity();
+
+        _httpClient.DefaultRequestHeaders.Authorization = isValid
+            ? new AuthenticationHeaderValue("bearer", token)
+            : null;
 
         return new AuthenticationState(new ClaimsPrincipal(identity));
+    }
+
+    private bool CheckExpTime(string token)
+    {
+        var claims = token.ParseClaimsFromJwt();
+        var expiry = claims.Where(claim => claim.Type.Equals("exp")).FirstOrDefault();
+        if (expiry == null)
+            return false;
+
+        var datetime = DateTimeOffset.FromUnixTimeSeconds(long.Parse(expiry.Value));
+        if (datetime.UtcDateTime <= DateTime.UtcNow)
+            return false;
+
+        return true;
     }
 
     public async Task Login(string token)
@@ -43,6 +61,11 @@ public class TokenAuthenticationStateProvider : AuthenticationStateProvider
     {
         await _localStorage.RemoveItemAsync("token");
 
+        NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+    }
+
+    public void RefreshAuthenticationState()
+    {
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
     }
 }

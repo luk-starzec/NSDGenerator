@@ -53,9 +53,14 @@
 
     bool frmVisible;
 
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+            tokenAuthStateProvider.RefreshAuthenticationState();
+    }
+
     private async Task LogoutUser()
     {
         await tokenAuthStateProvider.Logout();
     }
-
 }
