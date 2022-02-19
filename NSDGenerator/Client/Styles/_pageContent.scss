@@ -10,7 +10,7 @@
 .page-content__main {
     position: relative;
     width: 80vw;
-    background: #fff;
+    background: $color-light;
     z-index: 0;
 
     @media print {

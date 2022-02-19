@@ -6,9 +6,15 @@
     --color-90: hsl(0, 40%, 90%);
     --color-95: hsl(0, 40%, 95%);
     --color-98: hsl(0, 40%, 98%);
-    --color-mask-85: hsla(0, 40%, 15%, 0.85);
     --color-dark-text: hsl(0, 0%, 10%);
     --color-light-text: hsl(0, 0%, 100%);
+    --color-light: hsl(0, 0%, 100%);
+    --color-mask: hsla(0, 40%, 15%, 0.85);
+    --color-mask-text: hsla(0, 0%, 100%);
+    --color-shadow-5: hsla(0, 40%, 10%, 0.05);
+    --color-shadow-10: hsla(0, 40%, 10%, 0.1);
+    --color-shadow-15: hsla(0, 40%, 10%, 0.15);
+    --color-shadow-20: hsla(0, 40%, 10%, 0.2);
 }
 
 @function getColor($name) {
@@ -24,6 +30,13 @@ $color-95: getColor(95);
 $color-98: getColor(98);
 $color-dark-text: getColor(dark-text);
 $color-light-text: getColor(light-text);
+$color-light: getColor(light);
+$color-mask: getColor(mask);
+$color-mask-text: getColor(mask-text);
+$color-shadow-5: getColor(shadow-5);
+$color-shadow-10: getColor(shadow-10);
+$color-shadow-15: getColor(shadow-15);
+$color-shadow-20: getColor(shadow-20);
 
 * {
     outline-color: $color-50;
@@ -37,16 +50,16 @@ $color-light-text: getColor(light-text);
     border-radius: .5rem;
     cursor: pointer;
     transition: transform ease .1s, box-shadow ease .1s;
-    box-shadow: 4px 4px 4px 0 rgba(0, 0, 0, 0.15);
+    box-shadow: 4px 4px 4px 0 $color-shadow-15;
 
     &:hover:enabled {
         transform: scale(1.05);
-        box-shadow: 2px 4px 4px 0 rgba(0, 0, 0, 0.2);
+        box-shadow: 2px 4px 4px 0 $color-shadow-20;
     }
 
     &:hover:active:enabled {
         transform: scale(.95);
-        box-shadow: 2px 2px 4px 0 rgba(0, 0, 0, 0.2);
+        box-shadow: 2px 2px 4px 0 $color-shadow-20;
     }
 
     &:disabled {
@@ -58,18 +71,18 @@ $color-light-text: getColor(light-text);
 @mixin btn-primary {
     @include btn-base;
     background-color: $color-30;
-    color: #ffffff;
+    color: $color-light-text;
 }
 
 @mixin btn-secondary {
     @include btn-base;
     background-color: $color-90;
     color: $color-30;
-    box-shadow: 4px 4px 4px 0 rgba(0, 0, 0, 0.05);
+    box-shadow: 4px 4px 4px 0 $color-shadow-5;
 
     &:hover {
         background-color: $color-95;
-        box-shadow: 2px 4px 4px 0 rgba(0, 0, 0, 0.1);
+        box-shadow: 2px 4px 4px 0 $color-shadow-10;
     }
 }
 
@@ -91,6 +104,7 @@ $color-light-text: getColor(light-text);
     border-radius: 0.25rem;
     outline-color: $color-70;
     color: $color-50;
+    background-color: $color-light;
 
     &::-webkit-input-placeholder {
         color: $color-90;

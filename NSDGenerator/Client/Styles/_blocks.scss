@@ -32,7 +32,7 @@ $border-color: $color-80;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #fff;
+    color: $color-light-text;
 }
 
 .preview-branch-block__branch {
@@ -88,7 +88,7 @@ $border-color: $color-80;
     display: flex;
     flex-direction: column;
     z-index: 1;
-    box-shadow: 1px 1px 12px 2px hsla(0, 0, 0, 0.2);
+    box-shadow: 1px 1px 12px 2px $color-shadow-20;
 
     .block-button__button {
         margin-bottom: 0;
@@ -129,7 +129,7 @@ $border-color: $color-80;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #fff;
+    color: $color-light-text;
     margin-top: 2rem;
 }
 
@@ -217,14 +217,14 @@ $border-color: $color-80;
     justify-content: center;
     align-items: center;
     height: 100%;
-    background: #fff;
+    background: $color-light;
 }
 
 .preview-text-block__wrapper {
     display: flex;
     flex-direction: column;
     border: solid 1px $border-color;
-    background: #fff;
+    background: $color-light;
 
     &:last-child div {
         border-bottom: none;
@@ -278,7 +278,7 @@ $border-color: $color-80;
     display: grid;
     grid-template-rows: auto 1fr auto;
     grid-template-columns: 1fr 1fr;
-    box-shadow: 1px 1px 12px 2px hsla(0, 0, 0, 0.2);
+    box-shadow: 1px 1px 12px 2px $color-shadow-20;
     z-index: 1;
 
     .block-button__button {
@@ -329,7 +329,7 @@ $border-color: $color-80;
         border-radius: 0 0 0.25rem 0;
 
         svg {
-            stroke: white;
+            stroke: $color-light;
             height: 1em;
             margin-block: .25rem;
         }
@@ -356,7 +356,7 @@ $border-color: $color-80;
 .delete-dialog__wrapper {
     position: absolute;
     inset: 0;
-    background-color: var(--color-mask-85);
+    background-color: $color-mask;
     display: none;
     z-index: 10;
 
@@ -369,7 +369,7 @@ $border-color: $color-80;
 
 .delete-dialog__question {
     margin-inline: 1rem;
-    color: #fff;
+    color: $color-mask-text;
 }
 
 .delete-dialog__answear {
@@ -382,7 +382,7 @@ $border-color: $color-80;
 .delete-dialog__button {
     margin-inline: 0.5rem;
     padding: .25rem .5rem;
-    background-color: #fff;
+    background-color: $color-light;
     color: $color-30;
     border: none;
     border-radius: 0.25rem;
@@ -394,7 +394,7 @@ $border-color: $color-80;
 
     &--confirm {
         background-color: $color-70;
-        color: #fff;
+        color: $color-light-text;
 
         &:hover {
             background-color: darkred;

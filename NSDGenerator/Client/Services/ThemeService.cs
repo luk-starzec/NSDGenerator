@@ -9,25 +9,28 @@ public class ThemeService : IThemeService
 
     private readonly int defaultHue = 220;
     private readonly int defaultSaturation = 40;
+    private readonly bool defaultDarkMode = false;
 
     public ThemeService(IJSRuntime js)
     {
         this.js = js;
     }
 
-    private async Task SetColorAsync(int hue, int saturation)
-        => await js.InvokeVoidAsync("setThemeColor", hue, saturation);
+    private async Task SetColorAsync(int hue, int saturation, bool darkMode)
+        => await js.InvokeVoidAsync("setThemeColor", hue, saturation, darkMode);
 
     private async Task SetColorSaturationAsync(int saturation)
     {
         var hue = await GetCurrentThemeHueAsync();
-        await SetColorAsync(hue, saturation);
+        var darkMode = await GetCurrentDarkModeAsync();
+        await SetColorAsync(hue, saturation, darkMode);
     }
 
     public async Task SetColorHueAsync(int hue)
     {
         var saturation = await GetCurrentThemeSaturationAsync();
-        await SetColorAsync(hue, saturation);
+        var darkMode = await GetCurrentDarkModeAsync();
+        await SetColorAsync(hue, saturation, darkMode);
     }
 
     public async Task SetPreviewColorAsync(int hue)
@@ -46,8 +49,9 @@ public class ThemeService : IThemeService
     public async Task SetDefaultThemeAsync()
     {
         await SetPreviewColorAsync(defaultHue);
-        await SetColorAsync(defaultHue, defaultSaturation);
+        await SetColorAsync(defaultHue, defaultSaturation, defaultDarkMode);
         await SetGrayScaleAsync(false);
+        await SetDarkModeAsync(defaultDarkMode);
     }
 
     public async Task<int> GetCurrentThemeHueAsync()
@@ -71,6 +75,19 @@ public class ThemeService : IThemeService
     public async Task<bool> GetCurrentGrayScaleAsync()
     {
         var value = await js.InvokeAsync<string>("getLocalValue", "themeGrayScale");
-        return value is not null && bool.Parse(value);
+        return bool.TryParse(value, out bool result) ? result : false;
+    }
+
+    public async Task SetDarkModeAsync(bool darkMode)
+    {
+        var hue = await GetCurrentThemeHueAsync();
+        var saturation = await GetCurrentThemeSaturationAsync();
+        await SetColorAsync(hue, saturation, darkMode);
+    }
+
+    public async Task<bool> GetCurrentDarkModeAsync()
+    {
+        var value = await js.InvokeAsync<string>("getLocalValue", "themeDarkMode");
+        return bool.TryParse(value, out bool result) ? result : false;
     }
 }

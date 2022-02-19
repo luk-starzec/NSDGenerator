@@ -57,9 +57,10 @@
 
                 <td class="diagram-list__cell diagram-list__cell--buttons">
 
-                    <button @onclick="(async()=>await ViewClick(diagram.Id))">view</button>
-
-                    <button @onclick="(async()=>await DownloadClick(diagram.Id))">download</button>
+                    <div>
+                        <button @onclick="(async()=>await ViewClick(diagram.Id))">view</button>
+                        <button @onclick="(async()=>await DownloadClick(diagram.Id))">download</button>
+                    </div>
 
                 </td>
 
