@@ -7,10 +7,11 @@
 
 * {
     font-family: 'Baloo 2';
+    transition: background-color .5s ease, color .5s ease;
 }
 
-button, 
-input, 
+button,
+input,
 textarea {
     font-family: 'Baloo 2';
 }
