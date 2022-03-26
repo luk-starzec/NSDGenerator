@@ -61,8 +61,8 @@ public class DiagramControllerTests
         var actual = await response.Content.ReadFromJsonAsync<DiagramDTO>();
 
         Assert.NotNull(actual);
-        Assert.Equal(testDiagram.Id, actual.Id);
-        Assert.Equal(testDiagram.Name, actual.Name);
+        Assert.Equal(testDiagram.Id, actual?.Id);
+        Assert.Equal(testDiagram.Name, actual?.Name);
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public class DiagramControllerTests
     {
         diagramRepoStub
             .Setup(r => r.GetDiagramAsync(It.IsAny<Guid>(), It.IsAny<string>()))
-            .Returns(Task.FromResult<DiagramDTO>(null));
+            .Returns(Task.FromResult<DiagramDTO?>(null));
 
         var client = factory.CreateClient();
 
@@ -137,9 +137,10 @@ public class DiagramControllerTests
         var actual = await response.Content.ReadFromJsonAsync<IEnumerable<DiagramInfoDTO>>();
 
         Assert.NotNull(actual);
+#pragma warning disable CS8604 // Possible null reference argument.
         Assert.Equal(diagrams.Count, actual.Count());
         Assert.True(diagrams.All(r => actual.Contains(r)));
-
+#pragma warning restore CS8604 // Possible null reference argument.
     }
 
     [Fact]

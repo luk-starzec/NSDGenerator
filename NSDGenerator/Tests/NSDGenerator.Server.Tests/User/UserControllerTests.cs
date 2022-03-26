@@ -64,8 +64,8 @@ public class UserControllerTests
         response.EnsureSuccessStatusCode();
         var actual = await response.Content.ReadFromJsonAsync<LoginResult>();
 
-        Assert.True(actual.IsSuccessful);
-        Assert.NotNull(actual.Token);
+        Assert.True(actual?.IsSuccessful);
+        Assert.NotNull(actual?.Token);
     }
 
     [Fact]
@@ -79,8 +79,8 @@ public class UserControllerTests
         var actual = await response.Content.ReadFromJsonAsync<LoginResult>();
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        Assert.False(actual.IsSuccessful);
-        Assert.NotNull(actual.Error);
+        Assert.False(actual?.IsSuccessful);
+        Assert.NotNull(actual?.Error);
     }
 
     [Fact]
@@ -94,8 +94,8 @@ public class UserControllerTests
         response.EnsureSuccessStatusCode();
         var actual = await response.Content.ReadFromJsonAsync<RegisterResult>();
 
-        Assert.True(actual.IsSuccessful);
-        Assert.NotNull(actual.Token);
+        Assert.True(actual?.IsSuccessful);
+        Assert.NotNull(actual?.Token);
     }
 
     [Fact]
@@ -109,8 +109,8 @@ public class UserControllerTests
         var actual = await response.Content.ReadFromJsonAsync<RegisterResult>();
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        Assert.False(actual.IsSuccessful);
-        Assert.NotNull(actual.Error);
+        Assert.False(actual?.IsSuccessful);
+        Assert.NotNull(actual?.Error);
     }
 
     [Fact]
@@ -124,7 +124,7 @@ public class UserControllerTests
         var actual = await response.Content.ReadFromJsonAsync<RegisterResult>();
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        Assert.False(actual.IsSuccessful);
-        Assert.NotNull(actual.Error);
+        Assert.False(actual?.IsSuccessful);
+        Assert.NotNull(actual?.Error);
     }
 }

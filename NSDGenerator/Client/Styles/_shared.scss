@@ -9,12 +9,12 @@
     --color-dark-text: hsl(0, 0%, 10%);
     --color-light-text: hsl(0, 0%, 100%);
     --color-light: hsl(0, 0%, 100%);
-    --color-mask: hsla(0, 40%, 15%, 0.85);
-    --color-mask-text: hsla(0, 0%, 100%);
-    --color-shadow-5: hsla(0, 40%, 10%, 0.05);
-    --color-shadow-10: hsla(0, 40%, 10%, 0.1);
-    --color-shadow-15: hsla(0, 40%, 10%, 0.15);
-    --color-shadow-20: hsla(0, 40%, 10%, 0.2);
+    --color-mask: Hsla(0, 40%, 15%, 0.85);
+    --color-mask-text: Hsla(0, 0%, 100%);
+    --color-shadow-5: Hsla(0, 40%, 10%, 0.05);
+    --color-shadow-10: Hsla(0, 40%, 10%, 0.1);
+    --color-shadow-15: Hsla(0, 40%, 10%, 0.15);
+    --color-shadow-20: Hsla(0, 40%, 10%, 0.2);
 }
 
 @function getColor($name) {
